@@ -4,6 +4,7 @@ import Blogs from "@/components/homes/home-1/Blogs";
 import Categories from "@/components/common/Categories";
 import Cities from "@/components/homes/home-1/Cities";
 import AboutHomeSection from "@/components/homes/home-1/AboutHomeSection";
+import PropertyAccordion from "@/components/homes/home-1/PropertyAccordion";
 import HelpCenter from "@/components/homes/home-1/HelpCenter";
 import Hero from "@/components/homes/home-1/Hero";
 import LoanCalculator from "@/components/homes/home-1/LoanCalculator";
@@ -11,6 +12,7 @@ import Partners from "@/components/homes/home-1/Partners";
 import Properties from "@/components/homes/home-1/Properties";
 import Properties2 from "@/components/homes/home-1/Properties2";
 import Testimonials from "@/components/homes/home-1/Testimonials";
+import CookieDisclaimerBanner from "@/components/common/CookieDisclaimerBanner";
 import connectDB from "@/lib/mongoose";
 import PropertyModel from "@/models/Property";
 import PropertyTypeModel from "@/models/PropertyType";
@@ -21,6 +23,8 @@ import HelpCenterContentModel from "@/models/HelpCenterContent";
 import PartnerLogoModel from "@/models/PartnerLogo";
 import AboutSectionModel from "@/models/AboutSection";
 import SiteConfigModel from "@/models/SiteConfig";
+import HomeAccordionPanelModel from "@/models/HomeAccordionPanel";
+import CookieDisclaimerModel from "@/models/CookieDisclaimer";
 import { resolveHelpCenterContent } from "@/lib/helpCenterResolve";
 import { getPageSeo } from "@/lib/seo";
 import mongoose from "mongoose";
@@ -28,6 +32,19 @@ import { Suspense } from "react";
 
 /** Re-fetch DB SEO periodically so admin updates appear without redeploying */
 export const revalidate = 60;
+
+const DEFAULT_COOKIE_DISCLAIMER = {
+  title: "Your Privacy Matters",
+  paragraphs: [
+    "We use essential cookies to ensure site functionality. Additionally, we use supplementary cookies to enhance your experience, personalize ads, and analyze web traffic.",
+    "By clicking Accept, you consent to our Privacy Policy and Cookie Policy.",
+  ],
+  policyText: "Privacy Policy",
+  policyUrl: "/privacy-policy",
+  acceptText: "Accept",
+  closeText: "Close",
+  isActive: true,
+};
 
 export async function generateMetadata() {
   const { metadata } = await getPageSeo("home", {
@@ -54,6 +71,8 @@ async function getHomePageData() {
       aboutSectionRaw,
       heroStatsConfig,
       heroBadgeConfig,
+      homeAccordionPanelsRaw,
+      cookieDisclaimerRaw,
     ] = await Promise.all([
       PropertyModel.find({ isActive: { $ne: false } })
         .sort({ createdAt: -1 })
@@ -103,6 +122,12 @@ async function getHomePageData() {
       AboutSectionModel.findOne({ isActive: true }).lean().catch(() => null),
       SiteConfigModel.findOne({ key: "heroStats" }).lean().catch(() => null),
       SiteConfigModel.findOne({ key: "heroBadgeImage" }).lean().catch(() => null),
+      HomeAccordionPanelModel.find({ isActive: true })
+        .sort({ order: 1, createdAt: 1 })
+        .limit(10)
+        .lean()
+        .catch(() => []),
+      CookieDisclaimerModel.findOne({ key: "home" }).lean().catch(() => null),
     ]);
 
     let topCities = [];
@@ -188,6 +213,27 @@ async function getHomePageData() {
       typeof heroBadgeConfig?.value === "string"
         ? heroBadgeConfig.value.trim()
         : "";
+    const homeAccordionPanels = (homeAccordionPanelsRaw || []).map((p) => ({
+      key: String(p.key || ""),
+      label: String(p.label || ""),
+      tagline: String(p.tagline || ""),
+      image: String(p.image || ""),
+      href: String(p.href || "#"),
+      order: Number(p.order || 0),
+    }));
+    const cookieDisclaimer = cookieDisclaimerRaw
+      ? {
+          title: String(cookieDisclaimerRaw.title || "Your Privacy Matters"),
+          paragraphs: Array.isArray(cookieDisclaimerRaw.paragraphs)
+            ? cookieDisclaimerRaw.paragraphs.map((x) => String(x || "")).filter(Boolean)
+            : [],
+          policyText: String(cookieDisclaimerRaw.policyText || "Privacy Policy"),
+          policyUrl: String(cookieDisclaimerRaw.policyUrl || "/privacy-policy"),
+          acceptText: String(cookieDisclaimerRaw.acceptText || "Accept"),
+          closeText: String(cookieDisclaimerRaw.closeText || "Close"),
+          isActive: cookieDisclaimerRaw.isActive !== false,
+        }
+      : DEFAULT_COOKIE_DISCLAIMER;
 
     return {
       properties: JSON.parse(JSON.stringify(properties)),
@@ -201,6 +247,8 @@ async function getHomePageData() {
       aboutSection: JSON.parse(JSON.stringify(aboutSection)),
       heroStats: JSON.parse(JSON.stringify(heroStats)),
       heroBadgeImage: JSON.parse(JSON.stringify(heroBadgeImage)),
+      homeAccordionPanels: JSON.parse(JSON.stringify(homeAccordionPanels)),
+      cookieDisclaimer: JSON.parse(JSON.stringify(cookieDisclaimer)),
     };
   } catch {
     return {
@@ -215,6 +263,8 @@ async function getHomePageData() {
       aboutSection: null,
       heroStats: [],
       heroBadgeImage: "",
+      homeAccordionPanels: [],
+      cookieDisclaimer: DEFAULT_COOKIE_DISCLAIMER,
     };
   }
 }
@@ -232,6 +282,8 @@ export default async function Home() {
     aboutSection,
     heroStats,
     heroBadgeImage,
+    homeAccordionPanels,
+    cookieDisclaimer,
   } = await getHomePageData();
 
   return (
@@ -259,6 +311,9 @@ export default async function Home() {
         <Categories items={categoryItems} />
         <Properties properties={properties} />
         <AboutHomeSection content={aboutSection} />
+        <section className="tf-spacing-1">
+          <PropertyAccordion panels={homeAccordionPanels} />
+        </section>
         <HelpCenter content={helpCenterContent} />
         {/* <LoanCalculator /> */}
         <Cities cities={topCities} />
@@ -267,6 +322,7 @@ export default async function Home() {
         <Blogs blogs={blogs} />
         <Testimonials testimonials={testimonials} />
       </div>
+      <CookieDisclaimerBanner content={cookieDisclaimer} />
       <Footer1 />
     </>
   );
