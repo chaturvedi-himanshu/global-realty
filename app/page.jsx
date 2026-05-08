@@ -78,6 +78,7 @@ async function getHomePageData() {
       homeCtaBannerRaw,
     ] = await Promise.all([
       PropertyModel.find({ isActive: { $ne: false } })
+        .populate("propertyType", "name title slug")
         .sort({ createdAt: -1 })
         .limit(9)
         .lean()
@@ -88,6 +89,7 @@ async function getHomePageData() {
         .lean()
         .catch(() => []),
       BlogModel.find({ status: "published" })
+        .populate("category", "name slug")
         .sort({ publishedAt: -1, createdAt: -1 })
         .limit(6)
         .lean()
@@ -116,22 +118,34 @@ async function getHomePageData() {
         .sort({ name: 1 })
         .lean()
         .catch(() => []),
-      HelpCenterContentModel.findOne({ key: "home" }).lean().catch(() => null),
+      HelpCenterContentModel.findOne({ key: "home" })
+        .lean()
+        .catch(() => null),
       PartnerLogoModel.find({ isActive: true })
         .sort({ order: 1, createdAt: 1 })
         .select("name image link order")
         .lean()
         .catch(() => []),
-      AboutSectionModel.findOne({ isActive: true }).lean().catch(() => null),
-      SiteConfigModel.findOne({ key: "heroStats" }).lean().catch(() => null),
-      SiteConfigModel.findOne({ key: "heroBadgeImage" }).lean().catch(() => null),
+      AboutSectionModel.findOne({ isActive: true })
+        .lean()
+        .catch(() => null),
+      SiteConfigModel.findOne({ key: "heroStats" })
+        .lean()
+        .catch(() => null),
+      SiteConfigModel.findOne({ key: "heroBadgeImage" })
+        .lean()
+        .catch(() => null),
       HomeAccordionPanelModel.find({ isActive: true })
         .sort({ order: 1, createdAt: 1 })
         .limit(10)
         .lean()
         .catch(() => []),
-      CookieDisclaimerModel.findOne({ key: "home" }).lean().catch(() => null),
-      HomeCtaBannerModel.findOne({ key: "home" }).lean().catch(() => null),
+      CookieDisclaimerModel.findOne({ key: "home" })
+        .lean()
+        .catch(() => null),
+      HomeCtaBannerModel.findOne({ key: "home" })
+        .lean()
+        .catch(() => null),
     ]);
 
     let topCities = [];
@@ -160,7 +174,10 @@ async function getHomePageData() {
     }
 
     const typeCountMap = new Map(
-      (propertyTypeCounts || []).map((row) => [String(row._id), row.count || 0])
+      (propertyTypeCounts || []).map((row) => [
+        String(row._id),
+        row.count || 0,
+      ]),
     );
     const categoryItems = (propertyTypes || [])
       .filter((t) => t?._id && t.slug)
@@ -185,16 +202,20 @@ async function getHomePageData() {
 
     const aboutSection = aboutSectionRaw
       ? {
-          eyebrow: String(aboutSectionRaw.eyebrow || "Why Choose Our Properties"),
+          eyebrow: String(
+            aboutSectionRaw.eyebrow || "Why Choose Our Properties",
+          ),
           title: String(aboutSectionRaw.title || ""),
           description: String(aboutSectionRaw.description || ""),
           image: String(aboutSectionRaw.image || ""),
           highlights: Array.isArray(aboutSectionRaw.highlights)
-            ? aboutSectionRaw.highlights.map((x) => String(x || "").trim()).filter(Boolean)
+            ? aboutSectionRaw.highlights
+                .map((x) => String(x || "").trim())
+                .filter(Boolean)
             : Array.isArray(aboutSectionRaw.stats)
               ? aboutSectionRaw.stats
                   .map((x) =>
-                    `${String(x?.label || "").trim()}${x?.value ? ` - ${String(x.value).trim()}` : ""}`.trim()
+                    `${String(x?.label || "").trim()}${x?.value ? ` - ${String(x.value).trim()}` : ""}`.trim(),
                   )
                   .filter(Boolean)
               : [],
@@ -211,7 +232,9 @@ async function getHomePageData() {
             value: Number(row?.value || 0),
             suffix: String(row?.suffix || "").trim(),
           }))
-          .filter((row) => row.label && Number.isFinite(row.value) && row.value > 0)
+          .filter(
+            (row) => row.label && Number.isFinite(row.value) && row.value > 0,
+          )
       : [];
     const heroBadgeImage =
       typeof heroBadgeConfig?.value === "string"
@@ -229,9 +252,13 @@ async function getHomePageData() {
       ? {
           title: String(cookieDisclaimerRaw.title || "Your Privacy Matters"),
           paragraphs: Array.isArray(cookieDisclaimerRaw.paragraphs)
-            ? cookieDisclaimerRaw.paragraphs.map((x) => String(x || "")).filter(Boolean)
+            ? cookieDisclaimerRaw.paragraphs
+                .map((x) => String(x || ""))
+                .filter(Boolean)
             : [],
-          policyText: String(cookieDisclaimerRaw.policyText || "Privacy Policy"),
+          policyText: String(
+            cookieDisclaimerRaw.policyText || "Privacy Policy",
+          ),
           policyUrl: String(cookieDisclaimerRaw.policyUrl || "/privacy-policy"),
           acceptText: String(cookieDisclaimerRaw.acceptText || "Accept"),
           closeText: String(cookieDisclaimerRaw.closeText || "Close"),
@@ -240,12 +267,18 @@ async function getHomePageData() {
       : DEFAULT_COOKIE_DISCLAIMER;
     const homeCtaBanner = homeCtaBannerRaw
       ? {
-          heading: String(homeCtaBannerRaw.heading || "Let's Talk About Your Dream Property"),
+          heading: String(
+            homeCtaBannerRaw.heading || "Let's Talk About Your Dream Property",
+          ),
           buttonText: String(homeCtaBannerRaw.buttonText || "Contact Us"),
           buttonLink: String(homeCtaBannerRaw.buttonLink || "/contact"),
-          backgroundImage: String(homeCtaBannerRaw.backgroundImage || "/images/cta-bg.jpg"),
+          backgroundImage: String(
+            homeCtaBannerRaw.backgroundImage || "/images/cta-bg.jpg",
+          ),
           overlayColor: String(homeCtaBannerRaw.overlayColor || "#0a141e"),
-          overlayOpacity: Number.isFinite(Number(homeCtaBannerRaw.overlayOpacity))
+          overlayOpacity: Number.isFinite(
+            Number(homeCtaBannerRaw.overlayOpacity),
+          )
             ? Math.min(1, Math.max(0, Number(homeCtaBannerRaw.overlayOpacity)))
             : 0.78,
           isActive: homeCtaBannerRaw.isActive !== false,

@@ -45,7 +45,7 @@
   z-index: 2;
   display: inline-block;
   padding: 16px 52px;
-  background: #f5a623;
+  background: var(--Primary);
   color: #ffffff;
   font-size: 17px;
   font-weight: 500;
@@ -55,16 +55,25 @@
   border-radius: 4px;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
-  box-shadow: 0 4px 18px rgba(245, 166, 35, 0.35);
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
+  box-shadow: 0 4px 18px rgba(15, 24, 36, 0.25);
 }
 
 .btn:hover {
-  background: #d4891a;
+  background: var(--Primary);
+  color: #ffffff;
+  filter: brightness(0.92);
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(245, 166, 35, 0.45);
+  box-shadow: 0 8px 28px rgba(15, 24, 36, 0.35);
+}
+
+.btn:focus,
+.btn:focus-visible {
+  color: #ffffff;
 }
 
 .btn:active {
+  color: #ffffff;
+  filter: brightness(0.86);
   transform: translateY(0);
 }

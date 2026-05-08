@@ -3,9 +3,10 @@ import { blogPosts as FALLBACK_BLOGS } from "@/data/blogs";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
-import Image from "next/image";
+import { EffectFade, Navigation } from "swiper/modules";
 import SplitTextAnimation from "@/components/common/SplitTextAnimation";
-import { Pagination } from "swiper/modules";
+import styles from "./BlogsHeroSlider.module.css";
+import "swiper/css/effect-fade";
 
 function formatDate(dateStr) {
   if (!dateStr) return "";
@@ -22,18 +23,21 @@ function formatDate(dateStr) {
 
 export default function Blogs({ blogs: dbBlogs = [] }) {
   const posts = dbBlogs.length > 0 ? dbBlogs : FALLBACK_BLOGS;
+  const [activeSlide, setActiveSlide] = React.useState(1);
 
   const normalizedPosts = posts.map((p) => ({
     id: p._id || p.id,
     slug: p.slug || p._id || p.id,
     title: p.title,
     imgSrc: p.featuredImage || p.imgSrc || "/images/listings/house-1.jpg",
-    tag: p.category?.name || p.tag || "Blog",
+    tag: p.category?.name || p.category?.title || p.category || p.tag || "Real Estate",
     date: formatDate(p.publishedAt || p.createdAt) || p.date || "",
   }));
+  const totalSlides = Math.max(1, normalizedPosts.length);
+  const progressPercent = Math.min(100, (activeSlide / totalSlides) * 100);
 
   return (
-    <section className="section-opinion" style={{ paddingTop: "104px" }}>
+    <section className={styles.section}>
       <div className="tf-container">
         <div className="row">
           <div className="col-12">
@@ -42,68 +46,72 @@ export default function Blogs({ blogs: dbBlogs = [] }) {
                 <SplitTextAnimation text="Insight & Opinion" />
               </h2>
               <p className="text-1 split-text split-lines-transform">
-                Thousands of luxury home enthusiasts just like you visit our
-                website.
+                Thousands of luxury home enthusiasts just like you visit our website.
               </p>
             </div>
-            <Swiper
-              dir="ltr"
-              className="swiper style-pagination sw-layout"
-              breakpoints={{
-                0: { slidesPerView: 1 },
-                575: { slidesPerView: 2 },
-                768: { slidesPerView: 3, spaceBetween: 20 },
-                992: { slidesPerView: 3, spaceBetween: 40 },
-              }}
-              modules={[Pagination]}
-              pagination={{ el: ".spd3" }}
-            >
-              {normalizedPosts.map((post, index) => (
-                <SwiperSlide className="swiper-slide" key={post.id || index}>
-                  <div className="blog-article-item style-2 hover-img">
-                    <div className="image-wrap">
-                      <Link href={`/blog-details/${post.slug}`}>
-                        <Image
-                          className="lazyload"
-                          alt={post.title}
-                          src={post.imgSrc}
-                          width={600}
-                          height={396}
-                        />
-                      </Link>
-                      <div className="box-tag">
-                        <div className="tag-item text-4 text_white fw-6">
-                          {post.tag}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="article-content">
-                      {post.date && (
-                        <div className="time">
-                          <div className="icons">
-                            <i className="icon-clock" />
-                          </div>
-                          <p className="fw-5">{post.date}</p>
-                        </div>
-                      )}
-                      <h4 className="title">
-                        <Link
-                          href={`/blog-details/${post.slug}`}
-                          className="line-clamp-2"
-                        >
-                          {post.title}
-                        </Link>
-                      </h4>
-                      <Link href={`/blog-details/${post.slug}`} className="tf-btn-link">
-                        <span>Read More</span>{" "}
-                        <i className="icon-circle-arrow" />
-                      </Link>
-                    </div>
+          </div>
+        </div>
+        <div className={styles.sliderShell}>
+          <Swiper
+            dir="ltr"
+            modules={[Navigation, EffectFade]}
+            slidesPerView={1}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            speed={650}
+            navigation={{
+              nextEl: ".blog-hero-next",
+              prevEl: ".blog-hero-prev",
+            }}
+            onSlideChange={(swiper) => {
+              const next = (swiper?.realIndex ?? 0) + 1;
+              setActiveSlide(next);
+            }}
+            onInit={(swiper) => {
+              const initial = (swiper?.realIndex ?? 0) + 1;
+              setActiveSlide(initial);
+            }}
+          >
+            {normalizedPosts.map((post, index) => (
+              <SwiperSlide className="swiper-slide" key={post.id || index}>
+                <article className={styles.slideCard}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.imgSrc} alt={post.title} className={styles.bg} />
+                  <div className={styles.overlay} />
+                  <div className={styles.content}>
+                    <p className={styles.meta}>
+                      {post.date ? `${post.date} | ` : ""}
+                      {post.tag}
+                    </p>
+                    <h2 className={styles.title}>{post.title}</h2>
+                    <Link href={`/blog-details/${post.slug}`} className={styles.btn}>
+                      Read More
+                    </Link>
                   </div>
-                </SwiperSlide>
-              ))}
-              <div className="sw-pagination sw-pagination-layout text-center d-lg-none d-block mt-20 spd3" />
-            </Swiper>
+                </article>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className={styles.controls}>
+            <div className={styles.progressWrap}>
+              <div className={styles.fraction}>
+                <span className={styles.current}>{String(activeSlide).padStart(2, "0")}</span>
+                <span className={styles.separator}> / </span>
+                <span>{String(totalSlides).padStart(2, "0")}</span>
+              </div>
+              <div className={styles.progressTrack}>
+                <span className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+              </div>
+            </div>
+            <div className={styles.navWrap}>
+              <button className={`${styles.navBtn} blog-hero-prev`} aria-label="Previous slide">
+                <span className={styles.navIcon}>&#8249;</span>
+              </button>
+              <button className={`${styles.navBtn} blog-hero-next`} aria-label="Next slide">
+                <span className={styles.navIcon}>&#8250;</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

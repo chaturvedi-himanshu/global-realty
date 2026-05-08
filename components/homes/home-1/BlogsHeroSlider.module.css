@@ -1,0 +1,203 @@
+.section {
+  padding-top: 90px;
+  padding-bottom: 20px;
+}
+
+.sliderShell {
+  position: relative;
+}
+
+.slideCard {
+  position: relative;
+  min-height: 520px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 14, 24, 0.42) 0%,
+    rgba(8, 14, 24, 0.58) 48%,
+    rgba(8, 14, 24, 0.78) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 520px;
+  padding: 44px 54px;
+}
+
+.meta {
+  margin-bottom: 14px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title {
+  margin: 0 0 26px;
+  color: #fff;
+  font-family: "Oswald", "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 1.05;
+  letter-spacing: 0.2px;
+  max-width: 900px;
+  text-transform: uppercase;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 148px;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--White);
+  background: var(--Primary);
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: background 0.22s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--Secondary);
+  color: var(--White);
+  border-color: var(--White);
+  transform: translateY(-1px);
+}
+
+.controls {
+  position: absolute;
+  right: 28px;
+  bottom: 26px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.progressWrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.fraction {
+  color: #fff;
+  font-size: 35px;
+  line-height: 1;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.current {
+  color: #ffc928;
+}
+
+.separator {
+  color: #fff;
+}
+
+.progressTrack {
+  position: relative;
+  width: 240px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.88);
+  overflow: hidden;
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #ffc928;
+  transition: width 0.35s ease;
+}
+
+.navWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navBtn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--Primary);
+  color: var(--White);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  line-height: 1;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.navIcon {
+  display: block;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+.navBtn:hover {
+  background: var(--Secondary);
+  color: var(--White);
+  border-color: var(--White);
+}
+
+@media (max-width: 991px) {
+  .slideCard,
+  .content {
+    min-height: 440px;
+  }
+
+  .content {
+    padding: 28px 24px 92px;
+  }
+
+  .controls {
+    left: 24px;
+    right: 24px;
+    justify-content: space-between;
+    bottom: 22px;
+  }
+
+  .fraction {
+    font-size: 28px;
+  }
+
+  .progressTrack {
+    width: 160px;
+  }
+
+  .navBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 30px;
+  }
+}

@@ -3,12 +3,14 @@ import React from "react";
 import SplitTextAnimation from "@/components/common/SplitTextAnimation";
 import { properties6 } from "@/data/properties";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import PropertyCard from "@/components/properties/PropertyCard";
+import styles from "./Properties2Carousel.module.css";
 
 function normalizeProperty(p) {
   const primaryImage = Array.isArray(p.images)
-    ? p.images.find((i) => i && typeof i === "object" && i.isPrimary) || p.images[0]
+    ? p.images.find((i) => i && typeof i === "object" && i.isPrimary) ||
+      p.images[0]
     : null;
   const imageSrc =
     (typeof primaryImage === "string" ? primaryImage : primaryImage?.url) ||
@@ -22,7 +24,10 @@ function normalizeProperty(p) {
     title: p.title,
     images: p.images,
     imageSrc,
-    location: [p.address, p.city, p.state].filter(Boolean).join(", ") || p.location || "",
+    location:
+      [p.address, p.city, p.state].filter(Boolean).join(", ") ||
+      p.location ||
+      "",
     beds: p.beds || p.bedrooms || 0,
     baths: p.baths || p.bathrooms || 0,
     sqft: p.builtUpArea || p.area || p.sqft || 0,
@@ -30,14 +35,23 @@ function normalizeProperty(p) {
     garage: p.garage || 0,
     price: p.price || 0,
     priceType: p.priceType || "",
-    listingType: p.listingType === "sale" ? "For Sale" : p.listingType === "rent" ? "For Rent" : (p.listingType || "For Sale"),
+    listingType:
+      p.listingType === "sale"
+        ? "For Sale"
+        : p.listingType === "rent"
+          ? "For Rent"
+          : p.listingType || "For Sale",
+    propertyType: p.propertyType || null,
+    propertyCategory: p.propertyCategory || null,
+    category: p.category || null,
+    propertyTypeName: p.propertyTypeName || "",
+    categoryName: p.categoryName || "",
   };
 }
 
 export default function Properties2({ properties: dbProperties = [] }) {
-  const rawList =
-    dbProperties.length > 0 ? dbProperties.slice(3, 9) : properties6;
-  const properties = rawList.map(normalizeProperty);
+  const rawList = dbProperties.length > 0 ? dbProperties : properties6;
+  const properties = rawList.map(normalizeProperty).slice(0, 10);
 
   return (
     <section className="section-listing tf-spacing-1">
@@ -52,33 +66,29 @@ export default function Properties2({ properties: dbProperties = [] }) {
                 Explore our latest properties for sale
               </p>
             </div>
-            <div
-              className="swiper style-pagination tf-sw-mobile sw-swiper-992"
-              data-screen={992}
-              data-preview={1}
-              data-space={15}
-            >
-              <div className="swiper-wrapper tf-layout-mobile-lg lg-col-2 ">
-                {properties.map((property) => (
-                  <div className="swiper-slide" key={property.id}>
-                    <PropertyCard property={property} variant="home-list" />
-                  </div>
-                ))}
-              </div>
-              <div className="sw-pagination sw-pagination-mb text-center mt-20 d-lg-none d-block" />
-            </div>
             <Swiper
-              modules={[Pagination]}
-              pagination={{ clickable: true, el: ".spd447" }}
-              spaceBetween={15}
-              className="swiper style-pagination tf-sw-mobile sw-swiper-992"
+              modules={[Pagination, Autoplay]}
+              pagination={{
+                clickable: true,
+              }}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              breakpoints={{
+                0: { slidesPerView: 1, spaceBetween: 12 },
+                768: { slidesPerView: 2, spaceBetween: 16 },
+                1200: { slidesPerView: 3, spaceBetween: 18 },
+              }}
+              loop={properties.length > 3}
+              className={`swiper ${styles.carousel}`}
             >
               {properties.map((property) => (
                 <SwiperSlide className="swiper-slide" key={property.id}>
-                  <PropertyCard property={property} variant="home-list" />
+                  <PropertyCard property={property} variant="home-grid" />
                 </SwiperSlide>
               ))}
-              <div className="sw-pagination sw-pagination-mb text-center mt-20 d-lg-none d-block spd447" />
             </Swiper>
           </div>
         </div>

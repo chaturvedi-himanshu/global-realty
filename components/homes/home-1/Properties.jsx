@@ -8,7 +8,8 @@ import PropertyCard from "@/components/properties/PropertyCard";
 
 function normalizeProperty(p) {
   const primaryImage = Array.isArray(p.images)
-    ? p.images.find((i) => i && typeof i === "object" && i.isPrimary) || p.images[0]
+    ? p.images.find((i) => i && typeof i === "object" && i.isPrimary) ||
+      p.images[0]
     : null;
   const imageSrc =
     (typeof primaryImage === "string" ? primaryImage : primaryImage?.url) ||
@@ -22,14 +23,27 @@ function normalizeProperty(p) {
     title: p.title,
     images: p.images,
     imageSrc,
-    location: [p.address, p.city, p.state].filter(Boolean).join(", ") || p.location || "",
+    location:
+      [p.address, p.city, p.state].filter(Boolean).join(", ") ||
+      p.location ||
+      "",
     beds: p.beds || p.bedrooms || 0,
     baths: p.baths || p.bathrooms || 0,
     sqft: p.builtUpArea || p.area || p.sqft || 0,
     areaUnit: p.areaUnit || "Sqft",
     price: p.price || 0,
     priceType: p.priceType || "",
-    listingType: p.listingType === "sale" ? "For Sale" : p.listingType === "rent" ? "For Rent" : (p.listingType || "For Sale"),
+    listingType:
+      p.listingType === "sale"
+        ? "For Sale"
+        : p.listingType === "rent"
+          ? "For Rent"
+          : p.listingType || "For Sale",
+    propertyType: p.propertyType || null,
+    propertyCategory: p.propertyCategory || null,
+    category: p.category || null,
+    propertyTypeName: p.propertyTypeName || "",
+    categoryName: p.categoryName || "",
     featured: p.isFeatured || p.featured || false,
   };
 }
@@ -59,11 +73,11 @@ export default function Properties({ properties: dbProperties = [] }) {
               data-space={15}
             >
               <div className="swiper-wrapper tf-layout-mobile-md md-col-2  lg-col-3 ">
-              {properties.slice(0, 6).map((property) => (
-                <div key={property.id} className="swiper-slide">
-                  <PropertyCard property={property} variant="home-grid" />
-                </div>
-              ))}
+                {properties.slice(0, 6).map((property) => (
+                  <div key={property.id} className="swiper-slide">
+                    <PropertyCard property={property} variant="home-grid" />
+                  </div>
+                ))}
               </div>
             </div>
             <Swiper
