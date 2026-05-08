@@ -13,6 +13,7 @@ import Properties from "@/components/homes/home-1/Properties";
 import Properties2 from "@/components/homes/home-1/Properties2";
 import Testimonials from "@/components/homes/home-1/Testimonials";
 import CookieDisclaimerBanner from "@/components/common/CookieDisclaimerBanner";
+import HomeCtaBanner from "@/components/common/HomeCtaBanner";
 import connectDB from "@/lib/mongoose";
 import PropertyModel from "@/models/Property";
 import PropertyTypeModel from "@/models/PropertyType";
@@ -25,6 +26,7 @@ import AboutSectionModel from "@/models/AboutSection";
 import SiteConfigModel from "@/models/SiteConfig";
 import HomeAccordionPanelModel from "@/models/HomeAccordionPanel";
 import CookieDisclaimerModel from "@/models/CookieDisclaimer";
+import HomeCtaBannerModel from "@/models/HomeCtaBanner";
 import { resolveHelpCenterContent } from "@/lib/helpCenterResolve";
 import { getPageSeo } from "@/lib/seo";
 import mongoose from "mongoose";
@@ -73,6 +75,7 @@ async function getHomePageData() {
       heroBadgeConfig,
       homeAccordionPanelsRaw,
       cookieDisclaimerRaw,
+      homeCtaBannerRaw,
     ] = await Promise.all([
       PropertyModel.find({ isActive: { $ne: false } })
         .sort({ createdAt: -1 })
@@ -128,6 +131,7 @@ async function getHomePageData() {
         .lean()
         .catch(() => []),
       CookieDisclaimerModel.findOne({ key: "home" }).lean().catch(() => null),
+      HomeCtaBannerModel.findOne({ key: "home" }).lean().catch(() => null),
     ]);
 
     let topCities = [];
@@ -234,6 +238,27 @@ async function getHomePageData() {
           isActive: cookieDisclaimerRaw.isActive !== false,
         }
       : DEFAULT_COOKIE_DISCLAIMER;
+    const homeCtaBanner = homeCtaBannerRaw
+      ? {
+          heading: String(homeCtaBannerRaw.heading || "Let's Talk About Your Dream Property"),
+          buttonText: String(homeCtaBannerRaw.buttonText || "Contact Us"),
+          buttonLink: String(homeCtaBannerRaw.buttonLink || "/contact"),
+          backgroundImage: String(homeCtaBannerRaw.backgroundImage || "/images/cta-bg.jpg"),
+          overlayColor: String(homeCtaBannerRaw.overlayColor || "#0a141e"),
+          overlayOpacity: Number.isFinite(Number(homeCtaBannerRaw.overlayOpacity))
+            ? Math.min(1, Math.max(0, Number(homeCtaBannerRaw.overlayOpacity)))
+            : 0.78,
+          isActive: homeCtaBannerRaw.isActive !== false,
+        }
+      : {
+          heading: "Let's Talk About Your Dream Property",
+          buttonText: "Contact Us",
+          buttonLink: "/contact",
+          backgroundImage: "/images/cta-bg.jpg",
+          overlayColor: "#0a141e",
+          overlayOpacity: 0.78,
+          isActive: true,
+        };
 
     return {
       properties: JSON.parse(JSON.stringify(properties)),
@@ -249,6 +274,7 @@ async function getHomePageData() {
       heroBadgeImage: JSON.parse(JSON.stringify(heroBadgeImage)),
       homeAccordionPanels: JSON.parse(JSON.stringify(homeAccordionPanels)),
       cookieDisclaimer: JSON.parse(JSON.stringify(cookieDisclaimer)),
+      homeCtaBanner: JSON.parse(JSON.stringify(homeCtaBanner)),
     };
   } catch {
     return {
@@ -265,6 +291,15 @@ async function getHomePageData() {
       heroBadgeImage: "",
       homeAccordionPanels: [],
       cookieDisclaimer: DEFAULT_COOKIE_DISCLAIMER,
+      homeCtaBanner: {
+        heading: "Let's Talk About Your Dream Property",
+        buttonText: "Contact Us",
+        buttonLink: "/contact",
+        backgroundImage: "/images/cta-bg.jpg",
+        overlayColor: "#0a141e",
+        overlayOpacity: 0.78,
+        isActive: true,
+      },
     };
   }
 }
@@ -284,6 +319,7 @@ export default async function Home() {
     heroBadgeImage,
     homeAccordionPanels,
     cookieDisclaimer,
+    homeCtaBanner,
   } = await getHomePageData();
 
   return (
@@ -316,6 +352,7 @@ export default async function Home() {
         </section>
         <HelpCenter content={helpCenterContent} />
         {/* <LoanCalculator /> */}
+        <HomeCtaBanner content={homeCtaBanner} />
         <Cities cities={topCities} />
         <Properties2 properties={properties} />
         <Partners partnerLogos={partnerLogos} />
