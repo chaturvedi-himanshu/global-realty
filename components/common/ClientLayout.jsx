@@ -93,12 +93,13 @@ export default function ClientLayout({ children }) {
 
   useEffect(() => {
     const handleSticky = () => {
-      const navbar = document.querySelector(".header");
+      const navbar =
+        document.querySelector("#header-main") || document.querySelector(".header");
       if (!navbar) return;
       if (window.scrollY > 120) {
         navbar.classList.add("fixed", "header-sticky");
       } else {
-        navbar.classList.remove("fixed", "header-sticky");
+        navbar.classList.remove("fixed", "header-sticky", "is-sticky");
       }
       if (window.scrollY > 300) {
         navbar.classList.add("is-sticky");
@@ -106,9 +107,10 @@ export default function ClientLayout({ children }) {
         navbar.classList.remove("is-sticky");
       }
     };
-    window.addEventListener("scroll", handleSticky);
+    handleSticky();
+    window.addEventListener("scroll", handleSticky, { passive: true });
     return () => window.removeEventListener("scroll", handleSticky);
-  }, []);
+  }, [pathname]);
 
   return (
     <>

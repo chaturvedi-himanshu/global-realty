@@ -20,6 +20,7 @@ import HeroSectionModel from "@/models/HeroSection";
 import HelpCenterContentModel from "@/models/HelpCenterContent";
 import PartnerLogoModel from "@/models/PartnerLogo";
 import AboutSectionModel from "@/models/AboutSection";
+import SiteConfigModel from "@/models/SiteConfig";
 import { resolveHelpCenterContent } from "@/lib/helpCenterResolve";
 import { getPageSeo } from "@/lib/seo";
 import mongoose from "mongoose";
@@ -51,6 +52,8 @@ async function getHomePageData() {
       helpCenterDoc,
       partnerLogosRaw,
       aboutSectionRaw,
+      heroStatsConfig,
+      heroBadgeConfig,
     ] = await Promise.all([
       PropertyModel.find({ isActive: { $ne: false } })
         .sort({ createdAt: -1 })
@@ -98,6 +101,8 @@ async function getHomePageData() {
         .lean()
         .catch(() => []),
       AboutSectionModel.findOne({ isActive: true }).lean().catch(() => null),
+      SiteConfigModel.findOne({ key: "heroStats" }).lean().catch(() => null),
+      SiteConfigModel.findOne({ key: "heroBadgeImage" }).lean().catch(() => null),
     ]);
 
     let topCities = [];
@@ -170,6 +175,20 @@ async function getHomePageData() {
         }
       : null;
 
+    const heroStats = Array.isArray(heroStatsConfig?.value)
+      ? heroStatsConfig.value
+          .map((row) => ({
+            label: String(row?.label || "").trim(),
+            value: Number(row?.value || 0),
+            suffix: String(row?.suffix || "").trim(),
+          }))
+          .filter((row) => row.label && Number.isFinite(row.value) && row.value > 0)
+      : [];
+    const heroBadgeImage =
+      typeof heroBadgeConfig?.value === "string"
+        ? heroBadgeConfig.value.trim()
+        : "";
+
     return {
       properties: JSON.parse(JSON.stringify(properties)),
       testimonials: JSON.parse(JSON.stringify(testimonials)),
@@ -180,6 +199,8 @@ async function getHomePageData() {
       helpCenterContent: JSON.parse(JSON.stringify(helpCenterContent)),
       partnerLogos: JSON.parse(JSON.stringify(partnerLogos)),
       aboutSection: JSON.parse(JSON.stringify(aboutSection)),
+      heroStats: JSON.parse(JSON.stringify(heroStats)),
+      heroBadgeImage: JSON.parse(JSON.stringify(heroBadgeImage)),
     };
   } catch {
     return {
@@ -192,6 +213,8 @@ async function getHomePageData() {
       helpCenterContent: resolveHelpCenterContent(null),
       partnerLogos: [],
       aboutSection: null,
+      heroStats: [],
+      heroBadgeImage: "",
     };
   }
 }
@@ -207,6 +230,8 @@ export default async function Home() {
     helpCenterContent,
     partnerLogos,
     aboutSection,
+    heroStats,
+    heroBadgeImage,
   } = await getHomePageData();
 
   return (
@@ -217,20 +242,25 @@ export default async function Home() {
           <div
             className="page-title home01"
             style={{
-              minHeight: "clamp(560px, 72vh, 760px)",
+              minHeight: "clamp(560px, 94vh, 860px)",
               background: "#1f2124",
             }}
           />
         }
       >
-        <Hero heroSlides={heroSlides} />
+        <Hero
+          heroSlides={heroSlides}
+          propertyTypes={categoryItems}
+          heroStats={heroStats}
+          heroBadgeImage={heroBadgeImage}
+        />
       </Suspense>
       <div className="main-content">
         <Categories items={categoryItems} />
         <Properties properties={properties} />
         <AboutHomeSection content={aboutSection} />
         <HelpCenter content={helpCenterContent} />
-        <LoanCalculator />
+        {/* <LoanCalculator /> */}
         <Cities cities={topCities} />
         <Properties2 properties={properties} />
         <Partners partnerLogos={partnerLogos} />

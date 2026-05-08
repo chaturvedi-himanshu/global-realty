@@ -1,7 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import SplitTextAnimation from "@/components/common/SplitTextAnimation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
 
 function StarRating({ rating = 5 }) {
   return (
@@ -14,13 +16,11 @@ function StarRating({ rating = 5 }) {
 }
 
 export default function Testimonials({ testimonials: dbTestimonials = [] }) {
-  const [showMore, setShowMore] = useState(false);
   const items = dbTestimonials.filter((t) => t?.message || t?.review || t?.content);
   if (!items.length) return null;
-  const visibleItems = showMore ? items : items.slice(0, 9);
 
   const renderCard = (item) => (
-    <div key={item._id || item.id} className="wg-testimonial style-2">
+    <div className="wg-testimonial style-2">
       <StarRating rating={item.rating} />
       <p className="text-1 description">
         {item.message || item.review || item.content}
@@ -61,16 +61,25 @@ export default function Testimonials({ testimonials: dbTestimonials = [] }) {
                 website.
               </p>
             </div>
-            <div className={`tf-grid-layout md-col-3 loadmore-item-8 ${showMore ? "active" : ""}`}>
-              {visibleItems.map(renderCard)}
-              {!showMore && items.length > 9 && (
-                <button
-                  onClick={() => setShowMore(true)}
-                  className="tf-btn bg-color-primary fw-7 mx-auto btn-loadmore view-more-button"
-                >
-                  Show more...
-                </button>
-              )}
+            <div>
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              className="swiper style-pagination sw-layout"
+              spaceBetween={24}
+              slidesPerView={1}
+              breakpoints={{
+                768: { slidesPerView: 2, spaceBetween: 24 },
+              }}
+              autoplay={{ delay: 4500, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              loop={items.length > 2}
+            >
+              {items.map((item) => (
+                <SwiperSlide key={item._id || item.id}>
+                  {renderCard(item)}
+                </SwiperSlide>
+              ))}
+            </Swiper>
             </div>
           </div>
         </div>

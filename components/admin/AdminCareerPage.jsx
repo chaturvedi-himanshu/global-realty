@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR, { mutate } from "@/lib/swr-lite";
 import toast from "react-hot-toast";
 import api from "@/lib/axios";
 import ImageUploader from "@/components/ui/ImageUploader";

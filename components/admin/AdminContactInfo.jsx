@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import toast from "react-hot-toast";
 import api from "@/lib/axios";
 import ImageUploader from "@/components/ui/ImageUploader";
@@ -16,6 +16,9 @@ const EMPTY = {
   contactPageImage: "",
   contactAboutTitle: "",
   contactAboutSubtitle: "",
+  aboutPageHeroTitle: "",
+  aboutPageHeroSubtitle: "",
+  aboutPageHeroBanner: "",
   socialLinks: { facebook: "", instagram: "", linkedin: "", youtube: "", twitter: "", whatsapp: "" },
 };
 
@@ -36,6 +39,9 @@ export default function AdminContactInfo() {
         contactPageImage: d.contactPageImage || "",
         contactAboutTitle: d.contactAboutTitle || "",
         contactAboutSubtitle: d.contactAboutSubtitle || "",
+        aboutPageHeroTitle: d.aboutPageHeroTitle || "",
+        aboutPageHeroSubtitle: d.aboutPageHeroSubtitle || "",
+        aboutPageHeroBanner: d.aboutPageHeroBanner || "",
         socialLinks: { ...EMPTY.socialLinks, ...(d.socialLinks || {}) },
       });
     }
@@ -102,6 +108,23 @@ export default function AdminContactInfo() {
                 label="Upload image"
                 value={form.contactPageImage}
                 onChange={(url) => setForm((p) => ({ ...p, contactPageImage: url }))}
+              />
+            </div>
+            <div>
+              <label className="ap-label">About page — hero title</label>
+              <input className="ap-input" value={form.aboutPageHeroTitle} onChange={(e) => setForm((p) => ({ ...p, aboutPageHeroTitle: e.target.value }))} placeholder="About Us" />
+            </div>
+            <div>
+              <label className="ap-label">About page — hero subtitle</label>
+              <textarea className="ap-input" rows={3} value={form.aboutPageHeroSubtitle} onChange={(e) => setForm((p) => ({ ...p, aboutPageHeroSubtitle: e.target.value }))} placeholder="Short text under about page heading" />
+            </div>
+            <div>
+              <label className="ap-label">About page — hero banner image</label>
+              <ImageUploader
+                folder="cms/about"
+                label="Upload banner"
+                value={form.aboutPageHeroBanner}
+                onChange={(url) => setForm((p) => ({ ...p, aboutPageHeroBanner: url }))}
               />
             </div>
           </div>

@@ -1,12 +1,42 @@
 "use client";
 import FilterTop from "@/components/properties/FilterTop";
-import React, { useState } from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
 
-export default function Hero({ heroSlides = [] }) {
-  const heroHeight = "clamp(560px, 72vh, 760px)";
+function AnimatedCount({ value, duration = 1200 }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let rafId = 0;
+    const target = Math.max(0, Number(value) || 0);
+    const start = performance.now();
+
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayValue(Math.round(target * eased));
+      if (progress < 1) {
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [value, duration]);
+
+  return <>{displayValue.toLocaleString("en-IN")}</>;
+}
+
+export default function Hero({
+  heroSlides = [],
+  propertyTypes = [],
+  heroStats = [],
+  heroBadgeImage = "",
+}) {
+  const heroHeight = "clamp(560px, 94vh, 860px)";
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
 
@@ -25,6 +55,12 @@ export default function Hero({ heroSlides = [] }) {
   const slides = validSlides.length ? validSlides : [defaultSlide];
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const propertyTypeButtons = Array.isArray(propertyTypes)
+    ? propertyTypes.filter((item) => item?.slug && Number(item?.count || 0) > 0)
+    : [];
+  const statsCards = Array.isArray(heroStats)
+    ? heroStats.filter((item) => item?.label && Number(item?.value || 0) > 0)
+    : [];
   const currentSlide = hasHeroVideo
     ? videoSlide
     : slides[activeSlideIdx] || slides[0] || defaultSlide;
@@ -113,6 +149,11 @@ export default function Hero({ heroSlides = [] }) {
             zIndex: 1,
           }}
         />
+      ) : null}
+      {heroBadgeImage ? (
+        <div className="hero-side-badge">
+          <img src={heroBadgeImage} alt="Hero badge" />
+        </div>
       ) : null}
       <div className="tf-container" style={{ height: "100%" }}>
         <div
@@ -247,6 +288,32 @@ export default function Hero({ heroSlides = [] }) {
                         </button>
                       </div>
                     </div>
+                    {propertyTypeButtons.length > 0 ? (
+                      <div className="hero-type-buttons">
+                        {propertyTypeButtons.map((item) => (
+                          <Link
+                            key={item.slug}
+                            href={`/properties?type=${encodeURIComponent(item.slug)}`}
+                            className="hero-filter-chip"
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                    {statsCards.length > 0 ? (
+                      <div className="hero-stats-grid">
+                        {statsCards.map((item, idx) => (
+                          <div key={`${item.label}-${idx}`} className="hero-stat-card">
+                            <h4 className="hero-stat-card__value">
+                              <AnimatedCount value={item.value} />
+                              {item.suffix || ""}
+                            </h4>
+                            <p className="hero-stat-card__label">{item.label}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                     <FilterTop
                       variant="hero"
                       panelOpen={filterPanelOpen}

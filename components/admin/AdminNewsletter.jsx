@@ -1,5 +1,5 @@
 "use client";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import toast from "react-hot-toast";
 
 

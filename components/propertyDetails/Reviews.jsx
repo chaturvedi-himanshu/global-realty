@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import useSWR, { mutate } from "swr";
+import useSWR, { mutate } from "@/lib/swr-lite";
 import toast from "react-hot-toast";
 import api from "@/lib/axios";
 

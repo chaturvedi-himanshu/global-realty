@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);

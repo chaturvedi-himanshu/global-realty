@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR, { mutate } from "@/lib/swr-lite";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
 import DataTable from "@/components/ui/DataTable";

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
@@ -108,7 +108,7 @@ export default function MobileMenu() {
                 aria-expanded="false"
                 aria-controls="dropdown-menu-cities"
               >
-                Find By City
+                City
               </a>
               <div
                 id="dropdown-menu-cities"
@@ -244,6 +244,16 @@ export default function MobileMenu() {
             >
               <Link href="/team" className="item-menu-mobile">
                 Team
+              </Link>
+            </li>
+
+            <li
+              className={`menu-item ${
+                pathname === "/about" ? "current-menu-item" : ""
+              }`}
+            >
+              <Link href="/about" className="item-menu-mobile">
+                About
               </Link>
             </li>
 

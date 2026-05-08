@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 import ImageUploader from "@/components/ui/ImageUploader";
 import RichTextEditor from "@/components/ui/RichTextEditor";

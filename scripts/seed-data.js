@@ -115,9 +115,42 @@ async function seed() {
       { key: "siteTagline", value: "Find Your Dream Property", label: "Tagline", type: "text", createdAt: new Date(), updatedAt: new Date() },
       { key: "footerText", value: "© 2024 Proty Real Estate. All rights reserved.", label: "Footer Text", type: "text", createdAt: new Date(), updatedAt: new Date() },
       { key: "primaryColor", value: "#dc3545", label: "Primary Color", type: "text", createdAt: new Date(), updatedAt: new Date() },
+      {
+        key: "heroStats",
+        value: [
+          { label: "Years of Experience", value: 18, suffix: "+" },
+          { label: "Happy Customers", value: 2500, suffix: "+" },
+          { label: "Property Consultants", value: 75, suffix: "+" },
+          { label: "Years Established", value: 2009, suffix: "" },
+        ],
+        label: "Hero Stats",
+        type: "json",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
     console.log("✓ Site config seeded");
   }
+  await db.collection("siteconfigs").updateOne(
+    { key: "heroStats" },
+    {
+      $set: {
+        key: "heroStats",
+        value: [
+          { label: "Years of Experience", value: 18, suffix: "+" },
+          { label: "Happy Customers", value: 2500, suffix: "+" },
+          { label: "Property Consultants", value: 75, suffix: "+" },
+          { label: "Years Established", value: 2009, suffix: "" },
+        ],
+        label: "Hero Stats",
+        type: "json",
+        updatedAt: new Date(),
+      },
+      $setOnInsert: { createdAt: new Date() },
+    },
+    { upsert: true }
+  );
+  console.log("✓ Hero stats config upserted");
 
   // Seed Hero Slides
   const heroCount = await db.collection("herosections").countDocuments();

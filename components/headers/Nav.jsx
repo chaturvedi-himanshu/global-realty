@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
@@ -72,10 +72,12 @@ export default function Nav() {
         <Link href="/">Home</Link>
       </li>
 
-      <li
-        className={`has-child ${cityMenuActive ? "current-menu" : ""}`}
-      >
-        <a href="#">Find By City</a>
+      <li className={pathname === "/about" ? "current-menu" : ""}>
+        <Link href="/about">About</Link>
+      </li>
+
+      <li className={`has-child ${cityMenuActive ? "current-menu" : ""}`}>
+        <a href="#">City</a>
         <ul className="submenu">
           {isLoading ? (
             <li>

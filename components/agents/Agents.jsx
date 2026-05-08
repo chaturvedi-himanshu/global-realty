@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import DropdownSelect from "../common/DropdownSelect";
 import PaginationRound from "../common/PaginationRound";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);

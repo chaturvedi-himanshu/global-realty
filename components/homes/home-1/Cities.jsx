@@ -17,8 +17,8 @@ export default function Cities({ cities = [] }) {
   if (!cities.length) return null;
 
   return (
-    <section className="section-neighborhoods">
-      <div className="tf-container full">
+    <section className="section-neighborhoods" style={{ paddingTop: "104px" }}>
+      <div className="tf-container">
         <div className="col-12">
           <div className="heading-section text-center mb-48">
             <h2 className="title split-text effect-right">

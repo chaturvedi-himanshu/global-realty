@@ -40,6 +40,12 @@
   --jodit-color: #111827;
 }
 
+.layout-shell {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
 [data-theme="dark"] {
   /* Design system — dark mode */
   --bg-primary: #0f1117;

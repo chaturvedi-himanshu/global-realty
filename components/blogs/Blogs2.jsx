@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import { useRouter, useSearchParams } from "next/navigation";
 
 

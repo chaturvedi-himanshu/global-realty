@@ -10,6 +10,9 @@ const ContactInfoSchema = new mongoose.Schema(
     contactPageImage: { type: String, default: "" },
     contactAboutTitle: { type: String, default: "" },
     contactAboutSubtitle: { type: String, default: "" },
+    aboutPageHeroTitle: { type: String, default: "" },
+    aboutPageHeroSubtitle: { type: String, default: "" },
+    aboutPageHeroBanner: { type: String, default: "" },
     socialLinks: {
       facebook: { type: String, default: "" },
       instagram: { type: String, default: "" },

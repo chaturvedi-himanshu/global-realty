@@ -1,5 +1,5 @@
 "use client";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 import PropertyGridItems from "@/components/properties/PropertyGridItems";
 

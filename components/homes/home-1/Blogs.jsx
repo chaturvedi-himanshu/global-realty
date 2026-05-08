@@ -33,7 +33,7 @@ export default function Blogs({ blogs: dbBlogs = [] }) {
   }));
 
   return (
-    <section className="section-opinion">
+    <section className="section-opinion" style={{ paddingTop: "104px" }}>
       <div className="tf-container">
         <div className="row">
           <div className="col-12">

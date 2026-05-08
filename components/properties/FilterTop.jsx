@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import DropdownSelect from "../common/DropdownSelect";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 import Slider from "rc-slider";
 

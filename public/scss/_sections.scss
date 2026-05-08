@@ -157,6 +157,7 @@
       }
     }
   }
+
   &.home01,
   &.home05,
   &.career {
@@ -166,6 +167,9 @@
     background-size: cover;
     .heading-title {
       margin-bottom: 45px;
+    }
+    &.home01 {
+      padding: 255px 0 258px;
     }
     .tf-dropdown-sort {
       padding-right: 30px;
@@ -996,7 +1000,6 @@
 .section-work-together {
   .wg-partner {
     background-color: var(--Secondary);
-    padding-bottom: 328px;
   }
   .wg-appraisal {
     margin-top: calc(-11% - 13px);

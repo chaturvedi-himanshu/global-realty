@@ -1,5 +1,5 @@
 "use client";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import Link from "next/link";
 
 
@@ -153,6 +153,7 @@ export default function AdminDashboard() {
         <div className="ap-site-grid">
           {[
             { label: "Hero Slides", href: "/admin/cms/hero", icon: "🖼️" },
+            { label: "About page", href: "/admin/cms/about-page", icon: "ℹ️" },
             { label: "FAQs", href: "/admin/cms/faqs", icon: "❓" },
             { label: "Team agents", href: "/admin/cms/team-agents", icon: "👤" },
             { label: "Career page", href: "/admin/cms/career", icon: "💼" },

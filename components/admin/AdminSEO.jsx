@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR from "@/lib/swr-lite";
 import toast from "react-hot-toast";
 import api from "@/lib/axios";
 

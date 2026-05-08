@@ -37,14 +37,15 @@ export default async function Header1({ parentClass = "header" }) {
                     />
                   </Link>
                 </div>
-                <nav className="main-menu">
-                  <ul className="navigation ">
-                    <Suspense fallback={null}>
-                      <Nav />
-                    </Suspense>
-                  </ul>
-                </nav>
                 <div className="header-right">
+                  <div className="nav-links-touch-wrap">
+                    <nav className="main-menu">
+                      <ul className="navigation ">
+                        <Suspense fallback={null}>
+                          <Nav />
+                        </Suspense>
+                      </ul>
+                    </nav>
                   {/* {phone ? (
                     <div className="phone-number">
                       <div className="icons">
@@ -71,14 +72,15 @@ export default async function Header1({ parentClass = "header" }) {
                       </p>
                     </div>
                   ) : null} */}
-                  <div className="btn-add">
-                    <button
-                      className="tf-btn style-border pd-23"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalInquiry"
-                    >
-                      Get in Touch
-                    </button>
+                    <div className="btn-add">
+                      <button
+                        className="tf-btn style-border pd-23"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalInquiry"
+                      >
+                        Get in Touch
+                      </button>
+                    </div>
                   </div>
                   <div
                     className="mobile-button"

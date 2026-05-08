@@ -20,6 +20,7 @@ const ROUTE_LABELS = {
   "/admin/theme": "Theme Settings",
   "/admin/cms/hero": "Hero Slides",
   "/admin/cms/about": "About Section",
+  "/admin/cms/about-page": "About Page",
   "/admin/cms/testimonials": "Testimonials",
   "/admin/cms/faqs": "FAQs",
   "/admin/cms/banners": "Banners",
