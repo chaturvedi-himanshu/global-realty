@@ -1,10 +1,7 @@
 "use client";
 import SplitTextAnimation from "@/components/common/SplitTextAnimation";
 import { properties as FALLBACK_PROPERTIES } from "@/data/properties";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
 import PropertyCard from "@/components/properties/PropertyCard";
-import styles from "./Properties2Carousel.module.css";
 
 function normalizeProperty(p) {
   const primaryImage = Array.isArray(p.images)
@@ -49,19 +46,9 @@ function normalizeProperty(p) {
   };
 }
 
-function expandForLoop(items, minSlides = 4) {
-  if (!Array.isArray(items) || items.length === 0) return [];
-  if (items.length >= minSlides) return items;
-  const expanded = [];
-  for (let i = 0; i < minSlides; i += 1) {
-    expanded.push(items[i % items.length]);
-  }
-  return expanded;
-}
-
 export default function Properties({ properties: dbProperties = [] }) {
   const rawList = dbProperties.length > 0 ? dbProperties : FALLBACK_PROPERTIES;
-  const properties = expandForLoop(rawList.map(normalizeProperty).slice(0, 6));
+  const properties = rawList.map(normalizeProperty).slice(0, 9);
 
   return (
     <section className="section-listing tf-spacing-1">
@@ -76,34 +63,16 @@ export default function Properties({ properties: dbProperties = [] }) {
                 Find your dream home from our featured properties
               </p>
             </div>
-            <Swiper
-              dir="ltr"
-              className={`swiper ${styles.carousel}`}
-              modules={[Autoplay, Pagination]}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-              }}
-              pagination={{ clickable: true }}
-              breakpoints={{
-                0: { slidesPerView: 1.12 },
-                768: { slidesPerView: 2.12 },
-                1200: { slidesPerView: 3.12 },
-              }}
-              slidesPerGroup={1}
-              spaceBetween={15}
-              loop={true}
-              loopedSlides={properties.length}
-              loopAdditionalSlides={3}
-              watchOverflow={false}
-            >
+            <div className="row">
               {properties.map((property, idx) => (
-                <SwiperSlide key={`${property.id || property.slug || "property"}-${idx}`}>
+                <div
+                  className="col-xl-4 col-md-6 mb-30"
+                  key={`${property.id || property.slug || "property"}-${idx}`}
+                >
                   <PropertyCard property={property} variant="home-grid" />
-                </SwiperSlide>
+                </div>
               ))}
-            </Swiper>
+            </div>
           </div>
         </div>
       </div>
