@@ -93,16 +93,17 @@ async function resolveLocationRef(value, collectionName) {
 
 async function fetchProperty(id) {
   await connectDB();
-  const isMongoId = /^[0-9a-fA-F]{24}$/.test(id);
+  const normalizedId = decodeURIComponent(String(id || "").trim());
+  const escapedSlug = normalizedId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const isMongoId = /^[0-9a-fA-F]{24}$/.test(normalizedId);
   const query = isMongoId
-    ? { _id: id, isActive: { $ne: false } }
-    : { slug: id, isActive: { $ne: false } };
+    ? { _id: normalizedId, isActive: { $ne: false } }
+    : { slug: new RegExp(`^${escapedSlug}$`, "i"), isActive: { $ne: false } };
 
   const property = await Property.findOne(query)
     .populate("propertyType", "name slug icon")
     .populate("propertySubType", "name slug")
     .populate("amenities", "name icon category")
-    .populate("agentId", "name email phone avatar")
     .lean();
 
   if (!property) return null;
@@ -187,10 +188,11 @@ export async function generateMetadata({ params }) {
 
 export default async function page({ params }) {
   const { id } = await params;
+  const normalizedId = decodeURIComponent(String(id || "").trim());
 
   let property = null;
   try {
-    property = await fetchProperty(id);
+    property = await fetchProperty(normalizedId);
   } catch (error) {
     console.error("Error fetching property:", error);
   }
@@ -198,7 +200,7 @@ export default async function page({ params }) {
   if (!property) {
     notFound();
   }
-  if (property.slug && id !== property.slug) {
+  if (property.slug && normalizedId !== property.slug) {
     redirect(`/property-detail/${property.slug}`);
   }
 
