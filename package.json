@@ -14,6 +14,7 @@
     "seed:home-accordion": "node scripts/seed-home-accordion-panels.js",
     "seed:testimonial-videos": "node scripts/seed-testimonial-videos.js",
     "seed:rera": "node scripts/seed-rera-numbers.js",
+    "seed:footer-v2": "node scripts/seed-footer-v2-config.js",
     "seed:overview-all": "node scripts/seed-property-overview-all.js",
     "seed:pricelist-all": "node scripts/seed-property-price-list-all.js",
     "update:overview": "node scripts/update-property-overview-content.js",
