@@ -9,12 +9,8 @@ import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
 
-function isCityNavActive(pathname, searchParams, cities) {
-  if (pathname !== "/properties") return false;
-  const c = searchParams.get("city") || "";
-  if (!c) return false;
-  return cities.some((x) => x.name === c);
-}
+const contactFetcher = (url) =>
+  fetch(url).then((r) => r.json());
 
 function subtypeQueryMatchesItem(item, param) {
   if (!param) return false;
@@ -47,12 +43,15 @@ export default function MobileMenu() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data, isLoading } = useSWR("/website/nav-menu", fetcher);
+  const { data: contactJson } = useSWR(
+    "/api/website/contact-info",
+    contactFetcher,
+  );
   const payload = data?.data;
-  const cities = payload?.topCities || [];
   const propertiesMenu = payload?.propertiesMenu || [];
+  const phone = String(contactJson?.data?.phones?.[0] || "").trim();
+  const telHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "";
 
-  const cityMenuActive =
-    !isLoading && isCityNavActive(pathname, searchParams, cities);
   const propsMenuActive =
     !isLoading && isPropertiesNavActive(pathname, searchParams, propertiesMenu);
 
@@ -94,55 +93,6 @@ export default function MobileMenu() {
               <Link href="/" className="item-menu-mobile">
                 Home
               </Link>
-            </li>
-
-            <li
-              className={`menu-item menu-item-has-children-mobile ${
-                cityMenuActive ? "current-menu-item" : ""
-              }`}
-            >
-              <a
-                href="#dropdown-menu-cities"
-                className="item-menu-mobile collapsed"
-                data-bs-toggle="collapse"
-                aria-expanded="false"
-                aria-controls="dropdown-menu-cities"
-              >
-                City
-              </a>
-              <div
-                id="dropdown-menu-cities"
-                className="collapse"
-                data-bs-parent="#menu-mobile-menu"
-              >
-                <ul className="sub-mobile">
-                  {isLoading ? (
-                    <li className="menu-item">
-                      <span className="item-menu-mobile">Loading…</span>
-                    </li>
-                  ) : cities.length === 0 ? (
-                    <li className="menu-item">
-                      <span className="item-menu-mobile">No cities yet</span>
-                    </li>
-                  ) : (
-                    cities.map((c) => (
-                      <li
-                        key={c.name}
-                        className={
-                          pathname === "/properties" &&
-                          searchParams.get("city") === c.name
-                            ? "menu-item current-item"
-                            : "menu-item"
-                        }
-                      >
-                        <Link href={c.href} className="item-menu-mobile">
-                          {c.name}
-                        </Link>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              </div>
             </li>
 
             <li
@@ -229,26 +179,6 @@ export default function MobileMenu() {
 
             <li
               className={`menu-item ${
-                pathname.startsWith("/career") ? "current-menu-item" : ""
-              }`}
-            >
-              <Link href="/career" className="item-menu-mobile">
-                Career
-              </Link>
-            </li>
-
-            <li
-              className={`menu-item ${
-                pathname.startsWith("/team") ? "current-menu-item" : ""
-              }`}
-            >
-              <Link href="/team" className="item-menu-mobile">
-                Team
-              </Link>
-            </li>
-
-            <li
-              className={`menu-item ${
                 pathname === "/about" ? "current-menu-item" : ""
               }`}
             >
@@ -283,7 +213,11 @@ export default function MobileMenu() {
             </a>
             <ul className="mb-info">
               <li>
-                <Link href="/contact">Get in touch</Link>
+                {phone ? (
+                  <a href={telHref}>{phone}</a>
+                ) : (
+                  <Link href="/contact">Get in touch</Link>
+                )}
               </li>
             </ul>
           </div>

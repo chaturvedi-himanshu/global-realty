@@ -1,0 +1,375 @@
+.carouselWrap {
+  position: relative;
+  padding: 0 0 8px;
+  max-width: 100%;
+}
+
+.swiper {
+  overflow: hidden;
+}
+
+.swiper :global(.swiper-pagination) {
+  position: static !important;
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.swiper :global(.swiper-pagination-bullet) {
+  width: 10px;
+  height: 10px;
+  margin: 0 !important;
+  border-radius: 999px;
+  opacity: 1;
+  background: rgba(15, 24, 36, 0.18);
+  transition: none;
+}
+
+.swiper :global(.swiper-pagination-bullet-active) {
+  width: 28px;
+  border-radius: 999px;
+  background: var(--Primary);
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0f172a;
+  aspect-ratio: 10 / 11;
+  min-height: 260px;
+  max-height: 420px;
+  box-shadow: 0 8px 28px rgba(15, 24, 36, 0.12);
+  transition: none;
+}
+
+.card:hover {
+  box-shadow: 0 8px 28px rgba(15, 24, 36, 0.12);
+}
+
+/* Video + gradient + play UI share one stacking context so the play control is never covered by the gradient. */
+.mediaStack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  isolation: isolate;
+}
+
+.mediaFill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.bottomGrad {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52%;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 24, 36, 0) 0%,
+    rgba(15, 24, 36, 0.55) 45%,
+    rgba(15, 24, 36, 0.88) 100%
+  );
+  z-index: 1;
+}
+
+.brand {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  max-width: 46%;
+  padding: 14px 14px 0 10px;
+  text-align: right;
+  pointer-events: none;
+}
+
+.brandImg {
+  max-height: 48px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.brandText {
+  display: inline-block;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* Center play UI — must sit above .bottomGrad inside .mediaStack (z-index 2 > 1). */
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.playRing {
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  pointer-events: none;
+}
+
+.playBtn {
+  pointer-events: auto;
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--Primary);
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  box-shadow: 0 8px 24px rgba(15, 24, 36, 0.28);
+  transition: none;
+}
+
+.playBtn:hover {
+  filter: brightness(1.03);
+  transform: none;
+}
+
+.meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  padding: 18px 18px 20px;
+  pointer-events: none;
+}
+
+.name {
+  color: #fff;
+  font-size: clamp(1.05rem, 1.9vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.accentBar {
+  width: 44px;
+  height: 3px;
+  margin: 10px 0 8px;
+  border-radius: 2px;
+  background: var(--Primary);
+}
+
+.designation {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  font-weight: 500;
+  max-width: 95%;
+}
+
+.fallbackBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.fallbackOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(15, 24, 36, 0.55);
+}
+
+.quoteBody {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 20px 120px;
+  pointer-events: none;
+}
+
+.quoteText {
+  margin: 0;
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  text-align: center;
+  max-height: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+}
+
+/* ─── Video lightbox (centered panel, not full viewport) ─── */
+.lightboxBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(20px, env(safe-area-inset-top, 0px))
+    max(20px, env(safe-area-inset-right, 0px))
+    max(20px, env(safe-area-inset-bottom, 0px))
+    max(20px, env(safe-area-inset-left, 0px));
+  margin: 0;
+  box-sizing: border-box;
+  background: rgba(10, 15, 22, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: testimonialLightboxIn 0.2s ease-out;
+}
+
+@keyframes testimonialLightboxIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fixed 16:9 frame: size does not depend on video metadata loading. */
+.lightboxStage {
+  --lb-max-w: min(960px, calc(100vw - 40px));
+  --lb-max-h: min(72dvh, calc(100dvh - 140px));
+  position: relative;
+  width: min(var(--lb-max-w), calc(var(--lb-max-h) * 16 / 9));
+  height: calc(min(var(--lb-max-w), calc(var(--lb-max-h) * 16 / 9)) * 9 / 16);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #0a0e12;
+  border-radius: 16px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.12),
+    0 24px 64px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Poster / thumbnail as full-bleed background behind the video */
+.lightboxBgWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.lightboxBgImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: blur(18px) brightness(0.5) saturate(1.05);
+  transform: scale(1.08);
+}
+
+.lightboxBgScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(8, 12, 18, 0.55);
+  pointer-events: none;
+}
+
+.lightboxVideoSlot {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #000;
+  border-radius: inherit;
+}
+
+.lightboxVideo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(18, 24, 32, 0.92);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.lightboxCloseIcon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.lightboxClose:hover {
+  background: rgba(30, 38, 50, 0.96);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.lightboxClose:focus {
+  outline: 2px solid var(--Primary);
+  outline-offset: 2px;
+}
+
+.lightboxClose:focus:not(:focus-visible) {
+  outline: none;
+}

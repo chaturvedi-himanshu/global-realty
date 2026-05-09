@@ -61,6 +61,9 @@ async function getAboutData() {
 
 export default async function AboutPageRoute() {
   const { page: data, testimonials } = await getAboutData();
+  const testimonialItems = (testimonials || []).filter(
+    (item) => item?.video || item?.message || item?.review || item?.content
+  );
   const valueIcons = [FiShield, FiEye, FiUser, FiFeather, FiGlobe];
   const whyIcons = [FiCheckCircle, FiUsers, FiFileText, FiBarChart2, FiHeadphones, FiMapPin];
   const storyParagraphs = Array.isArray(data.storyParagraphs) && data.storyParagraphs.length
@@ -143,10 +146,10 @@ export default async function AboutPageRoute() {
                     ) : (
                       <div className={`about-v2-team-img-placeholder img-p${(idx % 3) + 1}`}>👤</div>
                     )}
-                  </div>
-                  <div className="about-v2-team-card-info">
-                    <h4>{leader.name}</h4>
-                    <span>{leader.role}</span>
+                    <div className="about-v2-team-badge">
+                      <h4>{leader.name}</h4>
+                      {leader.role ? <span>{leader.role}</span> : null}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -250,24 +253,56 @@ export default async function AboutPageRoute() {
           </div>
         </section>
 
+        {testimonialItems.length > 0 ? (
         <section className="about-v2-testimonials">
           <div className="tf-container">
             <div className="about-v2-section-eyebrow">{data.testimonialsEyebrow}</div>
             <h2>{data.testimonialsTitle}</h2>
             <p>{data.testimonialsDescription}</p>
             <div className="about-v2-testimonials-grid">
-              {testimonials.map((item, idx) => (
-                <div key={`${item._id || item.name}-${idx}`} className="about-v2-testimonial-card">
-                  <p>{item.message || item.review || item.content || ""}</p>
-                  <div className="about-v2-testimonial-author">
-                    <h5>{item.name}</h5>
-                    <span>{item.role || item.designation || item.company || ""}</span>
-                  </div>
-                </div>
-              ))}
+              {testimonialItems.map((item, idx) => {
+                  const text = item.message || item.review || item.content || "";
+                  const designation =
+                    [item.designation, item.role].find((x) => String(x || "").trim()) || "";
+                  const company = String(item.company || "").trim();
+                  const subtitle =
+                    designation && company
+                      ? `${designation} • ${company}`
+                      : designation || company;
+
+                  return (
+                    <div key={`${item._id || item.name}-${idx}`} className="about-v2-testimonial-card">
+                      {item.video ? (
+                        <div
+                          style={{
+                            borderRadius: 12,
+                            overflow: "hidden",
+                            aspectRatio: "16 / 9",
+                            background: "#0f172a",
+                            marginBottom: "0.75rem",
+                          }}
+                        >
+                          <video
+                            src={item.video}
+                            controls
+                            playsInline
+                            preload="metadata"
+                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                          />
+                        </div>
+                      ) : null}
+                      {text && !item.video ? <p>{text}</p> : null}
+                      <div className="about-v2-testimonial-author">
+                        <h5>{item.name}</h5>
+                        {subtitle ? <span>{subtitle}</span> : null}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </section>
+        ) : null}
         <Cta />
       </div>
       <Footer1 />

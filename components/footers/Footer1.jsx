@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,9 +14,28 @@ const defaultConfig = {
   socialInstagram: "",
 };
 
+/** Ensures Career & Team appear in Pages when removed from the main nav. */
+const FOOTER_PAGE_EXTRAS = [
+  { label: "Career", href: "/career" },
+  { label: "Team", href: "/team" },
+];
+
+function mergeFooterPageLinks(links) {
+  const base = Array.isArray(links) ? [...links] : [];
+  for (const extra of FOOTER_PAGE_EXTRAS) {
+    if (!base.some((l) => l.href === extra.href)) base.push(extra);
+  }
+  return base;
+}
+
 export default function Footer1({ logo = "/images/logo/logo.png" }) {
   const [contactInfo, setContactInfo] = useState({ phone: "", email: "" });
   const [cfg, setCfg] = useState(defaultConfig);
+
+  const pagesLinks = useMemo(
+    () => mergeFooterPageLinks(cfg.navLinks),
+    [cfg.navLinks],
+  );
 
   useEffect(() => {
     fetch("/api/website/contact-info")
@@ -66,7 +85,7 @@ export default function Footer1({ logo = "/images/logo/logo.png" }) {
         heading.removeEventListener("click", toggleOpen);
       });
     };
-  }, [cfg.navLinks.length, cfg.topCities.length, cfg.topSubTypes.length]);
+  }, [pagesLinks.length, cfg.topCities.length, cfg.topSubTypes.length]);
 
   const [success, setSuccess] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
@@ -174,7 +193,7 @@ export default function Footer1({ logo = "/images/logo/logo.png" }) {
                   <h5 className="title lh-30 title-desktop">Pages</h5>
                   <h5 className="title lh-30 title-mobile">Pages</h5>
                   <ul className="tf-collapse-content">
-                    {cfg.navLinks.map((link, linkIndex) => (
+                    {pagesLinks.map((link, linkIndex) => (
                       <li key={`${link.href}-${linkIndex}`}>
                         {link.href.startsWith("/") ? (
                           <Link href={link.href}>{link.label}</Link>

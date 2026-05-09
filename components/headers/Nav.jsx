@@ -8,13 +8,6 @@ import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
 
-function isCityNavActive(pathname, searchParams, cities) {
-  if (pathname !== "/properties") return false;
-  const c = searchParams.get("city") || "";
-  if (!c) return false;
-  return cities.some((x) => x.name === c);
-}
-
 function subtypeQueryMatchesItem(item, param) {
   if (!param) return false;
   const slug = String(item.slug || "").trim();
@@ -53,11 +46,8 @@ export default function Nav() {
   const searchParams = useSearchParams();
   const { data, isLoading } = useSWR("/website/nav-menu", fetcher);
   const payload = data?.data;
-  const cities = payload?.topCities || [];
   const propertiesMenu = payload?.propertiesMenu || [];
 
-  const cityMenuActive =
-    !isLoading && isCityNavActive(pathname, searchParams, cities);
   const propsMenuActive =
     !isLoading && isPropertiesNavActive(pathname, searchParams, propertiesMenu);
 
@@ -74,35 +64,6 @@ export default function Nav() {
 
       <li className={pathname === "/about" ? "current-menu" : ""}>
         <Link href="/about">About</Link>
-      </li>
-
-      <li className={`has-child ${cityMenuActive ? "current-menu" : ""}`}>
-        <a href="#">City</a>
-        <ul className="submenu">
-          {isLoading ? (
-            <li>
-              <span className="text-1">Loading…</span>
-            </li>
-          ) : cities.length === 0 ? (
-            <li>
-              <span className="text-1">No cities yet</span>
-            </li>
-          ) : (
-            cities.map((c) => (
-              <li
-                key={c.name}
-                className={
-                  pathname === "/properties" &&
-                  searchParams.get("city") === c.name
-                    ? "current-item"
-                    : ""
-                }
-              >
-                <Link href={c.href}>{c.name}</Link>
-              </li>
-            ))
-          )}
-        </ul>
       </li>
 
       <li
@@ -152,14 +113,6 @@ export default function Nav() {
             ))
           )}
         </ul>
-      </li>
-
-      <li className={pathname.startsWith("/career") ? "current-menu" : ""}>
-        <Link href="/career">Career</Link>
-      </li>
-
-      <li className={pathname.startsWith("/team") ? "current-menu" : ""}>
-        <Link href="/team">Team</Link>
       </li>
 
       <li className={blogActive ? "current-menu" : ""}>

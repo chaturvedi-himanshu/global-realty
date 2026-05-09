@@ -357,17 +357,18 @@
   flex-wrap: nowrap;
   justify-content: center;
   gap: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  width: 100%;
+  max-width: min(760px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
 }
 
 .page-title.home01 .hero-stat-card {
   border-radius: 0;
   padding: 8px 6px;
-  flex: 0 0 auto;
-  min-width: 170px;
+  flex: 1 1 0;
+  min-width: 0;
   text-align: center;
   border: none;
   background: transparent;
@@ -565,9 +566,9 @@
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(16, 63, 55, 0.95) 0%,
-    rgba(16, 63, 55, 0.85) 56%,
-    rgba(16, 63, 55, 0.62) 100%
+    rgba(var(--primary-rgb), 0.95) 0%,
+    rgba(var(--primary-rgb), 0.85) 56%,
+    rgba(var(--primary-rgb), 0.62) 100%
   );
 }
 
@@ -978,12 +979,7 @@
 .about-v2-hero-bg {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(
-      ellipse at 70% 50%,
-      rgba(255, 255, 255, 0.04) 0%,
-      transparent 60%
-    ),
-    linear-gradient(135deg, rgba(11, 39, 34, 0.95) 0%, rgba(18, 63, 54, 0.82) 100%);
+  background-image: radial-gradient(at 70%, #ffffff0a 0%, #0000 60%), linear-gradient(135deg, #79a63a 0%, #123f36d1 100%);
   z-index: 1;
 }
 
@@ -1102,8 +1098,9 @@
 }
 
 .about-v2-btn-outline-white:hover {
-  background: rgba(198, 165, 107, 0.14);
-  border-color: rgba(198, 165, 107, 0.9);
+  background: rgba(198, 165, 107, 0.22);
+  border-color: rgba(198, 165, 107, 0.95);
+  color: #fffaf0 !important;
 }
 
 .about-v2-btn-white-filled {
@@ -1232,7 +1229,7 @@
 
 .about-v2-team-card-img-wrap {
   position: relative;
-  height: 260px;
+  height: 420px;
 }
 
 .about-v2-team-card-img {
@@ -1242,7 +1239,7 @@
 
 .about-v2-team-img-placeholder {
   width: 100%;
-  height: 260px;
+  height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1254,20 +1251,56 @@
 .about-v2-team-img-placeholder.img-p2 { background: linear-gradient(160deg, #2f6254, #1d4238); }
 .about-v2-team-img-placeholder.img-p3 { background: linear-gradient(160deg, #173730, #386454); }
 
-.about-v2-team-card-info {
-  padding: 18px 20px;
-  text-align: center;
+.about-v2-team-badge {
+  position: absolute;
+  left: 0px;
+  right: auto;
+  bottom: 0px;
+  z-index: 2;
+  background: linear-gradient(
+    160deg,
+    rgba(var(--primary-rgb), 0.95) 0%,
+    rgba(var(--primary-rgb), 0.82) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0px 10px 0px 0px;
+  padding: 8px 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(2px);
+  width: fit-content;
+  max-width: calc(100% - 28px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
 }
 
-.about-v2-team-card-info h4 {
+.about-v2-team-badge h4 {
+  margin: 0;
+  color: #fff;
   font-family: "Playfair Display", serif;
-  font-size: 18px;
-  margin-bottom: 4px;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
 }
 
-.about-v2-team-card-info span {
-  font-size: 13px;
-  color: var(--av2-text-light);
+.about-v2-team-badge span {
+  display: inline;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+.about-v2-team-badge span::before {
+  content: "•";
+  margin-right: 6px;
+  opacity: 0.9;
 }
 
 .about-v2-journey-inner {
