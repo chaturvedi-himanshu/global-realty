@@ -3,6 +3,7 @@ import PropertyOverview from "./PropertyOverview";
 import VideoReview from "./VideoReview";
 import ExtraInfo from "./ExtraInfo";
 import OverviewSection from "./OverviewSection";
+import PriceListSection from "./PriceListSection";
 import Features from "./Features";
 import Location from "./Location";
 import FloorPlan from "./FloorPlan";
@@ -46,21 +47,30 @@ export default function Details1({ property }) {
   const hasFeatures =
     Array.isArray(property?.features) && property.features.length > 0;
   const hasDescription = Boolean(
-    (property?.description || "").replace(/<[^>]*>/g, "").trim()
+    (property?.description || "").replace(/<[^>]*>/g, "").trim(),
   );
   const hasOverviewContent = Boolean(
-    (property?.overviewContent || "").replace(/<[^>]*>/g, "").trim()
+    (property?.overviewContent || "").replace(/<[^>]*>/g, "").trim(),
   );
+  const hasPriceList = Array.isArray(property?.priceList)
+    ? property.priceList.some(
+        (item) =>
+          String(item?.property || "").trim() ||
+          String(item?.inventory || "").trim() ||
+          String(item?.size || "").trim() ||
+          String(item?.price || "").trim(),
+      )
+    : false;
   const hasDetailFacts = Boolean(
     property?.price ||
-      property?.builtUpArea ||
-      property?.bedrooms ||
-      property?.bathrooms ||
-      property?.rooms ||
-      property?.yearBuilt ||
-      property?.garages ||
-      property?.propertyType ||
-      property?.propertySubType
+    property?.builtUpArea ||
+    property?.bedrooms ||
+    property?.bathrooms ||
+    property?.rooms ||
+    property?.yearBuilt ||
+    property?.garages ||
+    property?.propertyType ||
+    property?.propertySubType,
   );
   const hasExtraInfo = hasDescription || hasDetailFacts;
   const hasLoanData = Number(property?.price) > 0;
@@ -77,6 +87,12 @@ export default function Details1({ property }) {
             {hasExtraInfo && (
               <div className="wg-property box-property-detail">
                 <ExtraInfo property={property} />
+              </div>
+            )}
+
+            {hasPriceList && (
+              <div className="wg-property box-property-detail">
+                <PriceListSection priceList={property.priceList} />
               </div>
             )}
 

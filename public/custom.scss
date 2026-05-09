@@ -169,6 +169,45 @@
   color: #fff !important;
 }
 
+/* Property details: dynamic price list section */
+.box-property-detail .price-list-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.box-property-detail .price-list-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.box-property-detail .price-list-table thead th {
+  background: var(--Primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  padding: 16px;
+  text-align: left;
+}
+
+.box-property-detail .price-list-table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.box-property-detail .price-list-table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+.box-property-detail .price-list-table tbody td {
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--Line);
+  color: var(--Heading);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
 /* Disable card elevation hover for PropertyCard only */
 .box-house.no-hover-shadow:hover {
   box-shadow: none !important;

@@ -15,6 +15,7 @@
     "seed:testimonial-videos": "node scripts/seed-testimonial-videos.js",
     "seed:rera": "node scripts/seed-rera-numbers.js",
     "seed:overview-all": "node scripts/seed-property-overview-all.js",
+    "seed:pricelist-all": "node scripts/seed-property-price-list-all.js",
     "update:overview": "node scripts/update-property-overview-content.js",
     "seed:bulk": "node scripts/seed-bulk-real-estate-data.js",
     "seed:agents-career": "node ../admin-dashboard/scripts/seed-agents-career.mjs"

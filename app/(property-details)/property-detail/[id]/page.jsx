@@ -122,6 +122,7 @@ async function fetchProperty(id) {
           reviews: 1,
           overviewData: 1,
           overviewContent: 1,
+          priceList: 1,
         },
       }
     );
@@ -142,6 +143,7 @@ async function fetchProperty(id) {
     overviewData: rawDoc?.overviewData ?? property.overviewData ?? [],
     overviewContent:
       rawDoc?.overviewContent ?? property.overviewContent ?? "",
+    priceList: rawDoc?.priceList ?? property.priceList ?? [],
     city,
     state,
     country,
