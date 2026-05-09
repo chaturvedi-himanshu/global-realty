@@ -7,9 +7,20 @@ const getLabel = (v) => {
   return v;
 };
 
-const fmtPrice = (price, currency = "INR") => {
+const fmtPrice = (price, currency = "INR", priceType = "") => {
+  if (priceType === "on-request") return "Price on Request";
+  const amount = Number(price);
+  if (!Number.isFinite(amount) || amount <= 0) return "";
   const sym = { INR: "₹", USD: "$", AED: "د.إ" }[currency] || "₹";
-  return `${sym}${Number(price || 0).toLocaleString("en-IN")}`;
+  if (currency === "INR") {
+    if (amount >= 10000000) {
+      return `${sym}${(amount / 10000000).toFixed(2)} Cr`;
+    }
+    if (amount >= 100000) {
+      return `${sym}${(amount / 100000).toFixed(2)} Lac`;
+    }
+  }
+  return `${sym}${amount.toLocaleString("en-IN")}`;
 };
 
 export default function ExtraInfo({ property }) {
@@ -21,7 +32,10 @@ export default function ExtraInfo({ property }) {
     value !== "" && value !== null && value !== undefined && Number(value) !== 0;
   const detailsLeft = [
     { label: "Sub Type", value: subType },
-    { label: "Price", value: fmtPrice(property.price, property.currency) },
+    {
+      label: "Price",
+      value: fmtPrice(property.price, property.currency, property.priceType),
+    },
     { label: "Rooms", value: property.rooms || property.bedrooms || "" },
     { label: "Baths", value: property.bathrooms || "" },
   ].filter((item) => isPresent(item.value));
