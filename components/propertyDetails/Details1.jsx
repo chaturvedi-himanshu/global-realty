@@ -89,16 +89,10 @@ export default function Details1({ property }) {
                 <ExtraInfo property={property} />
               </div>
             )}
-            
+
             {hasOverviewContent && (
               <div className="wg-property box-property-detail">
                 <OverviewSection content={property.overviewContent} />
-              </div>
-            )}
-
-            {hasPriceList && (
-              <div className="wg-property box-property-detail">
-                <PriceListSection priceList={property.priceList} />
               </div>
             )}
 
@@ -110,10 +104,9 @@ export default function Details1({ property }) {
                 />
               </div>
             )}
-
-            {hasMap && (
-              <div className="wg-property single-property-map">
-                <Location property={property} />
+            {hasPriceList && (
+              <div className="wg-property box-property-detail">
+                <PriceListSection priceList={property.priceList} />
               </div>
             )}
 
@@ -147,11 +140,17 @@ export default function Details1({ property }) {
               </div>
             )}
 
-            {hasLoanData && (
+            {hasMap && (
+              <div className="wg-property single-property-map">
+                <Location property={property} />
+              </div>
+            )}
+
+            {/* {hasLoanData && (
               <div className="wg-property box-loan">
                 <LoanCalculator price={property?.price} />
               </div>
-            )}
+            )} */}
 
             <Reviews
               propertyId={property?._id}

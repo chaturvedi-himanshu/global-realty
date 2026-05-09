@@ -15,11 +15,6 @@ export default function Location({ property }) {
   const state   = getLabel(property.state);
   const country = getLabel(property.country);
   const postal  = pincode || zipCode || "";
-  const areaValue = property.totalSize || property.builtUpArea || property.superBuiltUpArea || property.carpetArea;
-  const area    = areaValue
-    ? `${Number(areaValue).toLocaleString("en-IN")} ${property.areaUnit || "sqft"}`
-    : "";
-
   const embedUrl =
     mapEmbedUrl ||
     (latitude && longitude
@@ -61,10 +56,6 @@ export default function Location({ property }) {
           <li>
             <span className="label fw-6">Postal code</span>
             <div className="text text-variant-1">{postal || "-"}</div>
-          </li>
-          <li>
-            <span className="label fw-6">Area</span>
-            <div className="text text-variant-1">{area || "-"}</div>
           </li>
           <li>
             <span className="label fw-6">Country</span>

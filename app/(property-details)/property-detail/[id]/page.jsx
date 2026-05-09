@@ -206,7 +206,7 @@ export default async function page({ params }) {
 
   return (
     <>
-      <div id="wrapper">
+      <div id="wrapper" className="property-detail-page">
         <Header1 />
         <Breadcumb pageName={property.title} />
         <div className="main-content">

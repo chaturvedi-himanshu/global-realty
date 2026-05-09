@@ -208,6 +208,12 @@
   line-height: 1.35;
 }
 
+/* Property detail page background */
+.property-detail-page .flat-title,
+.property-detail-page .main-content {
+  background: #f7f6f2;
+}
+
 /* Footer V2 */
 .footer-v2-root {
   background: var(--Secondary);
