@@ -736,6 +736,30 @@ body * {
   margin-bottom: 14px;
 }
 
+/* Home page only: tighter section spacing */
+.home-page-content .tf-spacing-1 {
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+.home-page-content .tf-spacing-2 {
+  padding-top: 52px;
+  padding-bottom: 72px;
+}
+.home-page-content .tf-spacing-3 {
+  padding-top: 44px;
+  padding-bottom: 56px;
+}
+.home-page-content .tf-spacing-4 {
+  padding-bottom: 56px;
+}
+.home-page-content .tf-spacing-5 {
+  padding-top: 48px;
+  padding-bottom: 72px;
+}
+.home-page-content .tf-spacing-6 {
+  padding-bottom: 56px;
+}
+
 /* ── Text column ────────────────────── */
 .home-about-text-col {
   display: flex;

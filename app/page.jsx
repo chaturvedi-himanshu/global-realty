@@ -377,7 +377,7 @@ export default async function Home() {
           heroBadgeImage={heroBadgeImage}
         />
       </Suspense>
-      <div className="main-content">
+      <div className="main-content home-page-content">
         {/* <Categories items={categoryItems} /> */}
         <Properties properties={properties} />
         <AboutHomeSection content={aboutSection} />
@@ -389,7 +389,7 @@ export default async function Home() {
         <Cities cities={topCities.slice(0, 4)} />
         <Properties2 properties={properties} />
         <Partners partnerLogos={partnerLogos} />
-        <Blogs blogs={blogs} />
+        <Blogs blogs={blogs} topPadding={56} />
         <Testimonials testimonials={testimonials} />
         <HomeCtaBanner content={homeCtaBanner} />
       </div>
