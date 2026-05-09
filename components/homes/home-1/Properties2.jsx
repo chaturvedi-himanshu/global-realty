@@ -21,11 +21,12 @@ function normalizeProperty(p) {
   return {
     id: p._id || p.id,
     slug: p.slug || p._id || p.id,
+    reraNumber: p.reraNumber || "",
     title: p.title,
     images: p.images,
     imageSrc,
     location:
-      [p.address, p.city, p.state].filter(Boolean).join(", ") ||
+      [p.address].filter(Boolean).join(", ") ||
       p.location ||
       "",
     beds: p.beds || p.bedrooms || 0,
@@ -49,9 +50,19 @@ function normalizeProperty(p) {
   };
 }
 
+function expandForLoop(items, minSlides = 4) {
+  if (!Array.isArray(items) || items.length === 0) return [];
+  if (items.length >= minSlides) return items;
+  const expanded = [];
+  for (let i = 0; i < minSlides; i += 1) {
+    expanded.push(items[i % items.length]);
+  }
+  return expanded;
+}
+
 export default function Properties2({ properties: dbProperties = [] }) {
   const rawList = dbProperties.length > 0 ? dbProperties : properties6;
-  const properties = rawList.map(normalizeProperty).slice(0, 10);
+  const properties = expandForLoop(rawList.map(normalizeProperty).slice(0, 10));
 
   return (
     <section className="section-listing tf-spacing-1">
@@ -77,15 +88,15 @@ export default function Properties2({ properties: dbProperties = [] }) {
                 pauseOnMouseEnter: true,
               }}
               breakpoints={{
-                0: { slidesPerView: 1, spaceBetween: 12 },
-                768: { slidesPerView: 2, spaceBetween: 16 },
-                1200: { slidesPerView: 3, spaceBetween: 18 },
+                0: { slidesPerView: 1.12, spaceBetween: 12 },
+                768: { slidesPerView: 2.12, spaceBetween: 16 },
+                1200: { slidesPerView: 3.12, spaceBetween: 18 },
               }}
-              loop={properties.length > 3}
+              loop={true}
               className={`swiper ${styles.carousel}`}
             >
-              {properties.map((property) => (
-                <SwiperSlide className="swiper-slide" key={property.id}>
+              {properties.map((property, idx) => (
+                <SwiperSlide className="swiper-slide" key={`${property.id || property.slug || "property"}-${idx}`}>
                   <PropertyCard property={property} variant="home-grid" />
                 </SwiperSlide>
               ))}

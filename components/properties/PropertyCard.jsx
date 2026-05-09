@@ -11,12 +11,6 @@ import {
 const PLACEHOLDER = "/images/section/box-house.jpg";
 const isObjectIdLike = (v) => typeof v === "string" && /^[a-f\d]{24}$/i.test(v);
 
-const getCityLabel = (city) => {
-  if (city && typeof city === "object") return city.name || "";
-  if (isObjectIdLike(city)) return "";
-  return city || "";
-};
-
 const getPropertyCategoryLabel = (property) => {
   const candidates = [
     property?.propertyType?.name,
@@ -66,18 +60,17 @@ export default function PropertyCard({ property, variant = "default" }) {
   const slug = property.slug || property._id || property.id;
   const compareId = property._id || property.id;
   const inCompare = compareId ? isInCompare(compareId) : false;
-  const location = [property.address, getCityLabel(property.city)]
-    .filter(Boolean)
-    .join(", ");
-  const beds = property.bedrooms || property.beds || 0;
-  const baths = property.bathrooms || property.baths || 0;
-  const sqft = property.builtUpArea || property.totalSize || property.sqft || 0;
-  const garage = property.garages || property.garage || 0;
+  const reraNumber = String(property.reraNumber || "").trim();
+  const location =
+    String(property.address || "").trim() ||
+    String(property.location || "")
+      .split(",")[0]
+      .trim();
   const propertyTypeText = getPropertyCategoryLabel(property);
 
   if (variant === "home-list") {
     return (
-      <div className="box-house hover-img style-list">
+      <div className="box-house no-hover-shadow style-list">
         <div className="image-wrap" style={{ height: 280, overflow: "hidden" }}>
           <Link href={`/property-detail/${slug}`}>
             <Image
@@ -126,6 +119,9 @@ export default function PropertyCard({ property, variant = "default" }) {
               <span className="tooltip">Quick View</span>
             </a>
           </div>
+          {reraNumber ? (
+            <div className="property-rera-badge">Rera registered</div>
+          ) : null}
         </div>
         <div className="content">
           <h5 className="title">
@@ -136,28 +132,36 @@ export default function PropertyCard({ property, variant = "default" }) {
               <i className="icon-location" /> {location}
             </p>
           )}
-          <ul className="meta-list flex">
-            <li className="meta-item">
-              <div className="text-9 flex">
-                <i className="icon-bed" />
-                Beds<span>{beds}</span>
-              </div>
-              <div className="text-9 flex">
-                <i className="icon-sqft" />
-                Sqft<span>{sqft}</span>
-              </div>
-            </li>
-            <li className="meta-item">
-              <div className="text-9 flex">
-                <i className="icon-bath" />
-                Baths<span>{baths}</span>
-              </div>
-              <div className="text-9 flex">
-                <i className="icon-garage" />
-                Garage<span>{garage}</span>
-              </div>
-            </li>
-          </ul>
+          {reraNumber ? (
+            <p className="property-rera-number text-1">
+              <span className="property-rera-number__icon" aria-hidden="true">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 3L19 7V12C19 16.5 15.9 20.6 12 21.7C8.1 20.6 5 16.5 5 12V7L12 3Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M9.2 12.1L11.1 14L14.9 10.2"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              {reraNumber}
+            </p>
+          ) : null}
+          <div className="property-card-divider" />
           <div className="bot flex justify-between items-center">
             <h5 className="price">
               ₹{Number(property.price || 0).toLocaleString("en-IN")}
@@ -177,7 +181,7 @@ export default function PropertyCard({ property, variant = "default" }) {
   }
 
   return (
-    <div className="box-house hover-img">
+    <div className="box-house no-hover-shadow">
       <div
         className="image-wrap"
         style={{ height: 220, overflow: "hidden", flexShrink: 0 }}
@@ -238,33 +242,50 @@ export default function PropertyCard({ property, variant = "default" }) {
             <span className="tooltip">View Details</span>
           </Link>
         </div>
+        {reraNumber ? (
+          <div className="property-rera-badge">Rera registered</div>
+        ) : null}
       </div>
       <div className="content">
         <h5 className="title">
           <Link href={`/property-detail/${slug}`}>{property.title}</Link>
         </h5>
-        <p className="location text-1 flex items-center gap-6">
-          <i className="icon-location" />
-          {location}
-        </p>
-        <ul className="meta-list flex">
-          {beds > 0 && (
-            <li className="text-1 flex">
-              <span>{beds}</span>Beds
-            </li>
-          )}
-          {baths > 0 && (
-            <li className="text-1 flex">
-              <span>{baths}</span>Baths
-            </li>
-          )}
-          {sqft > 0 && (
-            <li className="text-1 flex">
-              <span>{Number(sqft).toLocaleString()}</span>
-              {property.areaUnit || "Sqft"}
-            </li>
-          )}
-        </ul>
+        {location ? (
+          <p className="location text-1 flex items-center gap-6">
+            <i className="icon-location" />
+            {location}
+          </p>
+        ) : null}
+        {reraNumber ? (
+          <p className="property-rera-number text-1">
+            <span className="property-rera-number__icon" aria-hidden="true">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 3L19 7V12C19 16.5 15.9 20.6 12 21.7C8.1 20.6 5 16.5 5 12V7L12 3Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9.2 12.1L11.1 14L14.9 10.2"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            {reraNumber}
+          </p>
+        ) : null}
+        <div className="property-card-divider" />
         <div className="bot flex justify-between items-center">
           <h5 className="price">{formatPrice(property)}</h5>
           <div className="wrap-btn flex">

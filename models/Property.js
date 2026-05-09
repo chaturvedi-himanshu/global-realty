@@ -76,12 +76,22 @@ const LoanDefaultsSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const OverviewItemSchema = new mongoose.Schema(
+  {
+    key: { type: String, default: "", trim: true },
+    value: { type: String, default: "", trim: true },
+    icon: { type: String, default: "", trim: true }, // react-icons key, e.g. FiHome
+  },
+  { _id: false }
+);
+
 // ── Main schema ─────────────────────────────────────────────────────────────
 
 const PropertySchema = new mongoose.Schema(
   {
     // ── Identification ──────────────────────────
     propertyId:  { type: String, default: "" },
+    reraNumber:  { type: String, default: "", trim: true },
     title:       { type: String, required: true, trim: true },
     slug:        { type: String, required: true, unique: true, lowercase: true },
     description: { type: String, default: "" },
@@ -198,6 +208,8 @@ const PropertySchema = new mongoose.Schema(
 
     // ── Loan Calculator defaults ─────────────────
     loanDefaults: { type: LoanDefaultsSchema, default: () => ({}) },
+    overviewData: { type: [OverviewItemSchema], default: [] },
+    overviewContent: { type: String, default: "" },
 
     // ── Agent / Seller ─────────────────────────── (embedded; agentId is ref)
     agentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },

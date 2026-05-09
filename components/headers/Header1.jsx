@@ -51,13 +51,13 @@ export default async function Header1({ parentClass = "header" }) {
                       {phone ? (
                         <a
                           href={telHref}
-                          className="tf-btn style-border pd-23"
+                          className="tf-btn style-border pd-23 nav-contact-btn"
                         >
                           {phone}
                         </a>
                       ) : (
                         <button
-                          className="tf-btn style-border pd-23"
+                          className="tf-btn style-border pd-23 nav-contact-btn"
                           data-bs-toggle="modal"
                           data-bs-target="#modalInquiry"
                         >

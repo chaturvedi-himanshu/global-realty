@@ -113,7 +113,17 @@ async function fetchProperty(id) {
     .collection("properties")
     .findOne(
       { _id: new mongoose.Types.ObjectId(property._id.toString()) },
-      { projection: { nearby: 1, floorPlans: 1, agent: 1, loanDefaults: 1, reviews: 1 } }
+      {
+        projection: {
+          nearby: 1,
+          floorPlans: 1,
+          agent: 1,
+          loanDefaults: 1,
+          reviews: 1,
+          overviewData: 1,
+          overviewContent: 1,
+        },
+      }
     );
 
   const city = await resolveLocationRef(property.city, "cities");
@@ -129,6 +139,9 @@ async function fetchProperty(id) {
     reviews:     rawDoc?.reviews     ?? property.reviews     ?? [],
     agent:       rawDoc?.agent       ?? property.agent       ?? {},
     loanDefaults: rawDoc?.loanDefaults ?? property.loanDefaults ?? {},
+    overviewData: rawDoc?.overviewData ?? property.overviewData ?? [],
+    overviewContent:
+      rawDoc?.overviewContent ?? property.overviewContent ?? "",
     city,
     state,
     country,

@@ -2,6 +2,11 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useComparison, MAX_COMPARE } from "@/components/compare/PropertyComparison";
+import * as FiIcons from "react-icons/fi";
+import * as FaIcons from "react-icons/fa6";
+import * as MdIcons from "react-icons/md";
+import * as IoIcons from "react-icons/io5";
+import * as BsIcons from "react-icons/bs";
 
 const getLabel = (value) => {
   if (!value) return "";
@@ -29,6 +34,16 @@ const formatCount = (value) => {
   return String(n);
 };
 
+const getReactIconComponent = (iconName) => {
+  const key = String(iconName || "").trim();
+  if (!key) return null;
+  const packs = [FiIcons, FaIcons, MdIcons, IoIcons, BsIcons];
+  for (const pack of packs) {
+    if (pack[key]) return pack[key];
+  }
+  return null;
+};
+
 export default function PropertyOverview({ property }) {
   const [downloading, setDownloading] = useState(false);
   const { addToCompare, removeFromCompare, isInCompare, count } = useComparison();
@@ -49,15 +64,25 @@ export default function PropertyOverview({ property }) {
     property.priceType,
     property.currency,
   );
+  const reraNumber = String(property.reraNumber || "").trim();
 
-  const floorInfo = property.floorNumber ?? property.totalFloors ?? null;
+  const floorNumber =
+    Number.isFinite(Number(property.floorNumber)) &&
+    Number(property.floorNumber) > 0
+      ? Number(property.floorNumber)
+      : null;
+  const totalFloors =
+    Number.isFinite(Number(property.totalFloors)) &&
+    Number(property.totalFloors) > 0
+      ? Number(property.totalFloors)
+      : null;
   const floorLabel =
-    property.floorNumber != null && property.totalFloors != null
-      ? `${property.floorNumber} / ${property.totalFloors}`
-      : property.floorNumber != null
-        ? String(property.floorNumber)
-        : property.totalFloors != null
-          ? String(property.totalFloors)
+    floorNumber != null && totalFloors != null
+      ? `${floorNumber} / ${totalFloors}`
+      : floorNumber != null
+        ? String(floorNumber)
+        : totalFloors != null
+          ? String(totalFloors)
           : "";
   const baths = formatCount(property.bathrooms);
   const propType =
@@ -67,7 +92,7 @@ export default function PropertyOverview({ property }) {
   const garages = formatCount(property.garages);
   const yearBuilt = property.yearBuilt ? String(property.yearBuilt) : "";
   const beds = formatCount(property.bedrooms);
-  // "Size" should match admin-stored totalSize first.
+  // Keep original UI field and derive it from available DB area fields.
   const size = formatArea(
     property.totalSize ||
       property.builtUpArea ||
@@ -81,7 +106,7 @@ export default function PropertyOverview({ property }) {
     : "";
   const typeLabel = [propType, listingTypeLabel].filter(Boolean).join(" / ");
 
-  const detailItems = [
+  const fallbackItems = [
     floorLabel
       ? { icon: "icon-HouseLine", label: "Floors:", value: floorLabel }
       : null,
@@ -99,6 +124,25 @@ export default function PropertyOverview({ property }) {
     beds ? { icon: "icon-Bed-2", label: "Bedrooms:", value: beds } : null,
     size ? { icon: "icon-Ruler", label: "Size:", value: size } : null,
   ].filter(Boolean);
+
+  const overviewData = Array.isArray(property.overviewData)
+    ? property.overviewData
+        .map((item) => ({
+          label: String(item?.key || "").trim(),
+          value: String(item?.value || "").trim(),
+          icon: String(item?.icon || "").trim(),
+        }))
+        .filter((item) => item.label && item.value)
+    : [];
+
+  const detailItems =
+    overviewData.length > 0
+      ? overviewData.map((item) => ({
+          iconComponent: getReactIconComponent(item.icon),
+          label: `${item.label}:`,
+          value: item.value,
+        }))
+      : fallbackItems;
 
   const detailRows = [];
   for (let i = 0; i < detailItems.length; i += 2) {
@@ -209,29 +253,35 @@ export default function PropertyOverview({ property }) {
               {addr}
             </p>
           )}
-          <ul className="meta-list flex">
-            {property.bedrooms > 0 && (
-              <li className="text-1 flex">
-                <span>{property.bedrooms}</span>Bed
-              </li>
-            )}
-            {property.bathrooms > 0 && (
-              <li className="text-1 flex">
-                <span>{property.bathrooms}</span>Bath
-              </li>
-            )}
-            {(Number(property.totalSize) > 0 ||
-              Number(property.builtUpArea) > 0) && (
-              <li className="text-1 flex">
-                <span>
-                  {Number(
-                    property.totalSize || property.builtUpArea,
-                  ).toLocaleString("en-IN")}
-                </span>
-                {property.areaUnit || "Sqft"}
-              </li>
-            )}
-          </ul>
+          {reraNumber ? (
+            <p className="location text-1 flex items-center gap-10">
+              <span className="property-rera-number__icon" aria-hidden="true">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 3L19 7V12C19 16.5 15.9 20.6 12 21.7C8.1 20.6 5 16.5 5 12V7L12 3Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M9.2 12.1L11.1 14L14.9 10.2"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              {reraNumber}
+            </p>
+          ) : null}
         </div>
         <div className="action">
           <ul className="list-action">
@@ -302,7 +352,11 @@ export default function PropertyOverview({ property }) {
               {row.map((item, idx) => (
                 <div className="box-icon" key={`${item.label}-${idx}`}>
                   <div className="icons">
-                    <i className={item.icon} />
+                    {item.iconComponent ? (
+                      <item.iconComponent size={20} />
+                    ) : (
+                      <i className={item.icon} />
+                    )}
                   </div>
                   <div className="content">
                     <div className="text-4 text-color-default">

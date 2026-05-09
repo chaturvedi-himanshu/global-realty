@@ -15,6 +15,7 @@ const FALLBACK_IMAGES = [
 
 export default function Cities({ cities = [] }) {
   if (!cities.length) return null;
+  const compactGrid = cities.length <= 4;
 
   return (
     <section className="section-neighborhoods" style={{ paddingTop: "104px" }}>
@@ -28,7 +29,7 @@ export default function Cities({ cities = [] }) {
               Find your dream apartment with our listing
             </p>
           </div>
-          <div className="wrap-neighborhoods">
+          <div className={`wrap-neighborhoods${compactGrid ? " is-compact" : ""}`}>
             {cities.map((city, index) => (
               <div
                 key={city._id || index}

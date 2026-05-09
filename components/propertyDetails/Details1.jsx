@@ -2,6 +2,7 @@ import React from "react";
 import PropertyOverview from "./PropertyOverview";
 import VideoReview from "./VideoReview";
 import ExtraInfo from "./ExtraInfo";
+import OverviewSection from "./OverviewSection";
 import Features from "./Features";
 import Location from "./Location";
 import FloorPlan from "./FloorPlan";
@@ -47,6 +48,9 @@ export default function Details1({ property }) {
   const hasDescription = Boolean(
     (property?.description || "").replace(/<[^>]*>/g, "").trim()
   );
+  const hasOverviewContent = Boolean(
+    (property?.overviewContent || "").replace(/<[^>]*>/g, "").trim()
+  );
   const hasDetailFacts = Boolean(
     property?.price ||
       property?.builtUpArea ||
@@ -73,6 +77,12 @@ export default function Details1({ property }) {
             {hasExtraInfo && (
               <div className="wg-property box-property-detail">
                 <ExtraInfo property={property} />
+              </div>
+            )}
+
+            {hasOverviewContent && (
+              <div className="wg-property box-property-detail">
+                <OverviewSection content={property.overviewContent} />
               </div>
             )}
 

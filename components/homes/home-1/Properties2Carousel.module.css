@@ -1,6 +1,8 @@
 .carousel {
   padding-bottom: 36px;
   position: relative;
+  overflow: visible !important;
+  padding-right: 10px;
 }
 
 .carousel :global(.swiper-pagination) {

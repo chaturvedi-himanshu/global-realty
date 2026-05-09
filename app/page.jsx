@@ -377,7 +377,7 @@ export default async function Home() {
         />
       </Suspense>
       <div className="main-content">
-        <Categories items={categoryItems} />
+        {/* <Categories items={categoryItems} /> */}
         <Properties properties={properties} />
         <AboutHomeSection content={aboutSection} />
         <section className="tf-spacing-1">
@@ -385,12 +385,12 @@ export default async function Home() {
         </section>
         <HelpCenter content={helpCenterContent} />
         {/* <LoanCalculator /> */}
-        <HomeCtaBanner content={homeCtaBanner} />
-        <Cities cities={topCities} />
+        <Cities cities={topCities.slice(0, 4)} />
         <Properties2 properties={properties} />
         <Partners partnerLogos={partnerLogos} />
         <Blogs blogs={blogs} />
         <Testimonials testimonials={testimonials} />
+        <HomeCtaBanner content={homeCtaBanner} />
       </div>
       <CookieDisclaimerBanner content={cookieDisclaimer} />
       <Footer1 />
