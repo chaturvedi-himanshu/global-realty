@@ -15,6 +15,7 @@ const BlogSchema = new mongoose.Schema(
     author: { type: String, default: "Admin" },
     authorAvatar: { type: String, default: "" },
     tags: [{ type: String }],
+    trending: { type: Boolean, default: false },
     status: {
       type: String,
       enum: ["draft", "published"],

@@ -46,6 +46,11 @@ export default function AdminBlogs() {
     { key: "author", label: "Author" },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
     {
+      key: "trending",
+      label: "Trending",
+      render: (r) => (r.trending ? "Yes" : "No"),
+    },
+    {
       key: "publishedAt",
       label: "Published",
       render: (r) => r.publishedAt ? new Date(r.publishedAt).toLocaleDateString("en-IN") : "—",

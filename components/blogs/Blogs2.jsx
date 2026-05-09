@@ -20,7 +20,7 @@ function BlogSkeleton() {
   );
 }
 
-export default function Blogs2() {
+export default function Blogs2({ excludeBlogIds = [] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
@@ -28,10 +28,13 @@ export default function Blogs2() {
   const query = searchParams.get("q") || "";
   const tag = searchParams.get("tag") || "";
   const selectedCategory = searchParams.get("category") || "";
+  const excludeParam = Array.isArray(excludeBlogIds) && excludeBlogIds.length
+    ? `&exclude=${excludeBlogIds.join(",")}`
+    : "";
 
-  const { data: categoriesData } = useSWR("/blog-categories");
+  const { data: categoriesData } = useSWR("/api/blog-categories");
   const { data, isLoading } = useSWR(
-    `/blogs?page=${page}&limit=${limit}&status=published${selectedCategory ? `&category=${selectedCategory}` : ""}${query ? `&q=${encodeURIComponent(query)}` : ""}${tag ? `&tag=${encodeURIComponent(tag)}` : ""}`);
+    `/api/blogs?page=${page}&limit=${limit}&status=published${selectedCategory ? `&category=${selectedCategory}` : ""}${query ? `&q=${encodeURIComponent(query)}` : ""}${tag ? `&tag=${encodeURIComponent(tag)}` : ""}${excludeParam}`);
 
   const posts = data?.data || [];
   const pagination = data?.pagination;

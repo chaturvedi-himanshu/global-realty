@@ -95,7 +95,6 @@ export default function Footer1() {
       >
         {v2.enquireLabel || "Enquire Now"}
       </button>
-
       <footer className="footer-v2-root">
         <div className="footer-v2-main">
           <div>

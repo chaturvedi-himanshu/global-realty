@@ -12,7 +12,7 @@ import Modal from "@/components/ui/Modal";
 const INITIAL = {
   title: "", slug: "", content: "", excerpt: "", featuredImage: "",
   category: "", author: "Admin", authorAvatar: "", tags: [],
-  status: "draft", metaTitle: "", metaDescription: "", readTime: 5,
+  status: "draft", trending: false, metaTitle: "", metaDescription: "", readTime: 5,
 };
 
 export default function BlogForm({ blogId }) {
@@ -136,6 +136,14 @@ export default function BlogForm({ blogId }) {
                     <option value="published">Published</option>
                   </select>
                 </div>
+                <label className="ap-checkbox-row">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(form.trending)}
+                    onChange={(e) => set("trending", e.target.checked)}
+                  />
+                  <span className="ap-checkbox-label">Trending blog</span>
+                </label>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.25rem" }}>
                     <label className="ap-label" style={{ marginBottom: 0 }}>Category</label>

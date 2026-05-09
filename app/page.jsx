@@ -88,7 +88,7 @@ async function getHomePageData() {
         .limit(9)
         .lean()
         .catch(() => []),
-      BlogModel.find({ status: "published" })
+      BlogModel.find({ status: "published", trending: true })
         .populate("category", "name slug")
         .sort({ publishedAt: -1, createdAt: -1 })
         .limit(6)
@@ -208,6 +208,7 @@ async function getHomePageData() {
           title: String(aboutSectionRaw.title || ""),
           description: String(aboutSectionRaw.description || ""),
           image: String(aboutSectionRaw.image || ""),
+          mediaLink: String(aboutSectionRaw.mediaLink || ""),
           highlights: Array.isArray(aboutSectionRaw.highlights)
             ? aboutSectionRaw.highlights
                 .map((x) => String(x || "").trim())

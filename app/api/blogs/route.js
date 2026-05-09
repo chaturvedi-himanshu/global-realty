@@ -35,6 +35,20 @@ export async function GET(request) {
     const tag = searchParams.get("tag");
     if (tag) query.tags = tag;
 
+    const trending = searchParams.get("trending");
+    if (trending === "true") query.trending = true;
+    if (trending === "false") query.trending = { $ne: true };
+
+    const exclude = searchParams.get("exclude");
+    if (exclude) {
+      const ids = exclude
+        .split(",")
+        .map((x) => x.trim())
+        .filter((x) => mongoose.isValidObjectId(x))
+        .map((x) => new mongoose.Types.ObjectId(x));
+      if (ids.length) query._id = { $nin: ids };
+    }
+
     const [blogs, total] = await Promise.all([
       Blog.find(query)
         .populate("category", "name slug")

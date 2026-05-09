@@ -5,6 +5,23 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
+import {
+  FaInstagram,
+  FaFacebookF,
+  FaWhatsapp,
+  FaYoutube,
+  FaLinkedinIn,
+  FaXTwitter,
+} from "react-icons/fa6";
+
+const SOCIAL_ICON_MAP = {
+  instagram: FaInstagram,
+  facebook: FaFacebookF,
+  whatsapp: FaWhatsapp,
+  youtube: FaYoutube,
+  linkedin: FaLinkedinIn,
+  x: FaXTwitter,
+};
 
 function AnimatedCount({ value, duration = 1200 }) {
   const [displayValue, setDisplayValue] = useState(0);
@@ -39,6 +56,7 @@ export default function Hero({
   const heroHeight = "clamp(560px, 94vh, 860px)";
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
+  const [heroSocialLinks, setHeroSocialLinks] = useState([]);
 
   const videoSlide = (heroSlides || []).find(
     (s) => typeof s?.backgroundVideo === "string" && s.backgroundVideo.trim()
@@ -81,6 +99,20 @@ export default function Hero({
     if (!q) return;
     router.push(`/properties?q=${encodeURIComponent(q)}`);
   };
+
+  useEffect(() => {
+    fetch("/api/website/footer-config")
+      .then((r) => r.json())
+      .then((res) => {
+        const links = Array.isArray(res?.data?.footerV2?.socialLinks)
+          ? res.data.footerV2.socialLinks
+          : [];
+        setHeroSocialLinks(
+          links.filter((s) => /^https?:\/\//i.test(String(s?.href || "").trim())),
+        );
+      })
+      .catch(() => setHeroSocialLinks([]));
+  }, []);
 
   return (
     <div
@@ -150,6 +182,27 @@ export default function Hero({
       {heroBadgeImage ? (
         <div className="hero-side-badge">
           <img src={heroBadgeImage} alt="Hero badge" />
+        </div>
+      ) : null}
+      {heroSocialLinks.length ? (
+        <div className="hero-social-fixed">
+          {heroSocialLinks.map((s, i) => {
+            const Icon = SOCIAL_ICON_MAP[String(s?.platform || "").toLowerCase()] || FaInstagram;
+            const href = String(s?.href || "").trim();
+            return (
+              <a
+                key={`hero-social-${s?.label || "social"}-${i}`}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={String(s?.label || "Social link")}
+                className="hero-social-fixed__item"
+                style={{ color: String(s?.color || "#fff") }}
+              >
+                <Icon />
+              </a>
+            );
+          })}
         </div>
       ) : null}
       <div className="tf-container" style={{ height: "100%" }}>

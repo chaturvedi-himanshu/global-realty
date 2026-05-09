@@ -21,7 +21,11 @@ function formatDate(dateStr) {
   }
 }
 
-export default function Blogs({ blogs: dbBlogs = [] }) {
+export default function Blogs({
+  blogs: dbBlogs = [],
+  showHeading = true,
+  topPadding,
+}) {
   const posts = dbBlogs.length > 0 ? dbBlogs : FALLBACK_BLOGS;
   const [activeSlide, setActiveSlide] = React.useState(1);
 
@@ -37,18 +41,23 @@ export default function Blogs({ blogs: dbBlogs = [] }) {
   const progressPercent = Math.min(100, (activeSlide / totalSlides) * 100);
 
   return (
-    <section className={styles.section}>
+    <section
+      className={styles.section}
+      style={typeof topPadding === "number" ? { paddingTop: `${topPadding}px` } : undefined}
+    >
       <div className="tf-container">
         <div className="row">
           <div className="col-12">
-            <div className="heading-section text-center mb-48">
-              <h2 className="title split-text effect-right">
-                <SplitTextAnimation text="Insight & Opinion" />
-              </h2>
-              <p className="text-1 split-text split-lines-transform">
-                Thousands of luxury home enthusiasts just like you visit our website.
-              </p>
-            </div>
+            {showHeading ? (
+              <div className="heading-section text-center mb-48">
+                <h2 className="title split-text effect-right">
+                  <SplitTextAnimation text="Insight & Opinion" />
+                </h2>
+                <p className="text-1 split-text split-lines-transform">
+                  Thousands of luxury home enthusiasts just like you visit our website.
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
         <div className={styles.sliderShell}>
@@ -105,10 +114,20 @@ export default function Blogs({ blogs: dbBlogs = [] }) {
               </div>
             </div>
             <div className={styles.navWrap}>
-              <button className={`${styles.navBtn} blog-hero-prev`} aria-label="Previous slide">
+              <button
+                type="button"
+                className={`${styles.navBtn} blog-hero-prev`}
+                aria-label="Previous slide"
+                onClick={(e) => e.preventDefault()}
+              >
                 <span className={styles.navIcon}>&#8249;</span>
               </button>
-              <button className={`${styles.navBtn} blog-hero-next`} aria-label="Next slide">
+              <button
+                type="button"
+                className={`${styles.navBtn} blog-hero-next`}
+                aria-label="Next slide"
+                onClick={(e) => e.preventDefault()}
+              >
                 <span className={styles.navIcon}>&#8250;</span>
               </button>
             </div>

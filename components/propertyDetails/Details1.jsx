@@ -89,16 +89,16 @@ export default function Details1({ property }) {
                 <ExtraInfo property={property} />
               </div>
             )}
+            
+            {hasOverviewContent && (
+              <div className="wg-property box-property-detail">
+                <OverviewSection content={property.overviewContent} />
+              </div>
+            )}
 
             {hasPriceList && (
               <div className="wg-property box-property-detail">
                 <PriceListSection priceList={property.priceList} />
-              </div>
-            )}
-
-            {hasOverviewContent && (
-              <div className="wg-property box-property-detail">
-                <OverviewSection content={property.overviewContent} />
               </div>
             )}
 

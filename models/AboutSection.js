@@ -6,6 +6,7 @@ const AboutSectionSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, default: "" },
     image: { type: String, default: "" },
+    mediaLink: { type: String, default: "" },
     highlights: [{ type: String }],
     ctaText: { type: String, default: "Read More" },
     ctaLink: { type: String, default: "/about-us" },
