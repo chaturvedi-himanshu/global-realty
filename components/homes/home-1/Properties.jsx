@@ -57,10 +57,10 @@ export default function Properties({ properties: dbProperties = [] }) {
           <div className="col-12">
             <div className="heading-section text-center">
               <h2 className="title split-text effect-right">
-                <SplitTextAnimation text="Featured Properties" />
+                <SplitTextAnimation text="Featured Projects" />
               </h2>
               <p className="text-1 split-text split-lines-transform">
-                Find your dream home from our featured properties
+                Find your dream home from our featured projects
               </p>
             </div>
             <div className="row">

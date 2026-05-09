@@ -71,10 +71,10 @@ export default function Properties2({ properties: dbProperties = [] }) {
           <div className="col-12">
             <div className="heading-section text-center mb-48">
               <h2 className="title split-text effect-right">
-                <SplitTextAnimation text="Latest Properties" />
+                <SplitTextAnimation text="Latest Projects" />
               </h2>
               <p className="text-1 split-text split-lines-transform">
-                Explore our latest properties for sale
+                Explore our latest projects for sale
               </p>
             </div>
             <Swiper
