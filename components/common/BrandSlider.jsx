@@ -24,7 +24,7 @@ function expandForMarquee(logos) {
 }
 
 export default function BrandSlider({
-  parentClass = "infiniteslide wrap-partners mb-40",
+  parentClass = "infiniteslide wrap-partners",
   logos = [],
 }) {
   const slides = useMemo(() => expandForMarquee(logos), [logos]);
