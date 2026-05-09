@@ -379,7 +379,7 @@ export default async function Home() {
       </Suspense>
       <div className="main-content home-page-content">
         {/* <Categories items={categoryItems} /> */}
-        <Properties properties={properties} />
+        <Properties properties={properties.slice(0, 6)} />
         <AboutHomeSection content={aboutSection} />
         <section className="tf-spacing-1">
           <PropertyAccordion panels={homeAccordionPanels} />
