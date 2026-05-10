@@ -580,6 +580,60 @@ body * {
   color: #ffffff !important;
 }
 
+@media (max-width: 767px) {
+  .section-neighborhoods {
+    padding-top: 64px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .section-neighborhoods .heading-section {
+    margin-bottom: 24px !important;
+  }
+
+  .section-neighborhoods .heading-section .title {
+    font-size: 28px !important;
+    line-height: 1.18 !important;
+  }
+
+  .section-neighborhoods .heading-section .text-1 {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+
+  .section-neighborhoods .wrap-neighborhoods {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    grid-template-areas: none !important;
+    gap: 14px !important;
+  }
+
+  .section-neighborhoods .wrap-neighborhoods > [class*="item-"] {
+    grid-area: auto !important;
+  }
+
+  .section-neighborhoods .box-location .image-wrap {
+    height: 210px !important;
+  }
+
+  .section-neighborhoods .box-location .content {
+    margin: 0 8px !important;
+    padding: 14px 12px !important;
+    gap: 8px !important;
+  }
+
+  .section-neighborhoods .box-location .content h6 {
+    font-size: 16px !important;
+    line-height: 1.25 !important;
+  }
+
+  .section-neighborhoods .neighborhoods-cta-btn {
+    height: 38px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    gap: 6px !important;
+  }
+}
+
 /* Hero with background video: keep heading/search anchored near bottom edge */
 .page-title.home01.hero-video-mode {
   padding: 0 !important;

@@ -18,7 +18,6 @@ export async function GET(request, { params }) {
       .populate("propertyType", "name slug icon")
       .populate("propertySubType", "name slug")
       .populate("amenities", "name icon category")
-      .populate("agentId", "name email phone avatar")
       .populate({
         path: "city",
         select: "name slug state",

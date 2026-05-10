@@ -1,7 +1,7 @@
 .carousel {
   padding-bottom: 36px;
   position: relative;
-  overflow: visible !important;
+  overflow: hidden !important;
   padding-right: 10px;
 }
 
