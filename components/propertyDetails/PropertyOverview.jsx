@@ -7,28 +7,13 @@ import * as FaIcons from "react-icons/fa6";
 import * as MdIcons from "react-icons/md";
 import * as IoIcons from "react-icons/io5";
 import * as BsIcons from "react-icons/bs";
+import { formatPropertyPriceCrLac } from "@/lib/formatPropertyPriceIN";
 
 const getLabel = (value) => {
   if (!value) return "";
   if (typeof value === "object") return value.name || "";
   if (typeof value === "string" && /^[a-f\d]{24}$/i.test(value)) return "";
   return value;
-};
-
-const fmtPrice = (price, priceType, currency) => {
-  if (priceType === "on-request") return "Price on Request";
-  const amount = Number(price);
-  if (!Number.isFinite(amount) || amount <= 0) return "";
-  const sym = { INR: "₹", USD: "$", AED: "د.إ" }[currency] || "₹";
-  if (currency === "INR") {
-    if (amount >= 10000000) {
-      return `${sym}${(amount / 10000000).toFixed(2)} Cr`;
-    }
-    if (amount >= 100000) {
-      return `${sym}${(amount / 100000).toFixed(2)} Lac`;
-    }
-  }
-  return `${sym}${amount.toLocaleString("en-IN")}`;
 };
 
 const formatArea = (value, unit = "sqft") => {
@@ -68,12 +53,12 @@ export default function PropertyOverview({ property }) {
   const state = getLabel(property.state);
   const addr = [property.address, city, state].filter(Boolean).join(", ");
 
-  const priceFormatted = fmtPrice(
+  const priceFormatted = formatPropertyPriceCrLac(
     property.price,
     property.priceType,
     property.currency,
   );
-  const reraNumber = String(property.reraNumber || "").trim();
+  const specification = String(property.specification || "").trim();
 
   const floorNumber =
     Number.isFinite(Number(property.floorNumber)) &&
@@ -262,9 +247,9 @@ export default function PropertyOverview({ property }) {
               {addr}
             </p>
           )}
-          {reraNumber ? (
-            <p className="location text-1 flex items-center gap-10">
-              <span className="property-rera-number__icon" aria-hidden="true">
+          {specification ? (
+            <p className="location text-1 flex items-start gap-10">
+              <span className="property-rera-number__icon" aria-hidden="true" style={{ marginTop: 2 }}>
                 <svg
                   width="16"
                   height="16"
@@ -273,22 +258,19 @@ export default function PropertyOverview({ property }) {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M12 3L19 7V12C19 16.5 15.9 20.6 12 21.7C8.1 20.6 5 16.5 5 12V7L12 3Z"
+                    d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h12v2H4v-2z"
                     stroke="currentColor"
-                    strokeWidth="1.8"
+                    strokeWidth="1.6"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M9.2 12.1L11.1 14L14.9 10.2"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                   />
                 </svg>
               </span>
-              {reraNumber}
+              <span>
+                <span className="fw-6" style={{ marginRight: 6 }}>
+                  Specification:
+                </span>
+                {specification}
+              </span>
             </p>
           ) : null}
         </div>

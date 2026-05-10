@@ -158,9 +158,12 @@ async function run() {
         : cityLower.includes("gurgaon") ? "Haryana"
         : "Uttar Pradesh";
 
+      const specFromConfig = `${p.configuration.join(" & ")} ${p.type || "apartments"}`.trim();
+
       return {
         title: p.name,
         slug: slugify(`${p.name}-${p.location}-${idx + 1}`, { lower: true, strict: true }),
+        specification: specFromConfig,
         description: `<p><strong>${p.name}</strong> by ${p.developer} located at ${p.location}. This ${p.type} project offers ${p.configuration.join(", ")} residences.</p>`,
         price: priceToNumber(p.priceRange.min),
         priceType: "fixed",

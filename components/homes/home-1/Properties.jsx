@@ -17,7 +17,8 @@ function normalizeProperty(p) {
   return {
     id: p._id || p.id,
     slug: p.slug || p._id || p.id,
-    reraNumber: p.reraNumber || "",
+    specification:
+      p.specification || "2 BHK & 3 BHK apartments",
     title: p.title,
     images: p.images,
     imageSrc,

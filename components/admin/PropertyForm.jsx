@@ -10,7 +10,7 @@ import LocationSelectorModal from "./LocationSelectorModal";
 
 
 const INITIAL_STATE = {
-  title: "", slug: "", description: "", price: "", priceType: "fixed",
+  title: "", slug: "", specification: "", description: "", price: "", priceType: "fixed",
   propertyType: "", propertySubType: "", status: "available", listingType: "sale",
   address: "", city: "", state: "", country: "India", pincode: "",
   latitude: "", longitude: "", mapEmbedUrl: "",
@@ -62,6 +62,10 @@ export default function PropertyForm({ propertyId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title) { toast.error("Title is required"); return; }
+    if (!String(form.specification || "").trim()) {
+      toast.error("Specification is required (e.g. 2 BHK & 3 BHK apartments)");
+      return;
+    }
     setSaving(true);
     try {
       if (propertyId) {
@@ -131,6 +135,19 @@ export default function PropertyForm({ propertyId }) {
               <div className="ap-col-full">
                 <label className="ap-label">Title *</label>
                 <input className="ap-input" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Property title" required />
+              </div>
+              <div className="ap-col-full">
+                <label className="ap-label">Specification *</label>
+                <input
+                  className="ap-input"
+                  value={form.specification}
+                  onChange={(e) => set("specification", e.target.value)}
+                  placeholder="e.g. 2 BHK & 3 BHK apartments"
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Shown on listing cards and property page; used for site search and chatbot matching.
+                </p>
               </div>
               <div><label className="ap-label">Slug</label><input className="ap-input" value={form.slug} onChange={(e) => set("slug", e.target.value)} placeholder="auto-generated if empty" /></div>
               <div><label className="ap-label">Price</label><input type="number" className="ap-input" value={form.price} onChange={(e) => set("price", e.target.value)} /></div>

@@ -928,6 +928,63 @@ body * {
   }
 }
 
+/*
+ * Dark mode: `.dark-theme` sets --Heading/--Text to light colors globally, but this
+ * section kept a light gradient — text became nearly invisible. Use a dark surface
+ * and explicit readable colors (also support html[data-theme="dark"] if used).
+ */
+body.dark-theme .home-about-section,
+html[data-theme="dark"] .home-about-section {
+  background: linear-gradient(160deg, #141922 0%, #1a2234 52%, #12171f 100%);
+}
+
+body.dark-theme .home-about-section::before,
+html[data-theme="dark"] .home-about-section::before {
+  background: radial-gradient(
+    circle,
+    rgba(120, 165, 53, 0.2) 0%,
+    transparent 72%
+  );
+}
+
+body.dark-theme .home-about-title,
+html[data-theme="dark"] .home-about-title {
+  color: #f1f5f9;
+}
+
+body.dark-theme .home-about-description,
+html[data-theme="dark"] .home-about-description {
+  color: #94a3b8;
+}
+
+body.dark-theme .home-about-list__item,
+html[data-theme="dark"] .home-about-list__item {
+  color: #e2e8f0;
+}
+
+body.dark-theme .home-about-img-placeholder,
+html[data-theme="dark"] .home-about-img-placeholder {
+  background: #252d3d;
+  color: #64748b;
+}
+
+body.dark-theme .home-about-video-frame,
+html[data-theme="dark"] .home-about-video-frame {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-theme .home-about-list__check,
+html[data-theme="dark"] .home-about-list__check {
+  background: rgba(120, 165, 53, 0.22);
+}
+
+body.dark-theme .home-about-video-play,
+html[data-theme="dark"] .home-about-video-play {
+  background: #f1f5f9;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.35);
+}
+
 /* Home: Try Searching For */
 .try-searching-section {
   position: relative;

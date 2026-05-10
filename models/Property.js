@@ -102,6 +102,13 @@ const PropertySchema = new mongoose.Schema(
     // ── Identification ──────────────────────────
     propertyId: { type: String, default: "" },
     reraNumber: { type: String, default: "", trim: true },
+    /** e.g. "2 BHK & 3 BHK apartments" — shown on cards & detail; used in search / chatbot. */
+    specification: {
+      type: String,
+      required: true,
+      default: "",
+      trim: true,
+    },
     title: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true },
     description: { type: String, default: "" },
@@ -279,7 +286,13 @@ const PropertySchema = new mongoose.Schema(
   },
 );
 
-PropertySchema.index({ title: "text", description: "text", address: "text" });
+PropertySchema.index({
+  title: "text",
+  description: "text",
+  address: "text",
+  specification: "text",
+  tags: "text",
+});
 // slug: unique index is already created by `unique: true` on the field
 PropertySchema.index({ city: 1, state: 1, country: 1 });
 PropertySchema.index({ status: 1, listingType: 1 });

@@ -56,6 +56,7 @@ async function run() {
   const propertyDoc = {
     propertyId: "GR-PROP-ULTRA-150-0001",
     reraNumber: "UPRERAPRJ980442",
+    specification: "2 BHK, 3 BHK & 4 BHK apartments",
     title: "Ultra Luxury Skyline Residences - Sector 150, Noida",
     slug,
     description: `

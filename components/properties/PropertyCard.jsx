@@ -7,6 +7,7 @@ import {
   useComparison,
   MAX_COMPARE,
 } from "@/components/compare/PropertyComparison";
+import { formatPropertyPriceCrLac } from "@/lib/formatPropertyPriceIN";
 
 const PLACEHOLDER = "/images/section/box-house.jpg";
 const isObjectIdLike = (v) => typeof v === "string" && /^[a-f\d]{24}$/i.test(v);
@@ -47,12 +48,6 @@ const getImageSrc = (property) => {
   return property?.imageSrc || property?.image || PLACEHOLDER;
 };
 
-const formatPrice = (p) => {
-  if (!p) return "";
-  if (p.priceType === "on-request") return "Price on Request";
-  return `₹${Number(p.price || 0).toLocaleString("en-IN")}`;
-};
-
 export default function PropertyCard({ property, variant = "default" }) {
   const { addToCompare, removeFromCompare, isInCompare, count } =
     useComparison();
@@ -60,7 +55,7 @@ export default function PropertyCard({ property, variant = "default" }) {
   const slug = property.slug || property._id || property.id;
   const compareId = property._id || property.id;
   const inCompare = compareId ? isInCompare(compareId) : false;
-  const reraNumber = String(property.reraNumber || "").trim();
+  const specification = String(property.specification || "").trim();
   const location =
     String(property.address || "").trim() ||
     String(property.location || "")
@@ -119,8 +114,8 @@ export default function PropertyCard({ property, variant = "default" }) {
               <span className="tooltip">Quick View</span>
             </a>
           </div>
-          {reraNumber ? (
-            <div className="property-rera-badge">Rera registered</div>
+          {specification ? (
+            <div className="property-rera-badge">Specification</div>
           ) : null}
         </div>
         <div className="content">
@@ -132,8 +127,8 @@ export default function PropertyCard({ property, variant = "default" }) {
               <i className="icon-location" /> {location}
             </p>
           )}
-          {reraNumber ? (
-            <p className="property-rera-number text-1">
+          {specification ? (
+            <p className="property-rera-number text-1 line-clamp-2">
               <span className="property-rera-number__icon" aria-hidden="true">
                 <svg
                   width="13"
@@ -143,28 +138,24 @@ export default function PropertyCard({ property, variant = "default" }) {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M12 3L19 7V12C19 16.5 15.9 20.6 12 21.7C8.1 20.6 5 16.5 5 12V7L12 3Z"
+                    d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"
                     stroke="currentColor"
-                    strokeWidth="1.8"
+                    strokeWidth="1.6"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M9.2 12.1L11.1 14L14.9 10.2"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                   />
                 </svg>
               </span>
-              {reraNumber}
+              {specification}
             </p>
           ) : null}
           <div className="property-card-divider" />
           <div className="bot flex justify-between items-center">
             <h5 className="price">
-              ₹{Number(property.price || 0).toLocaleString("en-IN")}
+              {formatPropertyPriceCrLac(
+                property.price,
+                property.priceType,
+                property.currency || "INR",
+              )}
             </h5>
             <div className="wrap-btn flex">
               <Link
@@ -242,8 +233,8 @@ export default function PropertyCard({ property, variant = "default" }) {
             <span className="tooltip">View Details</span>
           </Link>
         </div>
-        {reraNumber ? (
-          <div className="property-rera-badge">Rera registered</div>
+        {specification ? (
+          <div className="property-rera-badge">Specification</div>
         ) : null}
       </div>
       <div className="content">
@@ -256,8 +247,8 @@ export default function PropertyCard({ property, variant = "default" }) {
             {location}
           </p>
         ) : null}
-        {reraNumber ? (
-          <p className="property-rera-number text-1">
+        {specification ? (
+          <p className="property-rera-number text-1 line-clamp-2">
             <span className="property-rera-number__icon" aria-hidden="true">
               <svg
                 width="13"
@@ -267,27 +258,25 @@ export default function PropertyCard({ property, variant = "default" }) {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M12 3L19 7V12C19 16.5 15.9 20.6 12 21.7C8.1 20.6 5 16.5 5 12V7L12 3Z"
+                  d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="1.6"
                   strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M9.2 12.1L11.1 14L14.9 10.2"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
                 />
               </svg>
             </span>
-            {reraNumber}
+            {specification}
           </p>
         ) : null}
         <div className="property-card-divider" />
         <div className="bot flex justify-between items-center">
-          <h5 className="price">{formatPrice(property)}</h5>
+          <h5 className="price">
+            {formatPropertyPriceCrLac(
+              property.price,
+              property.priceType,
+              property.currency || "INR",
+            )}
+          </h5>
           <div className="wrap-btn flex">
             <button
               className={`compare flex gap-2 items-center text-1${inCompare ? " text-color-primary" : ""}`}

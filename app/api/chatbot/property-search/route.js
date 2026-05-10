@@ -8,35 +8,14 @@ import { getListedCityNames } from "@/lib/getListedCityNames";
 import {
   matchCityInMessage,
   parseBedroomsAndListingType,
+  buildSpecificationWordMatchClause,
 } from "@/lib/parseChatPropertyIntent";
+import { formatPropertyPriceCrLac } from "@/lib/formatPropertyPriceIN";
 
 export const dynamic = "force-dynamic";
 
 function escapeRegExp(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function thumbFromProperty(p) {
-  const images = p?.images;
-  if (!Array.isArray(images) || images.length === 0) return "";
-  const primary = images.find((i) => i && typeof i === "object" && i.isPrimary);
-  const first = primary || images[0];
-  if (typeof first === "string") return first;
-  if (first && typeof first === "object" && first.url) return first.url;
-  return "";
-}
-
-function cityLabelFromPopulated(p) {
-  if (p?.city && typeof p.city === "object" && p.city.name)
-    return String(p.city.name).trim();
-  return "";
-}
-
-function formatPriceLine(p) {
-  if (p?.priceType === "on-request") return "Price on request";
-  const n = Number(p?.price || 0);
-  if (!n) return "Price on request";
-  return `₹${n.toLocaleString("en-IN")}`;
 }
 
 async function buildCityFilter(cityName) {
@@ -74,29 +53,37 @@ export async function GET(request) {
     const cityNames = await getListedCityNames();
     const matchedCity = matchCityInMessage(q, cityNames);
     const { bedrooms, listingType } = parseBedroomsAndListingType(q);
+    const specClause = buildSpecificationWordMatchClause(q, matchedCity);
 
-    if (matchedCity == null && bedrooms == null) {
+    const hasIntent =
+      matchedCity != null || bedrooms != null || specClause != null;
+    if (!hasIntent) {
       return NextResponse.json({ success: true, matched: false });
     }
 
     await connectDB();
 
-    const query = { ...PROPERTY_LISTED_QUERY };
+    const andParts = [{ ...PROPERTY_LISTED_QUERY }];
 
     if (bedrooms !== null) {
-      query.bedrooms = bedrooms;
+      andParts.push({ bedrooms });
     }
 
     if (matchedCity) {
-      const cityQ = await buildCityFilter(matchedCity);
-      Object.assign(query, cityQ);
+      andParts.push(await buildCityFilter(matchedCity));
     }
 
     if (listingType === "rent") {
-      query.listingType = { $in: ["rent", "lease", "both"] };
+      andParts.push({ listingType: { $in: ["rent", "lease", "both"] } });
     } else if (listingType === "sale") {
-      query.listingType = { $in: ["sale", "both"] };
+      andParts.push({ listingType: { $in: ["sale", "both"] } });
     }
+
+    if (specClause) {
+      andParts.push(specClause);
+    }
+
+    const query = andParts.length === 1 ? andParts[0] : { $and: andParts };
 
     const sort = { isFeatured: -1, createdAt: -1 };
 
@@ -116,17 +103,14 @@ export async function GET(request) {
     const moreUrl = `/properties${params.toString() ? `?${params.toString()}` : ""}`;
 
     const data = rows.map((p) => ({
-      _id: String(p._id),
-      title: p.title || "Listing",
       slug: p.slug || String(p._id),
-      price: p.price,
-      priceType: p.priceType,
-      bedrooms: p.bedrooms,
-      builtUpArea: p.builtUpArea,
-      areaUnit: p.areaUnit || "sqft",
-      cityLabel: cityLabelFromPopulated(p),
-      image: thumbFromProperty(p),
-      priceLine: formatPriceLine(p),
+      title: p.title || "Listing",
+      priceDisplay: formatPropertyPriceCrLac(
+        p.price,
+        p.priceType,
+        p.currency || "INR",
+      ),
+      specification: String(p.specification || "").trim() || "—",
     }));
 
     return NextResponse.json({

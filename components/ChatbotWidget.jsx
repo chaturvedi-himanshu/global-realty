@@ -10,12 +10,13 @@ import {
 
 const uid = () => Math.random().toString(36).slice(2);
 
-const botMsg = (text, quickReplies) => ({
+const botMsg = (text, quickReplies, propertyResults) => ({
   id: uid(),
   role: "bot",
   text,
   time: new Date(),
   quickReplies,
+  propertyResults,
 });
 
 const userMsg = (text) => ({
@@ -52,30 +53,84 @@ function matchQA(input, list) {
 const fmtTime = (d) =>
   d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-/** Build bot reply text from `/api/chatbot/property-search` JSON. */
-function buildPropertySearchBotText(json) {
+/** Short intro for property-search; listing details render as cards below. */
+function buildPropertySearchIntro(json) {
   const intent = json.intent || {};
   const data = json.data || [];
   const locParts = [];
   if (intent.bedrooms != null) locParts.push(`${intent.bedrooms} BHK`);
   if (intent.city) locParts.push(intent.city);
   const loc = locParts.length ? locParts.join(" · ") : "your search";
-  const more = json.moreUrl || "/properties";
 
   if (data.length === 0) {
     return `I could not find active listings for **${loc}** right now.\n\nUse **Open all matching listings** to open the directory with filters, or ask for a **callback**.`;
   }
 
-  const intro = `Here are **${data.length}** top matches for **${loc}**:\n\n`;
-  const blocks = data.map((p, i) => {
-    const area =
-      Number(p.builtUpArea) > 0
-        ? ` · ${Number(p.builtUpArea).toLocaleString("en-IN")} ${p.areaUnit || "sqft"}`
-        : "";
-    const city = p.cityLabel ? ` · ${p.cityLabel}` : "";
-    return `${i + 1}. **${p.title}** — ${p.priceLine}${city}${area}\n/property-detail/${p.slug}`;
-  });
-  return `${intro}${blocks.join("\n\n")}\n\n**Browse all:** ${more}`;
+  return `Here are **${data.length}** curated matches for **${loc}**. Each card shows the **name**, **price**, and **specification** — tap **View property** to open the full listing.\n\nYou can also use **Open all matching listings** for the full directory.`;
+}
+
+const CHAT_THREAD_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+const chatThreadStorageKey = (variant) => `gr-chatbot-thread:${variant}`;
+
+function loadChatThread(variant) {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(chatThreadStorageKey(variant));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      !parsed ||
+      typeof parsed.savedAt !== "number" ||
+      !Array.isArray(parsed.messages) ||
+      parsed.messages.length === 0
+    ) {
+      return null;
+    }
+    if (Date.now() - parsed.savedAt > CHAT_THREAD_TTL_MS) {
+      localStorage.removeItem(chatThreadStorageKey(variant));
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function serializeMessagesForStorage(messages) {
+  return messages.map((m) => ({
+    ...m,
+    time: m.time instanceof Date ? m.time.toISOString() : m.time,
+  }));
+}
+
+function reviveMessagesFromStorage(messages) {
+  if (!Array.isArray(messages)) return [];
+  return messages.map((m) => ({
+    ...m,
+    time: m.time ? new Date(m.time) : new Date(),
+  }));
+}
+
+function saveChatThread(variant, snapshot) {
+  if (typeof window === "undefined") return;
+  const { messages, flow, leadName, leadQuery, lastListingsUrl } = snapshot;
+  if (!messages?.length) return;
+  try {
+    localStorage.setItem(
+      chatThreadStorageKey(variant),
+      JSON.stringify({
+        savedAt: Date.now(),
+        messages: serializeMessagesForStorage(messages),
+        flow: flow || "chat",
+        leadName: leadName || "",
+        leadQuery: leadQuery || "",
+        lastListingsUrl: lastListingsUrl || "",
+      }),
+    );
+  } catch {
+    /* quota / private mode */
+  }
 }
 
 const VARIANT_CONFIG = {
@@ -119,6 +174,11 @@ const VARIANT_CONFIG = {
   },
 };
 
+/** Panel animates from FAB size at bottom-right (see `transform` + `transformOrigin`). */
+const CHAT_PANEL_DESIGN_WIDTH = 380;
+const CHAT_LAUNCHER_SIZE = 60;
+const CHAT_PANEL_CLOSED_SCALE = CHAT_LAUNCHER_SIZE / CHAT_PANEL_DESIGN_WIDTH;
+
 /**
  * Floating chatbot — same UX as CHATBOT_FULL_REPLICATE_SPEC (Payloan-style).
  * @param {{ variant?: "website" | "admin" }} props
@@ -135,6 +195,7 @@ export default function ChatbotWidget({ variant = "website" }) {
   const [leadQuery, setLeadQuery] = useState("");
   const [unread, setUnread] = useState(0);
   const [greeted, setGreeted] = useState(false);
+  const [chatHydrated, setChatHydrated] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef(null);
   const messagesScrollRef = useRef(null);
@@ -142,6 +203,10 @@ export default function ChatbotWidget({ variant = "website" }) {
   const prevMsgLen = useRef(0);
   /** After we pin scroll for the opening greet, do not force scrollTop again until the thread changes. */
   const openingGreetPinnedIdRef = useRef(null);
+  /** Message count after last scroll layout pass — detect when a bot reply just finished. */
+  const scrollLayoutPrevLenRef = useRef(0);
+  /** Top of bot text bubble per message — align that edge to vertical center of the thread. */
+  const botAnswerStartRefs = useRef(new Map());
   const lastListingsUrlRef = useRef("");
 
   useEffect(() => {
@@ -151,6 +216,35 @@ export default function ChatbotWidget({ variant = "website" }) {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const { body } = document;
+    if (variant === "website") {
+      if (isOpen) body.dataset.chatbotOpen = "1";
+      else delete body.dataset.chatbotOpen;
+    }
+    return () => {
+      if (variant === "website") delete body.dataset.chatbotOpen;
+    };
+  }, [isOpen, variant]);
+
+  useEffect(() => {
+    const data = loadChatThread(variant);
+    if (data?.messages?.length) {
+      const revived = reviveMessagesFromStorage(data.messages);
+      setMessages(revived);
+      setFlow(typeof data.flow === "string" ? data.flow : "chat");
+      setLeadName(typeof data.leadName === "string" ? data.leadName : "");
+      setLeadQuery(typeof data.leadQuery === "string" ? data.leadQuery : "");
+      lastListingsUrlRef.current =
+        typeof data.lastListingsUrl === "string" ? data.lastListingsUrl : "";
+      setGreeted(true);
+      prevMsgLen.current = revived.length;
+      scrollLayoutPrevLenRef.current = revived.length;
+    }
+    setChatHydrated(true);
+  }, [variant]);
+
   useLayoutEffect(() => {
     const scrollEl = messagesScrollRef.current;
     if (!scrollEl) return;
@@ -158,6 +252,8 @@ export default function ChatbotWidget({ variant = "website" }) {
     if (messages.length === 0) {
       openingGreetPinnedIdRef.current = null;
       scrollEl.scrollTop = 0;
+      scrollLayoutPrevLenRef.current = 0;
+      botAnswerStartRefs.current.clear();
       return;
     }
 
@@ -174,10 +270,38 @@ export default function ChatbotWidget({ variant = "website" }) {
         openingGreetPinnedIdRef.current = first.id;
         scrollEl.scrollTop = 0;
       }
+      scrollLayoutPrevLenRef.current = messages.length;
       return;
     }
 
     openingGreetPinnedIdRef.current = null;
+
+    const last = messages[messages.length - 1];
+    const grew = messages.length > scrollLayoutPrevLenRef.current;
+    const newBotReplyFinished =
+      grew && last?.role === "bot" && !isTyping;
+
+    scrollLayoutPrevLenRef.current = messages.length;
+
+    if (newBotReplyFinished) {
+      requestAnimationFrame(() => {
+        const bubble = botAnswerStartRefs.current.get(last.id);
+        if (!bubble) return;
+        const top =
+          bubble.getBoundingClientRect().top -
+          scrollEl.getBoundingClientRect().top +
+          scrollEl.scrollTop;
+        const half = scrollEl.clientHeight / 2;
+        const maxScroll = Math.max(
+          0,
+          scrollEl.scrollHeight - scrollEl.clientHeight,
+        );
+        const nextTop = Math.max(0, Math.min(maxScroll, top - half));
+        scrollEl.scrollTo({ top: nextTop, behavior: "smooth" });
+      });
+      return;
+    }
+
     requestAnimationFrame(() => {
       bottomRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -186,23 +310,40 @@ export default function ChatbotWidget({ variant = "website" }) {
     });
   }, [messages, isTyping]);
 
-  const addBotMessage = useCallback((text, quickReplies) => {
-    setMessages((prev) => [...prev, botMsg(text, quickReplies)]);
+  useEffect(() => {
+    if (!chatHydrated || typeof window === "undefined") return;
+    if (!messages.length) return;
+    saveChatThread(variant, {
+      messages,
+      flow,
+      leadName,
+      leadQuery,
+      lastListingsUrl: lastListingsUrlRef.current,
+    });
+  }, [chatHydrated, variant, messages, flow, leadName, leadQuery]);
+
+  const addBotMessage = useCallback((text, quickReplies, propertyResults) => {
+    setMessages((prev) => [...prev, botMsg(text, quickReplies, propertyResults)]);
   }, []);
 
   const simulateTypingThenReply = useCallback(
-    (text, quickReplies) => {
+    (text, quickReplies, propertyResults) => {
       setIsTyping(true);
-      const delay = Math.min(600 + text.length * 10, 1800);
+      const nCards = propertyResults?.length || 0;
+      const delay = Math.min(
+        600 + text.length * 10 + nCards * 140,
+        2400,
+      );
       setTimeout(() => {
         setIsTyping(false);
-        addBotMessage(text, quickReplies);
+        addBotMessage(text, quickReplies, propertyResults);
       }, delay);
     },
     [addBotMessage],
   );
 
   useEffect(() => {
+    if (!chatHydrated) return;
     if (isOpen && !greeted) {
       setGreeted(true);
       setUnread(0);
@@ -222,7 +363,7 @@ export default function ChatbotWidget({ variant = "website" }) {
       setUnread(0);
       setTimeout(() => inputRef.current?.focus(), 300);
     }
-  }, [isOpen, greeted, qaList, addBotMessage, cfg]);
+  }, [isOpen, greeted, chatHydrated, qaList, addBotMessage, cfg]);
 
   const handleSend = useCallback(
     async (textArg) => {
@@ -297,13 +438,15 @@ export default function ChatbotWidget({ variant = "website" }) {
           if (json.success && json.matched) {
             setLeadQuery(val);
             lastListingsUrlRef.current = json.moreUrl || "/properties";
+            const listings = Array.isArray(json.data) ? json.data : [];
             simulateTypingThenReply(
-              buildPropertySearchBotText(json),
+              buildPropertySearchIntro(json),
               [
                 "Open all matching listings",
                 "Get a callback",
                 "Something else",
               ],
+              listings.length ? listings : undefined,
             );
             return;
           }
@@ -448,45 +591,30 @@ export default function ChatbotWidget({ variant = "website" }) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen((o) => !o)}
-        aria-label="Open chat"
-        style={{
-          position: "fixed",
-          bottom: 28,
-          right: 28,
-          zIndex: 9999,
-          width: 60,
-          height: 60,
-          borderRadius: "50%",
-          border: "none",
-          background: isOpen
-            ? "linear-gradient(135deg, #f0734a 0%, #e05528 100%)"
-            : "var(--chatbot-gradient-duo)",
-          boxShadow: "var(--chatbot-shadow-lg)",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
-          transform: isOpen ? "rotate(45deg) scale(1.05)" : "scale(1)",
-        }}
-      >
-        {isOpen ? (
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#fff"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        ) : (
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open chat"
+          style={{
+            position: "fixed",
+            bottom: 28,
+            right: 28,
+            zIndex: 9999,
+            width: 60,
+            height: 60,
+            borderRadius: "50%",
+            border: "none",
+            background: "var(--chatbot-gradient-duo)",
+            boxShadow: "var(--chatbot-shadow-lg)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
+            transform: "scale(1)",
+          }}
+        >
           <svg
             width="26"
             height="26"
@@ -499,31 +627,31 @@ export default function ChatbotWidget({ variant = "website" }) {
           >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-        )}
-        {!isOpen && unread > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              top: -4,
-              right: -4,
-              background: "#f0734a",
-              color: "#fff",
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              fontSize: 11,
-              fontWeight: 800,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "2px solid #fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-            }}
-          >
-            {unread}
-          </span>
-        )}
-      </button>
+          {unread > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: -4,
+                right: -4,
+                background: "#f0734a",
+                color: "#fff",
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                fontSize: 11,
+                fontWeight: 800,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "2px solid #fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+              }}
+            >
+              {unread}
+            </span>
+          )}
+        </button>
+      )}
 
       {!isOpen && (
         <span
@@ -545,10 +673,10 @@ export default function ChatbotWidget({ variant = "website" }) {
       <div
         style={{
           position: "fixed",
-          bottom: 102,
+          bottom: 28,
           right: 28,
           zIndex: 9999,
-          width: 380,
+          width: CHAT_PANEL_DESIGN_WIDTH,
           maxWidth: "calc(100vw - 40px)",
           boxSizing: "border-box",
           borderRadius: 20,
@@ -558,7 +686,7 @@ export default function ChatbotWidget({ variant = "website" }) {
           background: "#fff",
           transform: isOpen
             ? "scale(1) translateY(0)"
-            : "scale(0.92) translateY(20px)",
+            : `scale(${CHAT_PANEL_CLOSED_SCALE}) translateY(0)`,
           opacity: isOpen ? 1 : 0,
           pointerEvents: isOpen ? "all" : "none",
           transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
@@ -813,6 +941,14 @@ export default function ChatbotWidget({ variant = "website" }) {
                 }}
               >
                 <div
+                  ref={
+                    msg.role === "bot"
+                      ? (el) => {
+                          if (el) botAnswerStartRefs.current.set(msg.id, el);
+                          else botAnswerStartRefs.current.delete(msg.id);
+                        }
+                      : undefined
+                  }
                   style={{
                     padding: "10px 14px",
                     borderRadius:
@@ -839,6 +975,98 @@ export default function ChatbotWidget({ variant = "website" }) {
                 >
                   {renderText(msg.text)}
                 </div>
+
+                {msg.role === "bot" &&
+                  Array.isArray(msg.propertyResults) &&
+                  msg.propertyResults.length > 0 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                        marginTop: 2,
+                        maxWidth: "100%",
+                        minWidth: 0,
+                      }}
+                    >
+                      {msg.propertyResults.map((p) => (
+                        <div
+                          key={p.slug}
+                          style={{
+                            borderRadius: 14,
+                            border: "1px solid #e8e8f2",
+                            background:
+                              "linear-gradient(145deg, #ffffff 0%, #fafbff 100%)",
+                            padding: "12px 14px",
+                            boxShadow: "0 4px 14px rgba(15,23,42,0.06)",
+                            maxWidth: "100%",
+                            minWidth: 0,
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 800,
+                              fontSize: 14,
+                              lineHeight: 1.35,
+                              color: "#1a1a2e",
+                              marginBottom: 6,
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {p.title}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 15,
+                              fontWeight: 700,
+                              color: "var(--chatbot-base)",
+                              marginBottom: 8,
+                              letterSpacing: "0.01em",
+                            }}
+                          >
+                            {p.priceDisplay || "—"}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 12,
+                              lineHeight: 1.45,
+                              color: "#5c5c6e",
+                              marginBottom: 12,
+                              display: "-webkit-box",
+                              WebkitLineClamp: 4,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {p.specification || "—"}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (typeof window !== "undefined") {
+                                window.location.href = `/property-detail/${p.slug}`;
+                              }
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "10px 12px",
+                              borderRadius: 10,
+                              border: "none",
+                              cursor: "pointer",
+                              fontSize: 13,
+                              fontWeight: 700,
+                              color: "#fff",
+                              background: "var(--chatbot-gradient-duo)",
+                              boxShadow: "0 4px 12px rgba(240,115,74,0.35)",
+                            }}
+                          >
+                            View property
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                 {msg.quickReplies && msg.quickReplies.length > 0 && (
                   <div

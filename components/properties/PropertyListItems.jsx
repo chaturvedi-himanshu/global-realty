@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 import toast from "react-hot-toast";
 import { useComparison, MAX_COMPARE } from "@/components/compare/PropertyComparison";
+import { formatPropertyPriceCrLac } from "@/lib/formatPropertyPriceIN";
 
 const PLACEHOLDER = "/images/section/box-house.jpg";
 const isObjectIdLike = (v) => typeof v === "string" && /^[a-f\d]{24}$/i.test(v);
@@ -24,12 +25,6 @@ const getImageSrc = (images) => {
 export default function PropertyListItems({ properties = [], showItems }) {
   const { addToCompare, removeFromCompare, isInCompare, count } = useComparison();
   const items = showItems ? properties.slice(0, showItems) : properties;
-
-  const formatPrice = (p) => {
-    if (!p) return "";
-    if (p.priceType === "on-request") return "Price on Request";
-    return `₹${Number(p.price || 0).toLocaleString("en-IN")}`;
-  };
 
   if (!items.length) return null;
 
@@ -90,7 +85,13 @@ export default function PropertyListItems({ properties = [], showItems }) {
                 )}
               </ul>
               <div className="bot flex justify-between items-center">
-                <h5 className="price">{formatPrice(property)}</h5>
+                <h5 className="price">
+                  {formatPropertyPriceCrLac(
+                    property.price,
+                    property.priceType,
+                    property.currency || "INR",
+                  )}
+                </h5>
                 <div className="wrap-btn flex">
                   <button
                     className={`compare flex gap-8 items-center text-1${inCompare ? " text-color-primary" : ""}`}

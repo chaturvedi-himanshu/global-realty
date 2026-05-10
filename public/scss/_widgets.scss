@@ -3269,8 +3269,9 @@
 
 .progress-wrap {
   position: fixed;
-  bottom: 40px;
-  right: 15px;
+  /* Above fixed chatbot launcher (~60px + bottom offset); align with chat column */
+  bottom: 100px;
+  right: 28px;
   height: 40px;
   width: 40px;
   cursor: pointer;
@@ -3325,6 +3326,13 @@
     transition-duration: 0.4s;
     transition-timing-function: linear;
   }
+}
+
+/* When site chatbot panel is open, keep scroll progress clear of the wide panel */
+body[data-chatbot-open="1"] .progress-wrap {
+  left: 20px;
+  right: auto;
+  bottom: 40px;
 }
 
 .categories-item {

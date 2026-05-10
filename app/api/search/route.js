@@ -13,12 +13,20 @@ export async function GET(request) {
       return NextResponse.json({ success: true, data: { properties: [], blogs: [] } });
     }
 
-    const regex = { $regex: q, $options: "i" };
+    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = { $regex: esc, $options: "i" };
 
     const [properties, blogs] = await Promise.all([
       Property.find({
         isActive: true,
-        $or: [{ title: regex }, { city: regex }, { address: regex }],
+        $or: [
+          { title: regex },
+          { address: regex },
+          { specification: regex },
+          { description: regex },
+          { tags: regex },
+          { city: regex },
+        ],
       })
         .limit(5)
         .select("title slug city price images listingType")

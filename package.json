@@ -14,6 +14,7 @@
     "seed:home-accordion": "node scripts/seed-home-accordion-panels.js",
     "seed:testimonial-videos": "node scripts/seed-testimonial-videos.js",
     "seed:rera": "node scripts/seed-rera-numbers.js",
+    "backfill:property-specification": "node scripts/backfill-property-specification.js",
     "seed:property-full": "node scripts/seed-full-property-one.js",
     "seed:footer-v2": "node scripts/seed-footer-v2-config.js",
     "seed:chatbot": "node scripts/seed-chatbot-qa.js",
@@ -62,6 +63,7 @@
     "sass": "^1.85.0",
     "slugify": "^1.6.9",
     "swiper": "^11.2.4",
+    "yet-another-react-lightbox": "^3.32.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
