@@ -16,11 +16,15 @@
     "seed:rera": "node scripts/seed-rera-numbers.js",
     "seed:property-full": "node scripts/seed-full-property-one.js",
     "seed:footer-v2": "node scripts/seed-footer-v2-config.js",
+    "seed:chatbot": "node scripts/seed-chatbot-qa.js",
+    "seed:chatbot-500": "node scripts/seed-chatbot-qa-bulk-500.js",
     "seed:overview-all": "node scripts/seed-property-overview-all.js",
     "seed:pricelist-all": "node scripts/seed-property-price-list-all.js",
     "update:overview": "node scripts/update-property-overview-content.js",
     "seed:bulk": "node scripts/seed-bulk-real-estate-data.js",
-    "seed:agents-career": "node ../admin-dashboard/scripts/seed-agents-career.mjs"
+    "seed:agents-career": "node ../admin-dashboard/scripts/seed-agents-career.mjs",
+    "mongo:copy-all": "node scripts/mongo-copy-all-data.js",
+    "mongo:copy-all-fast": "node scripts/mongo-copy-all-data.js --skip-indexes"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

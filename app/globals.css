@@ -11,6 +11,29 @@
   --primary-section-bg: rgba(120, 165, 53, 0.06);
   --primary-rgb: 120, 165, 53;
 
+  /* Floating chatbot — follows `--color-primary` (ThemeLoader / ThemeContext) */
+  --chatbot-base: var(--color-primary);
+  --chatbot-mix-1: color-mix(in srgb, var(--chatbot-base) 80%, #0a0a0a);
+  --chatbot-mix-2: color-mix(in srgb, var(--chatbot-base) 64%, #0a0a0a);
+  --chatbot-gradient-duo: linear-gradient(
+    135deg,
+    var(--chatbot-base) 0%,
+    var(--chatbot-mix-1) 100%
+  );
+  --chatbot-gradient-trio: linear-gradient(
+    135deg,
+    var(--chatbot-base) 0%,
+    var(--chatbot-mix-1) 50%,
+    var(--chatbot-mix-2) 100%
+  );
+  --chatbot-shadow-lg: 0 8px 32px
+    color-mix(in srgb, var(--chatbot-base) 45%, transparent);
+  --chatbot-shadow-user: 0 2px 12px
+    color-mix(in srgb, var(--chatbot-base) 28%, transparent);
+  --chatbot-shadow-send: 0 4px 14px
+    color-mix(in srgb, var(--chatbot-base) 34%, transparent);
+  --chatbot-pulse-ring: color-mix(in srgb, var(--chatbot-base) 24%, transparent);
+
   /* Design system — light mode */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;

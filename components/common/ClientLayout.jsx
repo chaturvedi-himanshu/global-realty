@@ -10,6 +10,7 @@ import CompareBar from "@/components/compare/CompareBar";
 import InquiryModal from "@/components/modals/InquiryModal";
 import FloatingInquiryPopup from "@/components/common/FloatingInquiryPopup";
 import { Toaster } from "react-hot-toast";
+import ChatbotWidget from "@/components/ChatbotWidget";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -132,6 +133,7 @@ export default function ClientLayout({ children }) {
           style: { borderRadius: "8px", fontSize: "14px" },
         }}
       />
+      <ChatbotWidget variant="website" />
     </>
   );
 }
