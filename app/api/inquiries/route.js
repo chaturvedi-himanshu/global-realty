@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongoose";
 import Inquiry from "@/models/Inquiry";
+import Property from "@/models/Property";
+import { sendLeadToCrm } from "@/lib/crmLead";
 
 export async function GET(request) {
   try {
@@ -36,7 +38,42 @@ export async function POST(request) {
   try {
     await connectDB();
     const body = await request.json();
-    const inquiry = await Inquiry.create(body);
+    let resolvedProjectName =
+      String(body?.projectName || "").trim() ||
+      String(body?.propertyTitle || "").trim();
+
+    if (!resolvedProjectName && body?.propertyId) {
+      try {
+        const property = await Property.findById(body.propertyId)
+          .select("title")
+          .lean();
+        resolvedProjectName = String(property?.title || "").trim();
+      } catch {
+        // Ignore lookup failure and keep fallback behavior.
+      }
+    }
+
+    const inquiry = await Inquiry.create({
+      ...body,
+      projectName: resolvedProjectName || body?.projectName || "",
+      propertyTitle:
+        String(body?.propertyTitle || "").trim() || resolvedProjectName || "",
+    });
+    await sendLeadToCrm({
+      name: body?.name,
+      email: body?.email,
+      mobile: body?.phone,
+      formType: body?.pageName || "Inquiry",
+      projectName: resolvedProjectName,
+      source: "website",
+      remark: [
+        `Lead from ${body?.pageName || "Inquiry"} Form`,
+        body?.interest ? `Interest: ${body.interest}` : "",
+        body?.message ? `Message: ${String(body.message).slice(0, 220)}` : "",
+      ]
+        .filter(Boolean)
+        .join(" | "),
+    });
     return NextResponse.json({ success: true, data: inquiry }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

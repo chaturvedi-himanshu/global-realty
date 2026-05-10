@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongoose";
 import JobApplication from "@/models/JobApplication";
 import mongoose from "mongoose";
+import { sendLeadToCrm } from "@/lib/crmLead";
 
 export async function POST(request) {
   try {
@@ -58,6 +59,22 @@ export async function POST(request) {
       ...(jobPostingId && mongoose.Types.ObjectId.isValid(String(jobPostingId))
         ? { jobPostingId: String(jobPostingId) }
         : {}),
+    });
+    await sendLeadToCrm({
+      name: String(fullName).trim(),
+      email: String(email).trim(),
+      mobile: phoneDigits,
+      formType: "Career Job Application",
+      projectName: String(jobTitle || "").trim() || "Careers",
+      source: "website-career",
+      remark: [
+        "Lead from Job Application Form",
+        jobTitle ? `Job: ${jobTitle}` : "",
+        department ? `Department: ${department}` : "",
+        location ? `Location: ${location}` : "",
+      ]
+        .filter(Boolean)
+        .join(" | "),
     });
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (error) {
