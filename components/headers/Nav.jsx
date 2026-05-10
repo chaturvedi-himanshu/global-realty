@@ -65,7 +65,6 @@ export default function Nav() {
       <li className={pathname === "/about" ? "current-menu" : ""}>
         <Link href="/about">About</Link>
       </li>
-
       <li
         className={`has-child style-2 ${propsMenuActive ? "current-menu" : ""}`}
       >

@@ -186,7 +186,6 @@ export default function MobileMenu() {
                 About
               </Link>
             </li>
-
             <li
               className={`menu-item ${
                 blogActive ? "current-menu-item" : ""

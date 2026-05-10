@@ -12,6 +12,7 @@
     "seed:about": "node scripts/seed-about-section.js",
     "seed:about-page": "node scripts/seed-about-page.js",
     "seed:home-accordion": "node scripts/seed-home-accordion-panels.js",
+    "seed:site-events": "node scripts/seed-site-events.js",
     "seed:testimonial-videos": "node scripts/seed-testimonial-videos.js",
     "seed:rera": "node scripts/seed-rera-numbers.js",
     "backfill:property-specification": "node scripts/backfill-property-specification.js",
