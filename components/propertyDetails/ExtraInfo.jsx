@@ -198,7 +198,7 @@ export default function ExtraInfo({ property }) {
       {desc && (
         <div className="content">
           <div
-            className="description text-1"
+            className="description text-1 property-detail-rich-text"
             style={{ maxHeight: "none", overflow: "visible" }}
             dangerouslySetInnerHTML={{ __html: desc }}
           />

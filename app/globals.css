@@ -267,6 +267,29 @@ body * {
   background: #2d3748;
 }
 
+/* Property detail — CMS editor HTML (overview + property description) */
+.property-detail-rich-text ul,
+.property-detail-rich-text ol {
+  margin: 0.75em 0;
+  padding-left: 1.35em;
+}
+.property-detail-rich-text ul {
+  list-style: disc;
+}
+.property-detail-rich-text ol {
+  list-style: decimal;
+}
+.property-detail-rich-text ul li {
+  list-style: disc;
+  list-style-position: outside;
+  margin: 0.35em 0;
+}
+.property-detail-rich-text ol li {
+  list-style: decimal;
+  list-style-position: outside;
+  margin: 0.35em 0;
+}
+
 /* ── Admin UI ──────────────────────────────────────────────── */
 
 /* Reusable card used by all admin pages */
