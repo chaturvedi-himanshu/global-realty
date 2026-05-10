@@ -7,6 +7,11 @@ import {
   useRef,
   useCallback,
 } from "react";
+import {
+  isValidEmail,
+  isValidIndianMobile,
+  toIndianMobile10Digits,
+} from "@/lib/chatbotLeadValidation";
 
 const uid = () => Math.random().toString(36).slice(2);
 
@@ -114,7 +119,15 @@ function reviveMessagesFromStorage(messages) {
 
 function saveChatThread(variant, snapshot) {
   if (typeof window === "undefined") return;
-  const { messages, flow, leadName, leadQuery, lastListingsUrl } = snapshot;
+  const {
+    messages,
+    flow,
+    leadName,
+    leadEmail,
+    leadInterest,
+    leadQuery,
+    lastListingsUrl,
+  } = snapshot;
   if (!messages?.length) return;
   try {
     localStorage.setItem(
@@ -124,6 +137,8 @@ function saveChatThread(variant, snapshot) {
         messages: serializeMessagesForStorage(messages),
         flow: flow || "chat",
         leadName: leadName || "",
+        leadEmail: leadEmail || "",
+        leadInterest: leadInterest || "",
         leadQuery: leadQuery || "",
         lastListingsUrl: lastListingsUrl || "",
       }),
@@ -192,6 +207,8 @@ export default function ChatbotWidget({ variant = "website" }) {
   const [qaList, setQaList] = useState([]);
   const [flow, setFlow] = useState("chat");
   const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadInterest, setLeadInterest] = useState("");
   const [leadQuery, setLeadQuery] = useState("");
   const [unread, setUnread] = useState(0);
   const [greeted, setGreeted] = useState(false);
@@ -235,6 +252,10 @@ export default function ChatbotWidget({ variant = "website" }) {
       setMessages(revived);
       setFlow(typeof data.flow === "string" ? data.flow : "chat");
       setLeadName(typeof data.leadName === "string" ? data.leadName : "");
+      setLeadEmail(typeof data.leadEmail === "string" ? data.leadEmail : "");
+      setLeadInterest(
+        typeof data.leadInterest === "string" ? data.leadInterest : "",
+      );
       setLeadQuery(typeof data.leadQuery === "string" ? data.leadQuery : "");
       lastListingsUrlRef.current =
         typeof data.lastListingsUrl === "string" ? data.lastListingsUrl : "";
@@ -317,10 +338,21 @@ export default function ChatbotWidget({ variant = "website" }) {
       messages,
       flow,
       leadName,
+      leadEmail,
+      leadInterest,
       leadQuery,
       lastListingsUrl: lastListingsUrlRef.current,
     });
-  }, [chatHydrated, variant, messages, flow, leadName, leadQuery]);
+  }, [
+    chatHydrated,
+    variant,
+    messages,
+    flow,
+    leadName,
+    leadEmail,
+    leadInterest,
+    leadQuery,
+  ]);
 
   const addBotMessage = useCallback((text, quickReplies, propertyResults) => {
     setMessages((prev) => [...prev, botMsg(text, quickReplies, propertyResults)]);
@@ -374,29 +406,78 @@ export default function ChatbotWidget({ variant = "website" }) {
 
       if (flow === "ask-name") {
         setLeadName(val);
+        setFlow("ask-email");
+        simulateTypingThenReply(
+          `Nice to meet you, **${val}**! 😊\n\nWhat's your **email address**? We'll use it to follow up.`,
+        );
+        return;
+      }
+
+      if (flow === "ask-email") {
+        if (!isValidEmail(val)) {
+          simulateTypingThenReply(
+            "Please enter a valid **email address** (for example, **you@example.com**).",
+          );
+          return;
+        }
+        setLeadEmail(val.trim());
+        setFlow("ask-interest");
+        simulateTypingThenReply(
+          "Thanks! **What are you interested in?** (e.g. buying, renting, site visit, investment)",
+        );
+        return;
+      }
+
+      if (flow === "ask-interest") {
+        if (val.length < 2) {
+          simulateTypingThenReply(
+            "Please add a bit more detail — e.g. **2 BHK in Noida** or **office space for lease**.",
+          );
+          return;
+        }
+        setLeadInterest(val);
         setFlow("ask-phone");
         simulateTypingThenReply(
-          `Nice to meet you, **${val}**! 😊\n\nWhat's your phone number so we can reach you?`,
+          "Got it. Lastly, **your mobile number** so we can reach you.",
         );
         return;
       }
 
       if (flow === "ask-phone") {
-        fetch("/api/chatbot/lead", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: leadName,
-            phone: val,
-            query: leadQuery,
-            source: variant === "admin" ? "admin" : "website",
-          }),
-        });
+        if (!isValidIndianMobile(val)) {
+          simulateTypingThenReply(
+            "That doesn't look like a valid **mobile number**. Please check and try again.",
+          );
+          return;
+        }
+        const phoneDigits = toIndianMobile10Digits(val);
+        let saveMessage = `✅ **Perfect!** We've saved your details.\n\nWe'll contact **${leadName}** at **${phoneDigits}** and **${leadEmail.trim()}** soon.\n\nIs there anything else I can help you with?`;
+        try {
+          const res = await fetch("/api/chatbot/lead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: leadName,
+              email: leadEmail.trim(),
+              interestedIn: leadInterest,
+              phone: phoneDigits,
+              query: leadQuery,
+              source: variant === "admin" ? "admin" : "website",
+            }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            saveMessage = `We couldn't save your details: **${json.error || "Please try again"}**.`;
+          }
+        } catch {
+          saveMessage =
+            "We couldn't save your details (network issue). Please try again.";
+        }
         setFlow("done");
-        simulateTypingThenReply(
-          `✅ **Perfect!** We've saved your details.\n\nOur team will reach **${leadName}** at **${val}** soon.\n\nIs there anything else I can help you with?`,
-          ["Yes, I have more questions", "No, thanks!"],
-        );
+        simulateTypingThenReply(saveMessage, [
+          "Yes, I have more questions",
+          "No, thanks!",
+        ]);
         return;
       }
 
@@ -486,7 +567,18 @@ export default function ChatbotWidget({ variant = "website" }) {
         ["Yes, call me back!", "No thanks", "See options"],
       );
     },
-    [flow, input, leadName, leadQuery, qaList, simulateTypingThenReply, cfg, variant],
+    [
+      flow,
+      input,
+      leadName,
+      leadEmail,
+      leadInterest,
+      leadQuery,
+      qaList,
+      simulateTypingThenReply,
+      cfg,
+      variant,
+    ],
   );
 
   const handleQuickReply = (qr) => {
@@ -1183,7 +1275,6 @@ export default function ChatbotWidget({ variant = "website" }) {
           <input
             ref={inputRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -1193,10 +1284,29 @@ export default function ChatbotWidget({ variant = "website" }) {
             placeholder={
               flow === "ask-name"
                 ? "Enter your name…"
-                : flow === "ask-phone"
-                  ? "Enter your phone number…"
-                  : "Type a message…"
+                : flow === "ask-email"
+                  ? "Enter your email…"
+                  : flow === "ask-interest"
+                    ? "What are you interested in?…"
+                    : flow === "ask-phone"
+                      ? "Mobile number…"
+                      : "Type a message…"
             }
+            inputMode={
+              flow === "ask-phone"
+                ? "numeric"
+                : flow === "ask-email"
+                  ? "email"
+                  : "text"
+            }
+            maxLength={flow === "ask-phone" ? 10 : undefined}
+            onChange={(e) => {
+              if (flow === "ask-phone") {
+                setInput(toIndianMobile10Digits(e.target.value));
+              } else {
+                setInput(e.target.value);
+              }
+            }}
             style={{
               flex: 1,
               border: "1.5px solid #e8e8f5",

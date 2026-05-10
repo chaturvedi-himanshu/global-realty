@@ -1,26 +1,22 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongoose";
 import ChatLead from "@/models/ChatLead";
+import { assertLeadPayload } from "@/lib/chatbotLeadValidation";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, phone, query, source } = body || {};
-    if (!name || !phone) {
+    const parsed = assertLeadPayload(body || {});
+    if (!parsed.ok) {
       return NextResponse.json(
-        { success: false, error: "Name and phone required" },
-        { status: 400 },
+        { success: false, error: parsed.error },
+        { status: parsed.status },
       );
     }
     await connectDB();
-    await ChatLead.create({
-      name: String(name).trim(),
-      phone: String(phone).trim(),
-      query: query != null ? String(query) : "",
-      source: source === "admin" ? "admin" : "website",
-    });
+    await ChatLead.create(parsed.data);
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(
