@@ -627,29 +627,6 @@ export default function ChatbotWidget({ variant = "website" }) {
           >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          {unread > 0 && (
-            <span
-              style={{
-                position: "absolute",
-                top: -4,
-                right: -4,
-                background: "#f0734a",
-                color: "#fff",
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                fontSize: 11,
-                fontWeight: 800,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "2px solid #fff",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}
-            >
-              {unread}
-            </span>
-          )}
         </button>
       )}
 

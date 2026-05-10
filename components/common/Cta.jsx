@@ -10,16 +10,15 @@ export default function Cta() {
               <Image
                 alt=""
                 src="/images/section/cta.webp"
-                width={216}
-                height={312}
+                width={300}
+                height={512}
               />
               <div className="content">
                 <h4 className="text_white mb-8">
                   Find a Local Real Estate Agent Today
                 </h4>
                 <p className="text_white text-1">
-                  If you’re looking to buy or sell a home. We’ll help you make
-                  the most money possible.
+                  If you’re looking to buy a project. We’ll help you find the best one.
                 </p>
               </div>
               <button

@@ -107,6 +107,11 @@
   color: #fff !important;
 }
 
+/* Allow line-clamp / truncation inside grid card cells */
+.box-house .content {
+  min-width: 0;
+}
+
 /* Keep bottom divider after hiding meta fields in PropertyCard */
 .box-house .property-card-divider {
   border-bottom: 1px solid var(--Line);
@@ -138,9 +143,15 @@
   font-size: inherit;
   line-height: inherit;
   font-weight: inherit;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 15px;
+  min-width: 0;
+}
+
+.box-house .property-rera-number__text {
+  min-width: 0;
+  flex: 1;
 }
 
 .box-house .property-rera-number__icon {
@@ -157,7 +168,7 @@
   display: block;
 }
 
-/* Property details first section: overview key/value icon section */
+/* Property details: overview key/value icon section (also used inside box-property-detail) */
 .box-overview .info-detail .box-icon .icons {
   background-color: var(--Primary) !important;
   border-color: var(--Primary) !important;
@@ -167,6 +178,11 @@
 .box-overview .info-detail .box-icon .icons i,
 .box-overview .info-detail .box-icon .icons svg {
   color: #fff !important;
+}
+
+/* Space between rich-text description and icon grid (mirrors old .info margin before .info-detail) */
+.box-property-detail.box-overview .content + .info-detail {
+  margin-top: 32px;
 }
 
 /* Property details: dynamic price list section */
@@ -395,7 +411,7 @@
 .footer-v2-enquire {
   position: fixed;
   right: 0;
-  top: 50%;
+  top: 35% !important;
   transform: translateY(-50%);
   z-index: 100;
   background: var(--Primary);

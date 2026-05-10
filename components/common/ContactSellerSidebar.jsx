@@ -11,7 +11,8 @@ import {
 
 const emptyForm = { name: "", email: "", phone: "", message: "" };
 
-const defaultAvatar = "https://static.vecteezy.com/system/resources/previews/019/494/949/non_2x/service-call-center-man-user-avatar-person-people-colored-outline-style-vector.jpg";
+const defaultAvatar =
+  "https://www.shutterstock.com/image-photo/indoor-photo-smiling-young-handsome-260nw-2624493687.jpg";
 
 function clearErr(setter, key) {
   setter((prev) => {
@@ -137,7 +138,7 @@ export default function ContactSellerSidebar({
         onSubmit={handleSubmit1}
         noValidate
       >
-        <h4 className="heading-title mb-30">Contact Sellers</h4>
+        <h4 className="heading-title mb-30">Connect with our agent</h4>
 
         <div className="seller-info">
           <div className="avartar">

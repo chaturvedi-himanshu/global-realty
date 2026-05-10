@@ -16,7 +16,26 @@ const getSubTypeQueryValue = (v) => {
   }
   return String(v);
 };
-export default function RelatedProperties({ city, propertySubType, currentId }) {
+function mergeWithCurrent(fromApi, currentProperty, max = 3) {
+  const merged = [];
+  const seen = new Set();
+  const pushUnique = (p) => {
+    if (!p?._id) return;
+    const id = String(p._id);
+    if (seen.has(id)) return;
+    seen.add(id);
+    merged.push(p);
+  };
+  if (currentProperty) pushUnique(currentProperty);
+  for (const p of fromApi || []) pushUnique(p);
+  return merged.slice(0, max);
+}
+
+export default function RelatedProperties({
+  city,
+  propertySubType,
+  currentProperty,
+}) {
   const params = new URLSearchParams({ limit: 8 });
   const cityParam = getRefId(city);
   const subTypeParam = getSubTypeQueryValue(propertySubType);
@@ -25,9 +44,9 @@ export default function RelatedProperties({ city, propertySubType, currentId }) 
 
   const { data, isLoading } = useSWR(`/properties?${params}`, fetcher);
 
-  const properties = (data?.data || []).filter(
-    (p) => p._id !== currentId
-  ).slice(0, 3);
+  const properties = !isLoading
+    ? mergeWithCurrent(data?.data, currentProperty, 3)
+    : [];
 
   if (!isLoading && !properties.length) return null;
 

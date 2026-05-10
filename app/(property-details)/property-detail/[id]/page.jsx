@@ -1,10 +1,10 @@
 import Footer1 from "@/components/footers/Footer1";
 import Header1 from "@/components/headers/Header1";
-import Breadcumb from "@/components/common/Breadcumb";
 import Cta from "@/components/common/Cta";
 import Details1 from "@/components/propertyDetails/Details1";
 import RelatedProperties from "@/components/propertyDetails/RelatedProperties";
-import Slider1 from "@/components/propertyDetails/sliders/Slider1";
+import PropertyHeroCarousel from "@/components/propertyDetails/PropertyHeroCarousel";
+import { PropertyDetailLightboxProvider } from "@/contexts/PropertyDetailLightboxContext";
 import React from "react";
 import connectDB from "@/lib/mongoose";
 import Property from "@/models/Property";
@@ -208,19 +208,20 @@ export default async function page({ params }) {
     <>
       <div id="wrapper" className="property-detail-page">
         <Header1 />
-        <Breadcumb pageName={property.title} />
-        <div className="main-content">
-          <div id="property-detail-print-area">
-            <Slider1 images={property.images} title={property.title} />
-            <Details1 property={property} />
-            <RelatedProperties
-              city={property.city}
-              propertySubType={property.propertySubType}
-              currentId={property._id}
-            />
+        <PropertyDetailLightboxProvider property={property}>
+          <div className="main-content">
+            <div id="property-detail-print-area">
+              <PropertyHeroCarousel property={property} />
+              <Details1 property={property} />
+              <RelatedProperties
+                city={property.city}
+                propertySubType={property.propertySubType}
+                currentProperty={property}
+              />
+            </div>
+            <Cta />
           </div>
-          <Cta />
-        </div>
+        </PropertyDetailLightboxProvider>
         <Footer1 />
       </div>
     </>

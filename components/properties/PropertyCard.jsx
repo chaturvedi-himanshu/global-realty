@@ -119,16 +119,22 @@ export default function PropertyCard({ property, variant = "default" }) {
           ) : null}
         </div>
         <div className="content">
-          <h5 className="title">
-            <Link href={`/property-detail/${slug}`}>{property.title}</Link>
+          <h5 className="title min-w-0">
+            <Link
+              href={`/property-detail/${slug}`}
+              className="line-clamp-1"
+            >
+              {property.title}
+            </Link>
           </h5>
           {location && (
-            <p className="location text-1 line-clamp-1">
-              <i className="icon-location" /> {location}
+            <p className="location text-1 flex items-center gap-6 min-w-0">
+              <i className="icon-location flex-shrink-0" aria-hidden />
+              <span className="line-clamp-1 min-w-0">{location}</span>
             </p>
           )}
           {specification ? (
-            <p className="property-rera-number text-1 line-clamp-2">
+            <p className="property-rera-number text-1">
               <span className="property-rera-number__icon" aria-hidden="true">
                 <svg
                   width="13"
@@ -145,7 +151,9 @@ export default function PropertyCard({ property, variant = "default" }) {
                   />
                 </svg>
               </span>
-              {specification}
+              <span className="property-rera-number__text line-clamp-1">
+                {specification}
+              </span>
             </p>
           ) : null}
           <div className="property-card-divider" />
@@ -238,17 +246,22 @@ export default function PropertyCard({ property, variant = "default" }) {
         ) : null}
       </div>
       <div className="content">
-        <h5 className="title">
-          <Link href={`/property-detail/${slug}`}>{property.title}</Link>
+        <h5 className="title min-w-0">
+          <Link
+            href={`/property-detail/${slug}`}
+            className="line-clamp-1"
+          >
+            {property.title}
+          </Link>
         </h5>
         {location ? (
-          <p className="location text-1 flex items-center gap-6">
-            <i className="icon-location" />
-            {location}
+          <p className="location text-1 flex items-center gap-6 min-w-0">
+            <i className="icon-location flex-shrink-0" aria-hidden />
+            <span className="line-clamp-1 min-w-0">{location}</span>
           </p>
         ) : null}
         {specification ? (
-          <p className="property-rera-number text-1 line-clamp-2">
+          <p className="property-rera-number text-1">
             <span className="property-rera-number__icon" aria-hidden="true">
               <svg
                 width="13"
@@ -265,7 +278,9 @@ export default function PropertyCard({ property, variant = "default" }) {
                 />
               </svg>
             </span>
-            {specification}
+            <span className="property-rera-number__text line-clamp-1">
+              {specification}
+            </span>
           </p>
         ) : null}
         <div className="property-card-divider" />

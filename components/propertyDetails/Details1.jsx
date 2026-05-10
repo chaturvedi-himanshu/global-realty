@@ -1,5 +1,4 @@
 import React from "react";
-import PropertyOverview from "./PropertyOverview";
 import VideoReview from "./VideoReview";
 import ExtraInfo from "./ExtraInfo";
 import OverviewSection from "./OverviewSection";
@@ -7,6 +6,7 @@ import PriceListSection from "./PriceListSection";
 import Features from "./Features";
 import Location from "./Location";
 import FloorPlan from "./FloorPlan";
+import PropertyExtraGallery from "./PropertyExtraGallery";
 import Attachments from "./Attachments";
 import VirtualTour from "./VirtualTour";
 import LoanCalculator from "./LoanCalculator";
@@ -70,9 +70,23 @@ export default function Details1({ property }) {
     property?.yearBuilt ||
     property?.garages ||
     property?.propertyType ||
-    property?.propertySubType,
+    property?.propertySubType ||
+    property?.floorNumber ||
+    property?.totalFloors ||
+    property?.landSize ||
+    property?.totalSize ||
+    property?.superBuiltUpArea ||
+    property?.carpetArea ||
+    property?.listingType,
   );
-  const hasExtraInfo = hasDescription || hasDetailFacts;
+  const hasOverviewKeyValues = Array.isArray(property?.overviewData)
+    ? property.overviewData.some(
+        (item) =>
+          String(item?.key || "").trim() && String(item?.value || "").trim(),
+      )
+    : false;
+  const hasExtraInfo =
+    hasDescription || hasDetailFacts || hasOverviewKeyValues;
   const hasLoanData = Number(property?.price) > 0;
 
   return (
@@ -80,12 +94,8 @@ export default function Details1({ property }) {
       <div className="tf-container">
         <div className="row">
           <div className="col-xl-8 col-lg-7">
-            <div className="wg-property box-overview">
-              <PropertyOverview property={property} />
-            </div>
-
             {hasExtraInfo && (
-              <div className="wg-property box-property-detail">
+              <div className="wg-property box-property-detail box-overview">
                 <ExtraInfo property={property} />
               </div>
             )}
@@ -115,6 +125,8 @@ export default function Details1({ property }) {
                 <PropertyNearby nearby={property.nearby} />
               </div>
             )}
+
+            <PropertyExtraGallery property={property} />
 
             {hasFloor && (
               <div className="wg-property single-property-floor">
