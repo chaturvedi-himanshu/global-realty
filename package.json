@@ -26,7 +26,8 @@
     "seed:bulk": "node scripts/seed-bulk-real-estate-data.js",
     "seed:agents-career": "node ../admin-dashboard/scripts/seed-agents-career.mjs",
     "mongo:copy-all": "node scripts/mongo-copy-all-data.js",
-    "mongo:copy-all-fast": "node scripts/mongo-copy-all-data.js --skip-indexes"
+    "mongo:copy-all-fast": "node scripts/mongo-copy-all-data.js --skip-indexes",
+    "delete:cities": "node scripts/delete-all-cities.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

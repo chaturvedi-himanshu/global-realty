@@ -81,7 +81,7 @@ export default function Cities({ cities = [] }) {
                     href={`/properties?city=${encodeURIComponent(city.cityName)}`}
                     className="text-1 tf-btn style-border pd-23 neighborhoods-cta-btn"
                   >
-                    {city.propertyCount} Projects{" "}
+                    View Projects{" "}
                     <i className="icon-arrow-right neighborhoods-cta-btn__arrow" />
                   </a>
                 </div>

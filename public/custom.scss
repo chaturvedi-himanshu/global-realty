@@ -107,6 +107,12 @@
   color: #fff !important;
 }
 
+/* Properties dropdown (single-level): remove right-side arrow on type rows */
+.main-menu .navigation > li.has-child.style-2 > .submenu > li > a::after {
+  display: none !important;
+  content: none !important;
+}
+
 /* Allow line-clamp / truncation inside grid card cells */
 .box-house .content {
   min-width: 0;
@@ -408,10 +414,27 @@
   font-size: 13px;
 }
 
+.footer-v2-disclaimer {
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.footer-v2-read-more {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0;
+}
+
 .footer-v2-enquire {
   position: fixed;
   right: 0;
-  top: 35% !important;
+  top: 38% !important;
   transform: translateY(-50%);
   z-index: 100;
   background: var(--Primary);
@@ -425,6 +448,31 @@
   white-space: nowrap;
   writing-mode: vertical-rl;
   text-orientation: mixed;
+}
+
+/* Theme settings toggle: smaller and placed above enquire button */
+.popup-setting {
+  top: 96px !important;
+  width: 132px !important;
+  right: -142px !important;
+}
+
+.popup-setting.show {
+  right: 0 !important;
+}
+
+.popup-setting .btn-setting {
+  left: -40px !important;
+}
+
+.popup-setting .btn-setting a {
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 18px !important;
+}
+
+.popup-setting .popup-setting-container {
+  padding: 12px 0 12px 12px !important;
 }
 
 .hero-social-fixed {
@@ -479,6 +527,7 @@
     right: 0;
     font-size: 10px;
     padding: 10px 7px;
+    top: 62% !important;
   }
 
   .hero-social-fixed {

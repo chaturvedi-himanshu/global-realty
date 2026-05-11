@@ -49,7 +49,10 @@ function normalizeProperty(p) {
 
 export default function Properties({ properties: dbProperties = [] }) {
   const rawList = dbProperties.length > 0 ? dbProperties : FALLBACK_PROPERTIES;
-  const properties = rawList.map(normalizeProperty).slice(0, 9);
+  const properties = rawList
+    .map(normalizeProperty)
+    .filter((property) => property.featured)
+    .slice(0, 9);
 
   return (
     <section className="section-listing tf-spacing-1">

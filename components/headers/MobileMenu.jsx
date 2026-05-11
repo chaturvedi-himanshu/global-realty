@@ -9,34 +9,13 @@ import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
 
-const contactFetcher = (url) =>
-  fetch(url).then((r) => r.json());
-
-function subtypeQueryMatchesItem(item, param) {
-  if (!param) return false;
-  const slug = String(item.slug || "").trim();
-  if (slug && slug === param) return true;
-  return String(item._id) === param;
-}
+const contactFetcher = (url) => fetch(url).then((r) => r.json());
 
 function isPropertiesNavActive(pathname, searchParams, menu) {
   if (pathname !== "/properties") return false;
   const t = searchParams.get("type") || "";
   if (!t) return false;
-  const st = searchParams.get("propertySubType") || "";
-  return menu.some((type) => {
-    if (type.slug !== t) return false;
-    if (!st) return true;
-    return type.subtypes.some((s) => subtypeQueryMatchesItem(s, st));
-  });
-}
-
-function isSubtypeItemActive(pathname, searchParams, typeSlug, item) {
-  if (pathname !== "/properties") return false;
-  if (searchParams.get("type") !== typeSlug) return false;
-  const st = searchParams.get("propertySubType") || "";
-  if (item.slug === "all") return !st;
-  return subtypeQueryMatchesItem(item, st);
+  return menu.some((type) => type.slug === t);
 }
 
 export default function MobileMenu() {
@@ -59,6 +38,8 @@ export default function MobileMenu() {
     pathname === "/blogs" ||
     pathname.startsWith("/blog") ||
     pathname.startsWith("/blogs/");
+  const galleryActive =
+    pathname === "/events" || pathname.startsWith("/events/");
 
   return (
     <div
@@ -129,47 +110,21 @@ export default function MobileMenu() {
                     propertiesMenu.map((type) => (
                       <li
                         key={type._id}
-                        className="menu-item menu-item-has-children-mobile-2"
+                        className={
+                          searchParams.get("type") === type.slug
+                            ? "menu-item current-item"
+                            : "menu-item"
+                        }
                       >
-                        <a
-                          href={`#mobile-ptype-${type._id}`}
-                          className="item-menu-mobile collapsed"
-                          data-bs-toggle="collapse"
-                          aria-expanded="false"
-                          aria-controls={`mobile-ptype-${type._id}`}
+                        <Link
+                          href={
+                            type.href ||
+                            `/properties?type=${encodeURIComponent(type.slug)}`
+                          }
+                          className="item-menu-mobile"
                         >
                           {type.name}
-                        </a>
-                        <div
-                          id={`mobile-ptype-${type._id}`}
-                          className="collapse"
-                          data-bs-parent="#dropdown-menu-props"
-                        >
-                          <ul className="sub-mobile">
-                            {type.subtypes.map((item) => (
-                              <li
-                                key={item._id}
-                                className={
-                                  isSubtypeItemActive(
-                                    pathname,
-                                    searchParams,
-                                    type.slug,
-                                    item,
-                                  )
-                                    ? "menu-item current-item"
-                                    : "menu-item"
-                                }
-                              >
-                                <Link
-                                  href={item.href}
-                                  className="item-menu-mobile"
-                                >
-                                  {item.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                        </Link>
                       </li>
                     ))
                   )}
@@ -187,12 +142,19 @@ export default function MobileMenu() {
               </Link>
             </li>
             <li
-              className={`menu-item ${
-                blogActive ? "current-menu-item" : ""
-              }`}
+              className={`menu-item ${blogActive ? "current-menu-item" : ""}`}
             >
               <Link href="/blogs" className="item-menu-mobile">
                 Blog
+              </Link>
+            </li>
+            <li
+              className={`menu-item ${
+                galleryActive ? "current-menu-item" : ""
+              }`}
+            >
+              <Link href="/events" className="item-menu-mobile">
+                Gallery
               </Link>
             </li>
 

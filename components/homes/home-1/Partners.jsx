@@ -11,14 +11,13 @@ export default function Partners({ partnerLogos = [] }) {
             <div className="col-12">
               <div className="heading-section  text-center mb-48">
                 <h2 className="title split-text effect-right">
-                  <SplitTextAnimation text="Let’s Work Together" />
+                  <SplitTextAnimation text="Our Partners" />
                 </h2>
                 <p
                   className="text-1 wow animate__fadeInUp animate__animated"
                   data-wow-duration="1.5s"
                 >
-                  We focus on sales—helping owners list premium homes and reach
-                  serious buyers, from first viewing to closing.
+                  We partner with leading reputed developers who are experienced, committed, reliable and ethical.
                 </p>
               </div>
               <BrandSlider logos={partnerLogos} />

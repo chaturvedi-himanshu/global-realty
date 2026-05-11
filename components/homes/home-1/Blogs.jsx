@@ -51,10 +51,10 @@ export default function Blogs({
             {showHeading ? (
               <div className="heading-section text-center mb-48">
                 <h2 className="title split-text effect-right">
-                  <SplitTextAnimation text="Insight & Opinion" />
+                  <SplitTextAnimation text="Property Trends & Updates" />
                 </h2>
                 <p className="text-1 split-text split-lines-transform">
-                  Thousands of luxury home enthusiasts just like you visit our website.
+                  Stay updated with the latest trends, insights, and opportunities in the real estate.
                 </p>
               </div>
             ) : null}

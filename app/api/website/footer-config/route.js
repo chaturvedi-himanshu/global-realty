@@ -66,6 +66,7 @@ const DEFAULT_FOOTER_V2 = {
   contactLocationSub: "On-site meetings by appointment",
   enquireLabel: "Enquire Now",
   enquireLink: "/enquire",
+  disclaimer: "",
   bottomText:
     "© 2026 Prithvee Real Estate Services. All rights reserved.",
 };
@@ -138,6 +139,7 @@ function normalizeFooterV2(raw) {
     ),
     enquireLabel: toStr(src.enquireLabel, DEFAULT_FOOTER_V2.enquireLabel),
     enquireLink: toStr(src.enquireLink, DEFAULT_FOOTER_V2.enquireLink),
+    disclaimer: toStr(src.disclaimer, DEFAULT_FOOTER_V2.disclaimer),
     bottomText: toStr(src.bottomText, DEFAULT_FOOTER_V2.bottomText),
   };
 }

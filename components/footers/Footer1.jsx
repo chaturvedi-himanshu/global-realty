@@ -30,6 +30,7 @@ const defaultConfig = {
     contactLocationSub: "",
     enquireLabel: "Enquire Now",
     enquireLink: "/enquire",
+    disclaimer: "",
     bottomText: "",
   },
 };
@@ -63,6 +64,7 @@ async function openInquiryModal() {
 
 export default function Footer1() {
   const [cfg, setCfg] = useState(defaultConfig);
+  const [isDisclaimerExpanded, setIsDisclaimerExpanded] = useState(false);
 
   useEffect(() => {
     fetch("/api/website/footer-config")
@@ -82,6 +84,12 @@ export default function Footer1() {
   const reraItems = Array.isArray(v2.reraItems) ? v2.reraItems : [];
   const trustItems = Array.isArray(v2.trustItems) ? v2.trustItems : [];
   const badges = Array.isArray(v2.badges) ? v2.badges : [];
+  const disclaimer = String(v2.disclaimer || "").trim();
+  const disclaimerWords = disclaimer ? disclaimer.split(/\s+/).filter(Boolean) : [];
+  const hasLongDisclaimer = disclaimerWords.length > 40;
+  const visibleDisclaimer = hasLongDisclaimer && !isDisclaimerExpanded
+    ? `${disclaimerWords.slice(0, 40).join(" ")}...`
+    : disclaimer;
 
   return (
     <>
@@ -217,7 +225,27 @@ export default function Footer1() {
           </div>
         </div>
 
-        <div className="footer-v2-bottom">{v2.bottomText}</div>
+        <div className="footer-v2-bottom">
+          {v2.disclaimer ? (
+            <div className="footer-v2-disclaimer">
+              {visibleDisclaimer}
+              {hasLongDisclaimer ? (
+                <>
+                  {" "}
+                  <button
+                    type="button"
+                    className="footer-v2-read-more"
+                    onClick={() => setIsDisclaimerExpanded((prev) => !prev)}
+                    aria-expanded={isDisclaimerExpanded}
+                  >
+                    {isDisclaimerExpanded ? "Read less" : "Read more"}
+                  </button>
+                </>
+              ) : null}
+            </div>
+          ) : null}
+          <div>{v2.bottomText}</div>
+        </div>
       </footer>
     </>
   );

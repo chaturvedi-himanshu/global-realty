@@ -62,6 +62,7 @@ async function getHomePageData() {
 
     const [
       properties,
+      featuredProperties,
       testimonials,
       blogs,
       heroSlides,
@@ -78,6 +79,15 @@ async function getHomePageData() {
       homeCtaBannerRaw,
     ] = await Promise.all([
       PropertyModel.find({ isActive: { $ne: false } })
+        .populate("propertyType", "name title slug")
+        .sort({ createdAt: -1 })
+        .limit(9)
+        .lean()
+        .catch(() => []),
+      PropertyModel.find({
+        isActive: { $ne: false },
+        $or: [{ isFeatured: true }, { featured: true }],
+      })
         .populate("propertyType", "name title slug")
         .sort({ createdAt: -1 })
         .limit(9)
@@ -296,6 +306,7 @@ async function getHomePageData() {
 
     return {
       properties: JSON.parse(JSON.stringify(properties)),
+      featuredProperties: JSON.parse(JSON.stringify(featuredProperties)),
       testimonials: JSON.parse(JSON.stringify(testimonials)),
       blogs: JSON.parse(JSON.stringify(blogs)),
       heroSlides: JSON.parse(JSON.stringify(heroSlides)),
@@ -313,6 +324,7 @@ async function getHomePageData() {
   } catch {
     return {
       properties: [],
+      featuredProperties: [],
       testimonials: [],
       blogs: [],
       heroSlides: [],
@@ -341,6 +353,7 @@ async function getHomePageData() {
 export default async function Home() {
   const {
     properties,
+    featuredProperties,
     testimonials,
     blogs,
     heroSlides,
@@ -379,7 +392,7 @@ export default async function Home() {
       </Suspense>
       <div className="main-content home-page-content">
         {/* <Categories items={categoryItems} /> */}
-        <Properties properties={properties.slice(0, 6)} />
+        <Properties properties={featuredProperties.slice(0, 6)} />
         <AboutHomeSection content={aboutSection} />
         <section className="tf-spacing-1">
           <PropertyAccordion panels={homeAccordionPanels} />

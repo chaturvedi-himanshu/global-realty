@@ -230,7 +230,7 @@ export default function Hero({
                       <fieldset>
                         <input
                           type="text"
-                          placeholder="Place, neighborhood, school or agent..."
+                          placeholder="Residential, Commercial, Plots"
                           value={keyword}
                           onChange={(e) => setKeyword(e.target.value)}
                         />

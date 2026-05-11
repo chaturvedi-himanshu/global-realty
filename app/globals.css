@@ -63,6 +63,17 @@
   --jodit-color: #111827;
 }
 
+/* Hide default browser scrollbars globally (scroll remains enabled). */
+* {
+  -ms-overflow-style: none; /* IE/Edge legacy */
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome/Safari/Opera */
+}
+
 .layout-shell {
   width: 100%;
   max-width: 72rem;

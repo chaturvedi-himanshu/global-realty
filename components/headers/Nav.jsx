@@ -8,31 +8,11 @@ import api from "@/lib/axios";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
 
-function subtypeQueryMatchesItem(item, param) {
-  if (!param) return false;
-  const slug = String(item.slug || "").trim();
-  if (slug && slug === param) return true;
-  return String(item._id) === param;
-}
-
 function isPropertiesNavActive(pathname, searchParams, menu) {
   if (pathname !== "/properties") return false;
   const t = searchParams.get("type") || "";
-  const st = searchParams.get("propertySubType") || "";
   if (!t) return false;
-  return menu.some((type) => {
-    if (type.slug !== t) return false;
-    if (!st) return true;
-    return type.subtypes.some((s) => subtypeQueryMatchesItem(s, st));
-  });
-}
-
-function isSubtypeItemActive(pathname, searchParams, typeSlug, item) {
-  if (pathname !== "/properties") return false;
-  if (searchParams.get("type") !== typeSlug) return false;
-  const st = searchParams.get("propertySubType") || "";
-  if (item.slug === "all") return !st;
-  return subtypeQueryMatchesItem(item, st);
+  return menu.some((type) => type.slug === t);
 }
 
 /** Highlight the property-type row when that type is in the URL. */
@@ -55,6 +35,8 @@ export default function Nav() {
     pathname === "/blogs" ||
     pathname.startsWith("/blog") ||
     pathname.startsWith("/blogs/");
+  const galleryActive =
+    pathname === "/events" || pathname.startsWith("/events/");
 
   return (
     <>
@@ -88,26 +70,14 @@ export default function Nav() {
                     : ""
                 }
               >
-                <a href="#">{type.name}</a>
-                <ul className="submenu2">
-                  {type.subtypes.map((item) => (
-                    <li
-                      key={item._id}
-                      className={
-                        isSubtypeItemActive(
-                          pathname,
-                          searchParams,
-                          type.slug,
-                          item,
-                        )
-                          ? "current-item"
-                          : ""
-                      }
-                    >
-                      <Link href={item.href}>{item.name}</Link>
-                    </li>
-                  ))}
-                </ul>
+                <Link
+                  href={
+                    type.href ||
+                    `/properties?type=${encodeURIComponent(type.slug)}`
+                  }
+                >
+                  {type.name}
+                </Link>
               </li>
             ))
           )}
@@ -116,6 +86,10 @@ export default function Nav() {
 
       <li className={blogActive ? "current-menu" : ""}>
         <Link href="/blogs">Blog</Link>
+      </li>
+
+      <li className={galleryActive ? "current-menu" : ""}>
+        <Link href="/events">Gallery</Link>
       </li>
 
       <li className={pathname === "/contact" ? "current-menu" : ""}>

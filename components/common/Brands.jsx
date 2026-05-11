@@ -13,12 +13,11 @@ export default function Brands({
             <div className="col-12 wrap-partners">
               <div className="heading-section text-center mb-48">
                 <h2 className="title split-text effect-right">
-                  <SplitTextAnimation text="Let’s Work Together" />
+                  <SplitTextAnimation text="Our Partners" />
                 </h2>
                 <p className="text-1 split-text effect-right">
                   <SplitTextAnimation
-                    text="Thousands of luxury home enthusiasts just like you visit our
-                  website."
+                    text="We partner with leading reputed developers who are experienced, committed, reliable and ethical."
                   />
                 </p>
               </div>

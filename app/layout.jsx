@@ -17,6 +17,8 @@ import ScriptSettings from "@/models/ScriptSettings";
 import ThemeLoader from "@/components/common/ThemeLoader";
 import ScriptInjector from "@/components/common/ScriptInjector";
 
+export const metadata = {};
+
 async function getInjectedScripts() {
   try {
     await connectDB();
@@ -32,6 +34,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
+
       <body className="popup-loader">
         {/* Admin-managed scripts (Google Analytics, GTM, Meta Pixel, custom) */}
         {injectedScripts && <ScriptInjector scripts={injectedScripts} />}
