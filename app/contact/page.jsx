@@ -1,11 +1,10 @@
-import Brands from "@/components/common/Brands";
-import Cta from "@/components/common/Cta";
-import About from "@/components/contact/About";
-import Contact from "@/components/contact/Contact";
+import ContactMainSection from "@/components/contact/ContactMainSection";
+import ContactBranches from "@/components/contact/ContactBranches";
 import Footer1 from "@/components/footers/Footer1";
 import Header1 from "@/components/headers/Header1";
+import connectDB from "@/lib/mongoose";
+import ContactInfo from "@/models/ContactInfo";
 import { getPageSeo } from "@/lib/seo";
-import React from "react";
 
 export const revalidate = 60;
 
@@ -16,18 +15,30 @@ export async function generateMetadata() {
   });
   return metadata;
 }
-export default function page() {
+
+async function getContactData() {
+  try {
+    await connectDB();
+    const info = await ContactInfo.findOne().lean();
+    return info ? JSON.parse(JSON.stringify(info)) : {};
+  } catch {
+    return {};
+  }
+}
+
+export default async function ContactPage() {
+  const contactInfo = await getContactData();
+
   return (
-    <>
-      <div id="wrapper">
-        <Header1 />
-        <div className="main-content">
-          <Contact />
-          <About />
-          <Cta />
-        </div>
-        <Footer1 />
-      </div>
-    </>
+    <div id="wrapper">
+      <Header1 />
+      <main className="main-content">
+        <ContactMainSection contactInfo={contactInfo} />
+        {(contactInfo.branchOffices || []).length > 0 && (
+          <ContactBranches offices={contactInfo.branchOffices} />
+        )}
+      </main>
+      <Footer1 />
+    </div>
   );
 }
