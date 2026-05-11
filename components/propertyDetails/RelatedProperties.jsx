@@ -16,17 +16,20 @@ const getSubTypeQueryValue = (v) => {
   }
   return String(v);
 };
-function mergeWithCurrent(fromApi, currentProperty, max = 3) {
+function filterSimilar(fromApi, currentProperty, max = 3) {
+  const currentId = currentProperty?._id ? String(currentProperty._id) : "";
+
   const merged = [];
   const seen = new Set();
   const pushUnique = (p) => {
     if (!p?._id) return;
     const id = String(p._id);
+    if (currentId && id === currentId) return;
     if (seen.has(id)) return;
     seen.add(id);
     merged.push(p);
   };
-  if (currentProperty) pushUnique(currentProperty);
+
   for (const p of fromApi || []) pushUnique(p);
   return merged.slice(0, max);
 }
@@ -45,10 +48,12 @@ export default function RelatedProperties({
   const { data, isLoading } = useSWR(`/properties?${params}`, fetcher);
 
   const properties = !isLoading
-    ? mergeWithCurrent(data?.data, currentProperty, 3)
+    ? filterSimilar(data?.data, currentProperty, 3)
     : [];
 
-  if (!isLoading && !properties.length) return null;
+  // When there are no similar properties, keep comfortable space above footer.
+  if (!isLoading && !properties.length)
+    return <div className="tf-spacing-6" aria-hidden="true" />;
 
   return (
     <section className="section-similar-properties tf-spacing-3">
