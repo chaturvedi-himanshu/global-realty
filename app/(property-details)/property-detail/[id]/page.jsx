@@ -215,7 +215,7 @@ export default async function page({ params }) {
               <Details1 property={property} />
               <RelatedProperties
                 city={property.city}
-                propertySubType={property.propertySubType}
+                propertyType={property.propertyType}
                 currentProperty={property}
               />
             </div>

@@ -4,10 +4,9 @@ import api from "@/lib/axios";
 import PropertyGridItems from "@/components/properties/PropertyGridItems";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
-const getLabel = (v) => (v && typeof v === "object" ? v.name || "" : v || "");
 const getRefId = (v) => (v && typeof v === "object" ? v._id || "" : v || "");
-/** Prefer slug in listing URLs; fall back to id for legacy objects without slug. */
-const getSubTypeQueryValue = (v) => {
+/** Prefer slug for API lookup; fall back to id for legacy objects without slug. */
+const getSlugOrIdQueryValue = (v) => {
   if (!v) return "";
   if (typeof v === "object") {
     const slug = String(v.slug || "").trim();
@@ -36,14 +35,14 @@ function filterSimilar(fromApi, currentProperty, max = 3) {
 
 export default function RelatedProperties({
   city,
-  propertySubType,
+  propertyType,
   currentProperty,
 }) {
   const params = new URLSearchParams({ limit: 8 });
   const cityParam = getRefId(city);
-  const subTypeParam = getSubTypeQueryValue(propertySubType);
+  const typeParam = getSlugOrIdQueryValue(propertyType);
   if (cityParam) params.set("city", cityParam);
-  if (subTypeParam) params.set("propertySubType", subTypeParam);
+  if (typeParam) params.set("propertyType", typeParam);
 
   const { data, isLoading } = useSWR(`/properties?${params}`, fetcher);
 
