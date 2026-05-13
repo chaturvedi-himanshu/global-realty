@@ -298,6 +298,135 @@
 [data-theme="dark"] .det-related-skeleton { background: #374151; }
 @keyframes det-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+/* Sidebar: similar properties — card aligned with .wg-property / .form-contact-seller */
+.sidebar-similar-properties {
+  margin-bottom: 30px;
+}
+.sidebar-similar-properties__card {
+  background-color: var(--White);
+  border: 1px solid var(--Line);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
+  padding: 24px 22px 22px;
+}
+[data-theme="dark"] .sidebar-similar-properties__card {
+  box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.35);
+}
+.sidebar-similar-properties__title {
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--Line);
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--Heading);
+}
+.sidebar-similar-properties__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sidebar-similar-properties__item {
+  margin: 0;
+  padding: 0;
+}
+.sidebar-similar-properties__link {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+  border: 1px solid var(--Line);
+  padding: 12px 14px;
+  background-color: var(--White);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.sidebar-similar-properties__link:hover {
+  border-color: var(--Primary);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+.sidebar-similar-properties__link:active {
+  transform: translateY(0);
+}
+.sidebar-similar-properties__link:focus-visible {
+  outline: 2px solid var(--Primary);
+  outline-offset: 2px;
+}
+[data-theme="dark"] .sidebar-similar-properties__link:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+.sidebar-similar-properties__thumb-wrap {
+  flex-shrink: 0;
+  width: 96px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--Line);
+  border: 1px solid var(--Line);
+}
+.sidebar-similar-properties__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sidebar-similar-properties__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-similar-properties__name {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--Heading);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sidebar-similar-properties__config {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--Text);
+  opacity: 0.88;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sidebar-similar-properties__price {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--Primary);
+  margin-top: 2px;
+}
+.sidebar-similar-properties__skeleton {
+  height: 108px;
+  border-radius: 12px;
+  border: 1px solid var(--Line);
+  background-color: var(--Line);
+  animation: det-pulse 1.5s ease-in-out infinite;
+}
+
+/* .tf-sidebar is the direct sticky element; its containing block is the Bootstrap column
+   which stretches to match the left column, giving it a full track to stick through */
+.property-detail-page .tf-sidebar.sticky-sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 104px;
+  z-index: 10;
+}
+
 /* Review stars modifiers */
 .det-review-stars--sm { font-size: 0.875rem; }
 .det-review-stars--picker { display: flex; gap: 0.25rem; }

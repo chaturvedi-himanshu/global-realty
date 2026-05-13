@@ -2,52 +2,28 @@
 import useSWR from "@/lib/swr-lite";
 import api from "@/lib/axios";
 import PropertyGridItems from "@/components/properties/PropertyGridItems";
+import {
+  buildSimilarPropertiesSearchParams,
+  filterSimilarPropertyList,
+} from "@/lib/similarPropertiesQuery";
 
 const fetcher = (url) => api.get(url).then((r) => r.data);
-const getRefId = (v) => (v && typeof v === "object" ? v._id || "" : v || "");
-/** Prefer slug for API lookup; fall back to id for legacy objects without slug. */
-const getSlugOrIdQueryValue = (v) => {
-  if (!v) return "";
-  if (typeof v === "object") {
-    const slug = String(v.slug || "").trim();
-    if (slug) return slug;
-    return v._id ? String(v._id) : "";
-  }
-  return String(v);
-};
-function filterSimilar(fromApi, currentProperty, max = 3) {
-  const currentId = currentProperty?._id ? String(currentProperty._id) : "";
-
-  const merged = [];
-  const seen = new Set();
-  const pushUnique = (p) => {
-    if (!p?._id) return;
-    const id = String(p._id);
-    if (currentId && id === currentId) return;
-    if (seen.has(id)) return;
-    seen.add(id);
-    merged.push(p);
-  };
-
-  for (const p of fromApi || []) pushUnique(p);
-  return merged.slice(0, max);
-}
 
 export default function RelatedProperties({
   city,
   propertyType,
   currentProperty,
 }) {
-  const params = new URLSearchParams({ limit: 24 });
-  const cityParam = getRefId(city);
-  const typeParam = getSlugOrIdQueryValue(propertyType);
-  if (cityParam) params.set("city", cityParam);
-  if (typeParam) params.set("propertyType", typeParam);
+  const params = buildSimilarPropertiesSearchParams({
+    city,
+    propertyType,
+    limit: 24,
+  });
 
   const { data, isLoading } = useSWR(`/properties?${params}`, fetcher);
 
   const properties = !isLoading
-    ? filterSimilar(data?.data, currentProperty, 3)
+    ? filterSimilarPropertyList(data?.data, currentProperty, 3)
     : [];
 
   // When there are no similar properties, keep comfortable space above footer.

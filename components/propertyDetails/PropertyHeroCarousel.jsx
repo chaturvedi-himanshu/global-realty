@@ -221,14 +221,6 @@ export default function PropertyHeroCarousel({ property }) {
             >
               <FiShare2 size={20} />
             </button>
-            <button
-              type="button"
-              className="property-detail-hero__icon-btn"
-              onClick={printPage}
-              aria-label="Print page"
-            >
-              <FiPrinter size={20} />
-            </button>
           </div>
         </div>
       </div>

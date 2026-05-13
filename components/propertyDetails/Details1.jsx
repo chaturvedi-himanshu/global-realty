@@ -13,6 +13,7 @@ import LoanCalculator from "./LoanCalculator";
 import PropertyNearby from "./PropertyNearby";
 import Reviews from "./Reviews";
 import Sidebar from "./Sidebar";
+import SimilarPropertiesSidebar from "./SimilarPropertiesSidebar";
 
 const getImageUrl = (img) => {
   if (!img) return "";
@@ -171,7 +172,8 @@ export default function Details1({ property }) {
           </div>
 
           <div className="col-xl-4 col-lg-5">
-            <Sidebar property={property} />
+            <SimilarPropertiesSidebar property={property} />
+            <Sidebar property={property} className="sticky-sidebar" />
           </div>
         </div>
       </div>
