@@ -38,7 +38,7 @@ export default function RelatedProperties({
   propertyType,
   currentProperty,
 }) {
-  const params = new URLSearchParams({ limit: 8 });
+  const params = new URLSearchParams({ limit: 24 });
   const cityParam = getRefId(city);
   const typeParam = getSlugOrIdQueryValue(propertyType);
   if (cityParam) params.set("city", cityParam);

@@ -12,6 +12,14 @@ import { generateSlug } from "@/lib/apiHelpers";
 
 const isObjectId = (v) => typeof v === "string" && /^[a-f\d]{24}$/i.test(v);
 
+/** Match refs stored as ObjectId or as the same id string (e.g. city uses Mixed). */
+function matchObjectIdOrString(idString) {
+  const s = String(idString || "").trim();
+  if (!isObjectId(s)) return null;
+  const oid = new mongoose.Types.ObjectId(s);
+  return { $in: [oid, s] };
+}
+
 const toSlug = (name) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -34,15 +42,22 @@ export async function GET(request) {
 
     const city = searchParams.get("city");
     if (city) {
-      if (isObjectId(city)) {
-        query.city = new mongoose.Types.ObjectId(city);
+      const cityMatch = matchObjectIdOrString(city);
+      if (cityMatch) {
+        query.city = cityMatch;
       } else {
         // Look up city by name to get its ObjectId (new data), also match legacy string
         const CityModel = mongoose.models.City ||
           mongoose.model("City", new mongoose.Schema({ name: String, slug: String }, { strict: false }));
         const cityDoc = await CityModel.findOne({ name: { $regex: `^${city}$`, $options: "i" } }).lean();
         if (cityDoc) {
-          query.$or = [{ city: cityDoc._id }, { city: { $regex: city, $options: "i" } }];
+          const cid = cityDoc._id;
+          const cidStr = String(cid);
+          query.$or = [
+            { city: cid },
+            { city: cidStr },
+            { city: { $regex: city, $options: "i" } },
+          ];
         } else {
           query.city = { $regex: city, $options: "i" };
         }
@@ -55,30 +70,32 @@ export async function GET(request) {
     const propertyType = searchParams.get("propertyType");
     if (propertyType) {
       const raw = propertyType.trim();
-      if (isObjectId(raw)) {
-        query.propertyType = new mongoose.Types.ObjectId(raw);
+      const idMatch = matchObjectIdOrString(raw);
+      if (idMatch) {
+        query.propertyType = idMatch;
       } else {
         const pt = await PropertyType.findOne({
           slug: raw.toLowerCase(),
         })
           .select("_id")
           .lean();
-        if (pt?._id) query.propertyType = pt._id;
+        if (pt?._id) query.propertyType = matchObjectIdOrString(String(pt._id));
       }
     }
 
     const propertySubType = searchParams.get("propertySubType");
     if (propertySubType) {
       const raw = propertySubType.trim();
-      if (isObjectId(raw)) {
-        query.propertySubType = new mongoose.Types.ObjectId(raw);
+      const idMatch = matchObjectIdOrString(raw);
+      if (idMatch) {
+        query.propertySubType = idMatch;
       } else {
         const pst = await PropertySubType.findOne({
           slug: raw.toLowerCase(),
         })
           .select("_id")
           .lean();
-        if (pst?._id) query.propertySubType = pst._id;
+        if (pst?._id) query.propertySubType = matchObjectIdOrString(String(pst._id));
       }
     }
 
@@ -134,24 +151,41 @@ export async function GET(request) {
     else if (sortParam === "createdAt_asc" || sortParam === "oldest") sort = { createdAt: 1 };
     else if (sortParam === "createdAt_desc" || sortParam === "newest")sort = { createdAt: -1 };
 
-    const [properties, total] = await Promise.all([
-      Property.find(query)
-        .populate("propertyType", "name slug")
-        .populate("propertySubType", "name slug")
-        .populate("amenities", "name icon category")
-        .populate({
-          path: "city",
-          select: "name slug state",
-          populate: { path: "state", select: "name code" },
-        })
-        .populate("state", "name code")
-        .populate("country", "name code")
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Property.countDocuments(query),
+    // Use aggregate for $match so Mongoose does NOT cast query values — this
+    // lets { $in: [ObjectId, "string"] } match fields stored as either type.
+    const [rawMatches, countResult] = await Promise.all([
+      Property.aggregate([
+        { $match: query },
+        { $sort: sort },
+        { $skip: skip },
+        { $limit: limit },
+        { $project: { _id: 1 } },
+      ]),
+      Property.aggregate([{ $match: query }, { $count: "n" }]),
     ]);
+
+    const total = countResult[0]?.n || 0;
+    const ids = rawMatches.map((r) => r._id);
+
+    // Re-fetch with Mongoose populate using the matched IDs
+    const unordered = await Property.find({ _id: { $in: ids } })
+      .populate("propertyType", "name slug")
+      .populate("propertySubType", "name slug")
+      .populate("amenities", "name icon category")
+      .populate({
+        path: "city",
+        select: "name slug state",
+        populate: { path: "state", select: "name code" },
+      })
+      .populate("state", "name code")
+      .populate("country", "name code")
+      .lean();
+
+    // Restore the original sort order from the aggregate step
+    const idOrder = ids.map((id) => String(id));
+    const properties = idOrder
+      .map((id) => unordered.find((p) => String(p._id) === id))
+      .filter(Boolean);
 
     return NextResponse.json({
       success: true,
