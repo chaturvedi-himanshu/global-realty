@@ -1,5 +1,6 @@
 "use client";
 
+import PropertyDetailRichText from "@/components/propertyDetails/PropertyDetailRichText";
 import * as AiIcons from "react-icons/ai";
 import * as BiIcons from "react-icons/bi";
 import * as BsIcons from "react-icons/bs";
@@ -197,10 +198,10 @@ export default function ExtraInfo({ property }) {
 
       {desc && (
         <div className="content">
-          <div
-            className="description text-1 property-detail-rich-text"
+          <PropertyDetailRichText
+            html={desc}
+            className="description text-1"
             style={{ maxHeight: "none", overflow: "visible" }}
-            dangerouslySetInnerHTML={{ __html: desc }}
           />
         </div>
       )}

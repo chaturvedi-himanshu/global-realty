@@ -301,6 +301,30 @@ body * {
   margin: 0.35em 0;
 }
 
+/* Unordered lists: FiCheckCircle prefix (PropertyDetailRichText.jsx) + theme color */
+.property-detail-rich-text--ul-checks ul {
+  list-style: none;
+  padding-left: 0;
+}
+.property-detail-rich-text--ul-checks ul li {
+  list-style: none;
+  list-style-position: unset;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.4em 0;
+}
+.property-detail-rich-text--ul-checks .property-detail-li-check-host {
+  flex-shrink: 0;
+  margin-top: 0.12em;
+  color: var(--color-primary);
+  display: inline-flex;
+  line-height: 1;
+}
+.property-detail-rich-text--ul-checks .property-detail-li-check-host svg {
+  display: block;
+}
+
 /* ── Admin UI ──────────────────────────────────────────────── */
 
 /* Reusable card used by all admin pages */
@@ -2251,11 +2275,7 @@ html[data-theme="dark"] .home-about-video-play {
   gap: 8px;
   width: 100%;
   padding: 14px 24px;
-  background: linear-gradient(
-    135deg,
-    var(--Primary, #006532),
-    color-mix(in srgb, var(--Primary, #006532) 65%, #00c875)
-  );
+  background: #78a535 !important;
   color: #fff;
   font-size: 18px;
   font-weight: 700;
@@ -2520,4 +2540,9 @@ html[data-theme="dark"] .home-about-video-play {
   color: #666;
   line-height: 1.6;
   margin: 0;
+}
+
+/* Home help section — four cards (replaces tabbed .widget-tabs spacing) */
+.section-help .help-center-cards-grid {
+  margin-bottom: 48px;
 }

@@ -4,7 +4,6 @@ import SplitTextAnimation from "@/components/common/SplitTextAnimation";
 import { helpCenterIconClass } from "@/lib/helpCenterIconClass";
 import { DEFAULT_HELP_CENTER_CONTENT } from "@/lib/helpCenterDefaults";
 import Link from "next/link";
-import { useState } from "react";
 
 function renderTitle(text) {
   const lines = String(text || "").split(/\n/);
@@ -33,9 +32,10 @@ function CtaLink({ href, className, children }) {
 }
 
 export default function HelpCenter({ content }) {
-  const data = content && content.tabs?.length ? content : DEFAULT_HELP_CENTER_CONTENT;
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeTab = data.tabs[activeIndex] || data.tabs[0];
+  const data =
+    content && Array.isArray(content.cards) && content.cards.length
+      ? content
+      : DEFAULT_HELP_CENTER_CONTENT;
 
   return (
     <section className="section-help tf-spacing-1">
@@ -50,52 +50,31 @@ export default function HelpCenter({ content }) {
                 {data.subheading}
               </p>
             </div>
-            <div className="widget-tabs style-2 style-border-primary">
-              <ul className="widget-menu-tab ">
-                {data.tabs.map((item, index) => (
-                  <li
-                    key={item.label + index}
-                    className={`item-title ${
-                      activeIndex === index ? "active" : ""
-                    }`}
-                    onClick={() => setActiveIndex(index)}
-                  >
-                    {item.label}
-                  </li>
-                ))}
-              </ul>
-              <div className="widget-content-tab">
-                <div className="widget-content-inner active fadeInTab">
-                  <div className=" tf-grid-layout md-col-3 ">
-                    {activeTab?.cards?.map((card, i) => (
-                      <div
-                        className="icons-box default effec-icon "
-                        key={`${activeIndex}-${i}`}
-                      >
-                        <div className="tf-icon text-center">
-                          <i
-                            className={`icon ${helpCenterIconClass(card.icon)}`}
-                            style={{ fontSize: 56, lineHeight: 1 }}
-                            aria-hidden
-                          />
-                        </div>
-                        <h4 className="title text-center">
-                          <CtaLink href={card.buttonHref}>
-                            {renderTitle(card.title)}
-                          </CtaLink>
-                        </h4>
-                        <p className="text-center text-1">{card.description}</p>
-                        <CtaLink
-                          href={card.buttonHref}
-                          className="tf-btn style-border pd-5 mx-auto"
-                        >
-                          {card.buttonLabel}
-                        </CtaLink>
-                      </div>
-                    ))}
+            <div className="help-center-cards-grid tf-grid-layout md-col-4">
+              {data.cards.map((card, i) => (
+                <div
+                  className="icons-box default effec-icon"
+                  key={`${card.title}-${i}`}
+                >
+                  <div className="tf-icon text-center">
+                    <i
+                      className={`icon ${helpCenterIconClass(card.icon)}`}
+                      style={{ fontSize: 56, lineHeight: 1 }}
+                      aria-hidden
+                    />
                   </div>
+                  <h4 className="title text-center">
+                    <CtaLink href={card.buttonHref}>{renderTitle(card.title)}</CtaLink>
+                  </h4>
+                  <p className="text-center text-1">{card.description}</p>
+                  <CtaLink
+                    href={card.buttonHref}
+                    className="tf-btn style-border pd-5 mx-auto"
+                  >
+                    {card.buttonLabel}
+                  </CtaLink>
                 </div>
-              </div>
+              ))}
             </div>
             <p className="text text-center text-1 " data-wow-duration="2s">
               {data.footerLine}{" "}

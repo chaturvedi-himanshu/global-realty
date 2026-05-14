@@ -53,9 +53,7 @@ export default async function page() {
         <div className="main-content">
           <Jobs career={career} jobs={jobs} />
           <Benefits career={career} />
-          
-          <Cta />
-        </div>
+          </div>
         <Footer1 />
       </div>
     </>

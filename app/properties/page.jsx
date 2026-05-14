@@ -27,7 +27,6 @@ export default function Page() {
         <Suspense fallback={<div className="p-8 text-center">Loading properties...</div>}>
           <Properties2 defaultGrid />
         </Suspense>
-        <Cta />
       </div>
       <Footer1 />
     </div>

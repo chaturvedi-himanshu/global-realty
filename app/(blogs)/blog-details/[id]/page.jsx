@@ -53,7 +53,6 @@ export default async function page({ params }) {
           <Breadcumb pageName="Blog Details" />
           <BlogDetailsClient blog={blog} />
           <RelatedBlogs currentId={blog._id} categoryId={blog.category?._id} />
-          <Cta />
         </div>
         <Footer1 />
       </div>

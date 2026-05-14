@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import Header1 from "@/components/headers/Header1";
+import AboutLeadershipTeam from "@/components/about/AboutLeadershipTeam";
 import Footer1 from "@/components/footers/Footer1";
 import Cta from "@/components/common/Cta";
 import connectDB from "@/lib/mongoose";
@@ -131,29 +131,7 @@ export default async function AboutPageRoute() {
             <div className="about-v2-section-eyebrow">{data.leadershipEyebrow}</div>
             <h2>{data.leadershipTitle}</h2>
             <p>{data.leadershipDescription}</p>
-            <div className="about-v2-team-grid">
-              {data.leaders.map((leader, idx) => (
-                <div key={`${leader.name}-${idx}`} className="about-v2-team-card">
-                  <div className="about-v2-team-card-img-wrap">
-                    {leader.image ? (
-                      <Image
-                        className="about-v2-team-card-img"
-                        src={leader.image}
-                        alt={leader.name || "Leader"}
-                        fill
-                        sizes="(max-width: 991px) 100vw, 33vw"
-                      />
-                    ) : (
-                      <div className={`about-v2-team-img-placeholder img-p${(idx % 3) + 1}`}>👤</div>
-                    )}
-                    <div className="about-v2-team-badge">
-                      <h4>{leader.name}</h4>
-                      {leader.role ? <span>{leader.role}</span> : null}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <AboutLeadershipTeam leaders={data.leaders} />
           </div>
         </section>
 
@@ -303,7 +281,6 @@ export default async function AboutPageRoute() {
           </div>
         </section>
         ) : null}
-        <Cta />
       </div>
       <Footer1 />
     </>

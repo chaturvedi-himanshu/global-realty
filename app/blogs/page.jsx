@@ -49,7 +49,6 @@ export default async function page() {
           <Suspense fallback={<p className="text-1 text-center tf-container py-5">Loading…</p>}>
             <Blogs2 excludeBlogIds={excludeBlogIds} />
           </Suspense>
-          <Cta />
         </div>
         <Footer1 />
       </div>

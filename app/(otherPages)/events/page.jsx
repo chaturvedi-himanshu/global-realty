@@ -52,7 +52,6 @@ export default async function EventsPage() {
         <Header1 />
         <div className="main-content header-fixed">
           <EventsPageContent events={events} bannerConfig={bannerConfig} />
-          <Cta />
         </div>
         <Footer1 />  
       </div>

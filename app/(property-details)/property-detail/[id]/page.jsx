@@ -219,7 +219,6 @@ export default async function page({ params }) {
                 currentProperty={property}
               />
             </div>
-            <Cta />
           </div>
         </PropertyDetailLightboxProvider>
         <Footer1 />

@@ -81,7 +81,7 @@ async function getHomePageData() {
       PropertyModel.find({ isActive: { $ne: false } })
         .populate("propertyType", "name title slug")
         .sort({ createdAt: -1 })
-        .limit(9)
+        .limit(10)
         .lean()
         .catch(() => []),
       PropertyModel.find({

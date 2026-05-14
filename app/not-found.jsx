@@ -33,7 +33,6 @@ export default function page() {
               </div>
             </div>
           </div>
-          <Cta />
         </div>
 
         <Footer1 />

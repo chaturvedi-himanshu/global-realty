@@ -8,17 +8,9 @@ const HelpCardSchema = new mongoose.Schema(
     buttonHref: { type: String, default: "" },
     icon: {
       type: String,
-      enum: ["house", "wallet", "key"],
+      enum: ["house", "wallet", "key", "agent"],
       default: "house",
     },
-  },
-  { _id: false }
-);
-
-const HelpTabSchema = new mongoose.Schema(
-  {
-    label: { type: String, default: "" },
-    cards: { type: [HelpCardSchema], default: [] },
   },
   { _id: false }
 );
@@ -28,7 +20,7 @@ const HelpCenterContentSchema = new mongoose.Schema(
     key: { type: String, unique: true, default: "home", index: true },
     heading: { type: String, default: "" },
     subheading: { type: String, default: "" },
-    tabs: { type: [HelpTabSchema], default: [] },
+    cards: { type: [HelpCardSchema], default: [] },
     footerLine: { type: String, default: "" },
     footerCtaLabel: { type: String, default: "" },
     footerCtaHref: { type: String, default: "" },

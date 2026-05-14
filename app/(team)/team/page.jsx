@@ -24,7 +24,6 @@ export default function TeamPage() {
         <div className="page-content">
           <Breadcumb pageName="Our team" />
           <Agents />
-          <Cta />
         </div>
         <Footer1 />
       </div>

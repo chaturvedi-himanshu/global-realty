@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import PropertyDetailRichText from "@/components/propertyDetails/PropertyDetailRichText";
 
 export default function OverviewSection({ content = "" }) {
   const html = String(content || "").trim();
@@ -10,10 +10,10 @@ export default function OverviewSection({ content = "" }) {
     <>
       <div className="wg-title text-11 fw-6 text-color-heading">Overview</div>
       <div className="content">
-        <div
-          className="description text-1 property-detail-rich-text"
+        <PropertyDetailRichText
+          html={html}
+          className="description text-1"
           style={{ maxHeight: "none", overflow: "visible" }}
-          dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>
     </>

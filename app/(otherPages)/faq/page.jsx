@@ -42,7 +42,6 @@ export default async function page() {
         <Breadcumb pageName="FAQS" />
         <div className="main-content tf-spacing-6 header-fixed">
           <Faqs faqs={faqs} />
-          <Cta />
         </div>
         <Footer1 />
       </div>

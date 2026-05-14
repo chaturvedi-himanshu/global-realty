@@ -39,7 +39,6 @@ export default async function TeamMemberPage({ params }) {
         <div className="page-content">
           <Breadcumb pageName="Our team" />
           <AgentDetails agent={plain} />
-          <Cta />
         </div>
         <Footer1 />
       </div>

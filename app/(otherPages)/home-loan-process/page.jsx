@@ -28,7 +28,6 @@ export default function page() {
           <Facts />
           <Process />
           <LoanCalculator />
-          <Cta />
         </div>
         <Footer1 />
       </div>

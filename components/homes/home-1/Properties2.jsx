@@ -21,15 +21,11 @@ function normalizeProperty(p) {
   return {
     id: p._id || p.id,
     slug: p.slug || p._id || p.id,
-    specification:
-      p.specification || "2 BHK & 3 BHK apartments",
+    specification: p.specification || "2 BHK & 3 BHK apartments",
     title: p.title,
     images: p.images,
     imageSrc,
-    location:
-      [p.address].filter(Boolean).join(", ") ||
-      p.location ||
-      "",
+    location: [p.address].filter(Boolean).join(", ") || p.location || "",
     beds: p.beds || p.bedrooms || 0,
     baths: p.baths || p.bathrooms || 0,
     sqft: p.builtUpArea || p.area || p.sqft || 0,
@@ -84,20 +80,23 @@ export default function Properties2({ properties: dbProperties = [] }) {
                 clickable: true,
               }}
               autoplay={{
-                delay: 3000,
+                delay: 2000,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
               }}
               breakpoints={{
                 0: { slidesPerView: 1.12, spaceBetween: 12 },
-                768: { slidesPerView: 2.12, spaceBetween: 16 },
-                1200: { slidesPerView: 3.12, spaceBetween: 18 },
+                768: { slidesPerView: 2, spaceBetween: 16 },
+                1200: { slidesPerView: 3, spaceBetween: 18 },
               }}
               loop={true}
               className={`swiper ${styles.carousel}`}
             >
               {properties.map((property, idx) => (
-                <SwiperSlide className="swiper-slide" key={`${property.id || property.slug || "property"}-${idx}`}>
+                <SwiperSlide
+                  className="swiper-slide"
+                  key={`${property.id || property.slug || "property"}-${idx}`}
+                >
                   <PropertyCard property={property} variant="home-grid" />
                 </SwiperSlide>
               ))}

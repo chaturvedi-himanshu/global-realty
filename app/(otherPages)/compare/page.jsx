@@ -23,7 +23,6 @@ export default function page() {
         <Breadcumb pageName="Compare" />
         <div className="main-content">
           <PropertyComparison />
-          <Cta />
         </div>
         <Footer1 />
       </div>
