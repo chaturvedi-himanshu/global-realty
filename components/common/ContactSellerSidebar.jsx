@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import toast from "react-hot-toast";
-import { FiShare2, FiDownload, FiSearch } from "react-icons/fi";
 import api from "@/lib/axios";
+import { formatPropertyPriceCrLac } from "@/lib/formatPropertyPriceIN";
 import {
   firstErrorMessage,
   validateInquiryForm,
 } from "@/lib/inquiryFormValidation";
-import { formatPropertyPriceCrLac } from "@/lib/formatPropertyPriceIN";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FiDownload, FiSend, FiShare2 } from "react-icons/fi";
 
 const emptyForm = { name: "", email: "", phone: "" };
+
+const SIDEBAR_FORM_CONSENT =
+  "By submitting, I authorise Global Realty and its representatives to contact me via Call, SMS, WhatsApp, or Email. This consent overrides any NDNC/DND registration.";
 
 function defaultSidebarInquiryMessage(property, inquiryMeta) {
   if (property?.title)
@@ -273,13 +276,17 @@ export default function ContactSellerSidebar({
                   <span className="form-field-error">{errors.email}</span>
                 ) : null}
 
+                <p className="ci-form-consent property-inquiry-sticky__consent">
+                  {SIDEBAR_FORM_CONSENT}
+                </p>
+
                 <button
                   type="submit"
                   disabled={submitting}
                   className="property-inquiry-sticky__submit"
                 >
                   <span>SEND MESSAGE</span>
-                  <FiSearch size={18} aria-hidden />
+                  <FiSend size={18} aria-hidden />
                 </button>
               </>
             )}
@@ -484,13 +491,17 @@ export default function ContactSellerSidebar({
                 <span className="form-field-error">{errors.email}</span>
               ) : null}
 
+              <p className="ci-form-consent property-inquiry-sticky__consent">
+                {SIDEBAR_FORM_CONSENT}
+              </p>
+
               <button
                 type="submit"
                 disabled={submitting}
                 className="property-inquiry-sticky__submit"
               >
                 <span>SEND MESSAGE</span>
-                <FiSearch size={18} aria-hidden />
+                <FiSend size={18} aria-hidden />
               </button>
             </>
           )}
