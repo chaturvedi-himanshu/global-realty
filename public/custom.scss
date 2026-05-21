@@ -2279,6 +2279,25 @@
   }
 }
 
+/* Home / Help-center cards: responsive grid that doesn't overflow tablets.
+   Overrides the default `tf-grid-layout.md-col-4` which forced 4 columns
+   starting at 768px (way too cramped between 768px and 1199px). */
+.section-help .help-center-cards-grid.tf-grid-layout {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 576px) {
+  .section-help .help-center-cards-grid.tf-grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .section-help .help-center-cards-grid.tf-grid-layout {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* News page: two-column responsive grid */
 .section-news-grid {
   padding: 24px 0 56px;
