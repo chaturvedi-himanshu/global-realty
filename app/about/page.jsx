@@ -1,11 +1,12 @@
-import Link from "next/link";
 import Header1 from "@/components/headers/Header1";
 import AboutLeadershipTeam from "@/components/about/AboutLeadershipTeam";
+import AboutHeroStatsBand from "@/components/about/AboutHeroStatsBand";
 import Footer1 from "@/components/footers/Footer1";
 import Cta from "@/components/common/Cta";
 import connectDB from "@/lib/mongoose";
 import AboutPage from "@/models/AboutPage";
 import TestimonialModel from "@/models/Testimonial";
+import SiteConfigModel from "@/models/SiteConfig";
 import { mergeAboutPage } from "@/lib/aboutPageDefaults";
 import { getPageSeo } from "@/lib/seo";
 import {
@@ -39,28 +40,44 @@ export async function generateMetadata() {
 async function getAboutData() {
   try {
     await connectDB();
-    const [doc, testimonialsRaw] = await Promise.all([
+    const [doc, testimonialsRaw, heroStatsConfig] = await Promise.all([
       AboutPage.findOne({ key: "main" }).lean(),
       TestimonialModel.find({ isApproved: true, isActive: true })
         .sort({ createdAt: -1 })
         .limit(10)
         .lean()
         .catch(() => []),
+      SiteConfigModel.findOne({ key: "heroStats" })
+        .lean()
+        .catch(() => null),
     ]);
+    const homepageHeroStats = Array.isArray(heroStatsConfig?.value)
+      ? heroStatsConfig.value
+          .map((row) => ({
+            label: String(row?.label || "").trim(),
+            value: Number(row?.value || 0),
+            suffix: String(row?.suffix || "").trim(),
+          }))
+          .filter(
+            (row) => row.label && Number.isFinite(row.value) && row.value > 0,
+          )
+      : [];
     return {
       page: mergeAboutPage(doc),
       testimonials: JSON.parse(JSON.stringify(testimonialsRaw || [])),
+      homepageHeroStats,
     };
   } catch {
     return {
       page: mergeAboutPage(null),
       testimonials: [],
+      homepageHeroStats: [],
     };
   }
 }
 
 export default async function AboutPageRoute() {
-  const { page: data, testimonials } = await getAboutData();
+  const { page: data, testimonials, homepageHeroStats } = await getAboutData();
   const testimonialItems = (testimonials || []).filter(
     (item) => item?.video || item?.message || item?.review || item?.content
   );
@@ -74,48 +91,34 @@ export default async function AboutPageRoute() {
     <>
       <Header1 />
       <div className="main-content about-page about-v2">
-        <section className="about-v2-hero">
-          <div className="about-v2-hero-house" style={{ backgroundImage: `url(${data.heroBackgroundImage || "/images/slider/slider-1.jpg"})` }} />
-          <div className="about-v2-hero-bg" />
-          <div className="tf-container">
-            <div className="about-v2-hero-content">
-              <div className="about-v2-hero-left">
-                <div className="about-v2-hero-badge">{data.heroBadge}</div>
-                <h1>{data.heroTitle}</h1>
-                <p className="about-v2-hero-desc">{data.heroSubtitle}</p>
-                <div className="about-v2-hero-stats">
-                  {data.heroStats.map((item, idx) => (
-                    <div key={`${item.label}-${idx}`} className="about-v2-stat-box">
-                      <span className="num">{item.value}</span>
-                      <div className="label">{item.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="about-v2-hero-btns">
-                  <Link className="about-v2-btn-outline-white" href={data.heroPrimaryCtaLink || "#about-v2-journey"}>
-                    {data.heroPrimaryCtaText}
-                  </Link>
-                  <Link className="about-v2-btn-white-filled" href={data.heroSecondaryCtaLink || "#about-v2-team"}>
-                    {data.heroSecondaryCtaText}
-                  </Link>
-                </div>
-              </div>
-              <div className="about-v2-trust-card">
-                <div className="about-v2-trust-label">{data.introEyebrow}</div>
-                <h3>{data.introTitle}</h3>
-                <p>{data.introDescription}</p>
-                <div className="about-v2-trust-metrics">
-                  {data.introHighlights.map((item, idx) => (
-                    <div key={`${item.label}-${idx}`} className="about-v2-trust-metric-item">
-                      <span className="metric-val">{item.label}</span>
-                      <div className="metric-desc">{item.note}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        <section className="about-v2-hero about-v2-hero--video">
+          {data.heroVideo ? (
+            <video
+              className="about-v2-hero__video"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={data.heroBackgroundImage || undefined}
+            >
+              <source src={data.heroVideo} />
+            </video>
+          ) : (
+            <div
+              className="about-v2-hero__video about-v2-hero__video--fallback"
+              style={{
+                backgroundImage: `url(${data.heroBackgroundImage || "/images/slider/slider-1.jpg"})`,
+              }}
+            />
+          )}
         </section>
+
+        <AboutHeroStatsBand
+          stats={homepageHeroStats}
+          backgroundImage={data.statsBackgroundImage}
+          overlayColor={data.statsOverlayColor}
+        />
 
         <section className="about-v2-relationships">
           <div className="tf-container">
@@ -188,7 +191,7 @@ export default async function AboutPageRoute() {
           </div>
         </section>
 
-        <section className="about-v2-mission">
+        {/* <section className="about-v2-mission">
           <div className="tf-container">
             <div className="about-v2-section-eyebrow">{data.missionEyebrow}</div>
             <h2>{data.missionTitle}</h2>
@@ -280,7 +283,7 @@ export default async function AboutPageRoute() {
             </div>
           </div>
         </section>
-        ) : null}
+        ) : null} */}
       </div>
       <Footer1 />
     </>

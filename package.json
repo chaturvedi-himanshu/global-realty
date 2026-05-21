@@ -16,6 +16,8 @@
     "seed:site-events": "node scripts/seed-site-events.js",
     "seed:contact-page": "node scripts/seed-contact-page.js",
     "seed:testimonial-videos": "node scripts/seed-testimonial-videos.js",
+    "seed:news": "node scripts/seed-news.js",
+    "seed:static-pages": "node scripts/seed-static-pages.js",
     "seed:rera": "node scripts/seed-rera-numbers.js",
     "backfill:property-specification": "node scripts/backfill-property-specification.js",
     "seed:property-full": "node scripts/seed-full-property-one.js",

@@ -125,16 +125,6 @@ export default function AboutHomeSection({ content }) {
                 </span>
               </div>
             </div>
-
-            <button
-              type="button"
-              className="tf-btn bg-color-primary pd-23 home-about-enquire-btn"
-              data-bs-toggle="modal"
-              data-bs-target="#modalInquiry"
-            >
-              Enquire Now
-              <i className="icon-arrow-right" style={{ fontSize: 16 }} />
-            </button>
           </div>
         </div>
       </div>

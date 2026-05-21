@@ -1,8 +1,9 @@
 "use client";
 import FilterTop from "@/components/properties/FilterTop";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getCachedVideoBlobUrl, populateVideoCache } from "@/lib/cachedMedia";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
 import {
@@ -73,6 +74,55 @@ export default function Hero({
   const slides = validSlides.length ? validSlides : [defaultSlide];
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+
+  const videoSrc = videoSlide?.backgroundVideo || "";
+  const videoPoster = videoSlide?.backgroundImage || "";
+  const [resolvedVideoSrc, setResolvedVideoSrc] = useState(videoSrc);
+  const videoBlobUrlRef = useRef(null);
+
+  useEffect(() => {
+    if (!hasHeroVideo) return;
+    setVideoReady(false);
+  }, [hasHeroVideo, videoSrc]);
+
+  useEffect(() => {
+    if (videoBlobUrlRef.current) {
+      URL.revokeObjectURL(videoBlobUrlRef.current);
+      videoBlobUrlRef.current = null;
+    }
+    setResolvedVideoSrc(videoSrc);
+
+    if (!hasHeroVideo || !videoSrc) return undefined;
+
+    let cancelled = false;
+    (async () => {
+      const cachedUrl = await getCachedVideoBlobUrl(videoSrc);
+      if (cancelled) {
+        if (cachedUrl) URL.revokeObjectURL(cachedUrl);
+        return;
+      }
+      if (cachedUrl) {
+        videoBlobUrlRef.current = cachedUrl;
+        setResolvedVideoSrc(cachedUrl);
+      } else {
+        populateVideoCache(videoSrc);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasHeroVideo, videoSrc]);
+
+  useEffect(() => {
+    return () => {
+      if (videoBlobUrlRef.current) {
+        URL.revokeObjectURL(videoBlobUrlRef.current);
+        videoBlobUrlRef.current = null;
+      }
+    };
+  }, []);
   const propertyTypeButtons = Array.isArray(propertyTypes)
     ? propertyTypes.filter((item) => item?.slug && Number(item?.count || 0) > 0)
     : [];
@@ -124,25 +174,50 @@ export default function Hero({
       }}
     >
       {hasHeroVideo ? (
-        <video
-          key={videoSlide._id || videoSlide.backgroundVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={videoSlide.backgroundImage || undefined}
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        >
-          <source src={videoSlide.backgroundVideo} />
-        </video>
+        <>
+          <video
+            key={resolvedVideoSrc || videoSrc}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={videoPoster || undefined}
+            onCanPlay={() => setVideoReady(true)}
+            onPlaying={() => setVideoReady(true)}
+            onLoadedData={() => setVideoReady(true)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: videoReady ? 1 : 0,
+              transition: "opacity 400ms ease",
+            }}
+          >
+            <source src={resolvedVideoSrc || videoSrc} />
+          </video>
+          {videoPoster ? (
+            <div
+              aria-hidden="true"
+              className="hero-video-preview"
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 0,
+                backgroundImage: `url(${videoPoster})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                opacity: videoReady ? 0 : 1,
+                transition: "opacity 500ms ease",
+                pointerEvents: "none",
+              }}
+            />
+          ) : null}
+        </>
       ) : (
         <Swiper
           modules={[Autoplay, EffectFade]}

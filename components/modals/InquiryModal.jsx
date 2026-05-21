@@ -70,7 +70,14 @@ function SuccessCheckIcon({ gradId }) {
         strokeLinejoin="round"
       />
       <defs>
-        <linearGradient id={gid} x1="6" y1="12.5" x2="18.5" y2="12.5" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={gid}
+          x1="6"
+          y1="12.5"
+          x2="18.5"
+          y2="12.5"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#047857" />
           <stop offset="1" stopColor="#10b981" />
         </linearGradient>
@@ -174,7 +181,8 @@ export default function InquiryModal() {
     const raw = String(value || "").trim();
     if (!raw) return "Please pick a preferred meeting date and time.";
     const picked = new Date(raw);
-    if (Number.isNaN(picked.getTime())) return "Please pick a valid date and time.";
+    if (Number.isNaN(picked.getTime()))
+      return "Please pick a valid date and time.";
     if (picked.getTime() < Date.now()) {
       return "Meeting time can't be in the past.";
     }
@@ -227,7 +235,10 @@ export default function InquiryModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { ok, errors } = validateInquiryForm(formSnapshot(), MODAL_VALIDATE_OPTS);
+    const { ok, errors } = validateInquiryForm(
+      formSnapshot(),
+      MODAL_VALIDATE_OPTS,
+    );
     const visitDateError = validateVisitDate(form.visitDate);
     const meetingDateTimeError = validateMeetingDateTime(form.meetingDateTime);
     if (visitDateError) errors.visitDate = visitDateError;
@@ -301,78 +312,137 @@ export default function InquiryModal() {
         >
           <div
             style={{
-              padding: success ? "1.25rem 1.75rem 2rem" : "2rem 2.35rem 2.15rem",
+              padding: success
+                ? "1.25rem 1.75rem 2rem"
+                : "2rem 2.35rem 2.15rem",
               display: "flex",
               flexDirection: "column",
             }}
           >
             {success ? (
               <>
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.35rem" }}>
-                  <button type="button" className="inquiry-modal-close inquiry-modal-close--ghost" data-bs-dismiss="modal" aria-label="Close">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginBottom: "0.35rem",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="inquiry-modal-close inquiry-modal-close--ghost"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  >
                     ×
                   </button>
                 </div>
-                <div className="inquiry-modal-success" role="status" aria-live="polite" aria-atomic="true">
-                <div className="inquiry-modal-success__glow" aria-hidden />
-                <div className="inquiry-modal-success__glow-mint" aria-hidden />
-                <span className="inquiry-success-sparkle inquiry-success-sparkle--1" aria-hidden />
-                <span className="inquiry-success-sparkle inquiry-success-sparkle--2" aria-hidden />
-                <span className="inquiry-success-sparkle inquiry-success-sparkle--3" aria-hidden />
-                <span className="inquiry-success-sparkle inquiry-success-sparkle--4" aria-hidden />
-                <div className="inquiry-modal-success__content">
-                  <div className="inquiry-success-icon-wrap">
-                    <div className="inquiry-success-icon-ring" aria-hidden />
-                    <div className="inquiry-success-icon-ring inquiry-success-icon-ring--delay" aria-hidden />
-                    <div className="inquiry-success-icon-circle">
-                      <SuccessCheckIcon gradId={successIconGradId} />
+                <div
+                  className="inquiry-modal-success"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <div className="inquiry-modal-success__glow" aria-hidden />
+                  <div
+                    className="inquiry-modal-success__glow-mint"
+                    aria-hidden
+                  />
+                  <span
+                    className="inquiry-success-sparkle inquiry-success-sparkle--1"
+                    aria-hidden
+                  />
+                  <span
+                    className="inquiry-success-sparkle inquiry-success-sparkle--2"
+                    aria-hidden
+                  />
+                  <span
+                    className="inquiry-success-sparkle inquiry-success-sparkle--3"
+                    aria-hidden
+                  />
+                  <span
+                    className="inquiry-success-sparkle inquiry-success-sparkle--4"
+                    aria-hidden
+                  />
+                  <div className="inquiry-modal-success__content">
+                    <div className="inquiry-success-icon-wrap">
+                      <div className="inquiry-success-icon-ring" aria-hidden />
+                      <div
+                        className="inquiry-success-icon-ring inquiry-success-icon-ring--delay"
+                        aria-hidden
+                      />
+                      <div className="inquiry-success-icon-circle">
+                        <SuccessCheckIcon gradId={successIconGradId} />
+                      </div>
                     </div>
+                    <h2
+                      id="inquiryModalLabel"
+                      className="inquiry-success-title"
+                    >
+                      {isSiteVisitTab
+                        ? "Site visit request received!"
+                        : "Meeting request received!"}
+                    </h2>
+                    <p className="inquiry-success-sub">
+                      {isSiteVisitTab
+                        ? "We've noted your preferred visit date. Our team will confirm the slot within "
+                        : "We've noted your preferred meeting time. Our team will confirm the slot within "}
+                      <strong style={{ color: "#374151", fontWeight: 700 }}>
+                        24 hours
+                      </strong>{" "}
+                      with next steps.
+                    </p>
+                    <div className="inquiry-success-badges">
+                      <span className="inquiry-success-badge">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden
+                        >
+                          <path
+                            d="M12 8v4l2.5 1.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            stroke="currentColor"
+                            strokeWidth="1.75"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        Fast response
+                      </span>
+                      <span className="inquiry-success-badge">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden
+                        >
+                          <path
+                            d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            stroke="currentColor"
+                            strokeWidth="1.75"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        Dedicated expert
+                      </span>
+                    </div>
+                    <p className="inquiry-success-hint">
+                      This window will close automatically in a moment.
+                    </p>
                   </div>
-                  <h2 id="inquiryModalLabel" className="inquiry-success-title">
-                    {isSiteVisitTab
-                      ? "Site visit request received!"
-                      : "Meeting request received!"}
-                  </h2>
-                  <p className="inquiry-success-sub">
-                    {isSiteVisitTab
-                      ? "We've noted your preferred visit date. Our team will confirm the slot within "
-                      : "We've noted your preferred meeting time. Our team will confirm the slot within "}
-                    <strong style={{ color: "#374151", fontWeight: 700 }}>24 hours</strong> with next steps.
-                  </p>
-                  <div className="inquiry-success-badges">
-                    <span className="inquiry-success-badge">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path
-                          d="M12 8v4l2.5 1.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          stroke="currentColor"
-                          strokeWidth="1.75"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      Fast response
-                    </span>
-                    <span className="inquiry-success-badge">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path
-                          d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          stroke="currentColor"
-                          strokeWidth="1.75"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      Dedicated expert
-                    </span>
-                  </div>
-                  <p className="inquiry-success-hint">This window will close automatically in a moment.</p>
                 </div>
-              </div>
               </>
             ) : (
               <div className="inquiry-modal-form-layout">
                 <div className="inquiry-modal-form-layout__glow" aria-hidden />
-                <div className="inquiry-modal-form-layout__glow-bottom" aria-hidden />
+                <div
+                  className="inquiry-modal-form-layout__glow-bottom"
+                  aria-hidden
+                />
                 <div className="inquiry-modal-form-layout__inner">
                   <header className="inquiry-modal-form-head inquiry-modal-form-head--center">
                     <button
@@ -384,18 +454,29 @@ export default function InquiryModal() {
                       ×
                     </button>
                     <div className="inquiry-modal-form-head-text">
-                      <p className="inquiry-modal-form-eyebrow">We&apos;re here to help</p>
-                      <h2 id="inquiryModalLabel" className="inquiry-modal-form-title">
-                        {isSiteVisitTab ? "Book a Site Visit" : "Book a Meeting"}
+                      <p className="inquiry-modal-form-eyebrow">
+                        We&apos;re here to help
+                      </p>
+                      <h2
+                        id="inquiryModalLabel"
+                        className="inquiry-modal-form-title"
+                      >
+                        {isSiteVisitTab
+                          ? "Book a Site Visit"
+                          : "Connect with an Expert"}
                       </h2>
                       <p className="inquiry-modal-form-sub">
                         {isSiteVisitTab
                           ? "Pick a preferred date and we'll arrange your site visit."
-                          : "Pick a date and time and our team will confirm your meeting."}
+                          : "Share your details — our team will respond within one business day."}
                       </p>
                     </div>
                   </header>
-                  <div className="inquiry-modal-tabs" role="tablist" aria-label="Inquiry type">
+                  <div
+                    className="inquiry-modal-tabs"
+                    role="tablist"
+                    aria-label="Inquiry type"
+                  >
                     <button
                       type="button"
                       role="tab"
@@ -403,7 +484,7 @@ export default function InquiryModal() {
                       className={`inquiry-modal-tab${isBookMeetingTab ? " inquiry-modal-tab--active" : ""}`}
                       onClick={() => handleTabChange(TAB_MEETING)}
                     >
-                      Book a Meeting
+                      Connect with an Expert
                     </button>
                     <button
                       type="button"
@@ -415,12 +496,21 @@ export default function InquiryModal() {
                       Book a Site Visit
                     </button>
                   </div>
-                  <form className="inquiry-modal-form" onSubmit={handleSubmit} noValidate>
-                    {error ? <div className="inquiry-modal-error-banner">{error}</div> : null}
+                  <form
+                    className="inquiry-modal-form"
+                    onSubmit={handleSubmit}
+                    noValidate
+                  >
+                    {error ? (
+                      <div className="inquiry-modal-error-banner">{error}</div>
+                    ) : null}
 
                     <div className="inquiry-modal-grid-2">
                       <div>
-                        <label className="inquiry-modal-field-label" htmlFor="inquiry-name">
+                        <label
+                          className="inquiry-modal-field-label"
+                          htmlFor="inquiry-name"
+                        >
                           Full name *
                         </label>
                         <input
@@ -428,21 +518,35 @@ export default function InquiryModal() {
                           type="text"
                           className={`inquiry-modal-input${fieldErrors.name ? " inquiry-modal-input--invalid" : ""}`}
                           value={form.name}
-                          onChange={(e) => updateField("name", sanitizeSingleLineText(e.target.value))}
+                          onChange={(e) =>
+                            updateField(
+                              "name",
+                              sanitizeSingleLineText(e.target.value),
+                            )
+                          }
                           onBlur={() => validateFieldOnBlur("name")}
                           placeholder="Your name"
                           aria-invalid={!!fieldErrors.name}
-                          aria-describedby={fieldErrors.name ? "inquiry-name-error" : undefined}
+                          aria-describedby={
+                            fieldErrors.name ? "inquiry-name-error" : undefined
+                          }
                           autoComplete="name"
                         />
                         {fieldErrors.name ? (
-                          <span id="inquiry-name-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                          <span
+                            id="inquiry-name-error"
+                            className="form-field-error inquiry-modal-field-error"
+                            role="alert"
+                          >
                             {fieldErrors.name}
                           </span>
                         ) : null}
                       </div>
                       <div>
-                        <label className="inquiry-modal-field-label" htmlFor="inquiry-phone">
+                        <label
+                          className="inquiry-modal-field-label"
+                          htmlFor="inquiry-phone"
+                        >
                           Phone *
                         </label>
                         <input
@@ -452,15 +556,28 @@ export default function InquiryModal() {
                           maxLength={PHONE_DIGITS}
                           className={`inquiry-modal-input${fieldErrors.phone ? " inquiry-modal-input--invalid" : ""}`}
                           value={form.phone}
-                          onChange={(e) => updateField("phone", sanitizePhoneDigits(e.target.value, PHONE_DIGITS))}
+                          onChange={(e) =>
+                            updateField(
+                              "phone",
+                              sanitizePhoneDigits(e.target.value, PHONE_DIGITS),
+                            )
+                          }
                           onBlur={() => validateFieldOnBlur("phone")}
                           placeholder="10-digit mobile number"
                           aria-invalid={!!fieldErrors.phone}
-                          aria-describedby={fieldErrors.phone ? "inquiry-phone-error" : undefined}
+                          aria-describedby={
+                            fieldErrors.phone
+                              ? "inquiry-phone-error"
+                              : undefined
+                          }
                           autoComplete="tel"
                         />
                         {fieldErrors.phone ? (
-                          <span id="inquiry-phone-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                          <span
+                            id="inquiry-phone-error"
+                            className="form-field-error inquiry-modal-field-error"
+                            role="alert"
+                          >
                             {fieldErrors.phone}
                           </span>
                         ) : null}
@@ -469,7 +586,10 @@ export default function InquiryModal() {
 
                     <div className="inquiry-modal-grid-2">
                       <div>
-                        <label className="inquiry-modal-field-label" htmlFor="inquiry-email">
+                        <label
+                          className="inquiry-modal-field-label"
+                          htmlFor="inquiry-email"
+                        >
                           Email *
                         </label>
                         <input
@@ -477,32 +597,54 @@ export default function InquiryModal() {
                           type="email"
                           className={`inquiry-modal-input${fieldErrors.email ? " inquiry-modal-input--invalid" : ""}`}
                           value={form.email}
-                          onChange={(e) => updateField("email", sanitizeEmailInput(e.target.value))}
+                          onChange={(e) =>
+                            updateField(
+                              "email",
+                              sanitizeEmailInput(e.target.value),
+                            )
+                          }
                           onBlur={() => validateFieldOnBlur("email")}
                           placeholder="your@email.com"
                           aria-invalid={!!fieldErrors.email}
-                          aria-describedby={fieldErrors.email ? "inquiry-email-error" : undefined}
+                          aria-describedby={
+                            fieldErrors.email
+                              ? "inquiry-email-error"
+                              : undefined
+                          }
                           autoComplete="email"
                         />
                         {fieldErrors.email ? (
-                          <span id="inquiry-email-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                          <span
+                            id="inquiry-email-error"
+                            className="form-field-error inquiry-modal-field-error"
+                            role="alert"
+                          >
                             {fieldErrors.email}
                           </span>
                         ) : null}
                       </div>
 
                       <div>
-                        <label className="inquiry-modal-field-label" htmlFor="inquiry-interest">
+                        <label
+                          className="inquiry-modal-field-label"
+                          htmlFor="inquiry-interest"
+                        >
                           Area of interest *
                         </label>
                         <select
                           id="inquiry-interest"
                           className={`inquiry-modal-input inquiry-modal-input--select${fieldErrors.interest ? " inquiry-modal-input--invalid" : ""}${!form.interest ? " inquiry-modal-input--placeholder" : ""}`}
                           value={form.interest}
-                          onChange={(e) => updateField("interest", e.target.value)}
+                          onChange={(e) =>
+                            updateField("interest", e.target.value)
+                          }
                           onBlur={() => validateFieldOnBlur("interest")}
                           aria-invalid={!!fieldErrors.interest}
-                          aria-describedby={fieldErrors.interest ? "inquiry-interest-error" : undefined}
+                          aria-describedby={
+                            fieldErrors.interest
+                              ? "inquiry-interest-error"
+                              : undefined
+                          }
                         >
                           <option value="" disabled hidden>
                             Select an option
@@ -514,7 +656,11 @@ export default function InquiryModal() {
                           ))}
                         </select>
                         {fieldErrors.interest ? (
-                          <span id="inquiry-interest-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                          <span
+                            id="inquiry-interest-error"
+                            className="form-field-error inquiry-modal-field-error"
+                            role="alert"
+                          >
                             {fieldErrors.interest}
                           </span>
                         ) : null}
@@ -523,7 +669,10 @@ export default function InquiryModal() {
 
                     {isSiteVisitTab ? (
                       <div>
-                        <label className="inquiry-modal-field-label" htmlFor="inquiry-visit-date">
+                        <label
+                          className="inquiry-modal-field-label"
+                          htmlFor="inquiry-visit-date"
+                        >
                           Preferred visit date *
                         </label>
                         <input
@@ -532,10 +681,16 @@ export default function InquiryModal() {
                           min={minVisitDate}
                           className={`inquiry-modal-input${fieldErrors.visitDate ? " inquiry-modal-input--invalid" : ""}`}
                           value={form.visitDate}
-                          onChange={(e) => updateField("visitDate", e.target.value)}
+                          onChange={(e) =>
+                            updateField("visitDate", e.target.value)
+                          }
                           onBlur={() => validateFieldOnBlur("visitDate")}
                           aria-invalid={!!fieldErrors.visitDate}
-                          aria-describedby={fieldErrors.visitDate ? "inquiry-visit-date-error" : undefined}
+                          aria-describedby={
+                            fieldErrors.visitDate
+                              ? "inquiry-visit-date-error"
+                              : undefined
+                          }
                         />
                         {fieldErrors.visitDate ? (
                           <span
@@ -551,7 +706,10 @@ export default function InquiryModal() {
 
                     {isBookMeetingTab ? (
                       <div>
-                        <label className="inquiry-modal-field-label" htmlFor="inquiry-meeting-datetime">
+                        <label
+                          className="inquiry-modal-field-label"
+                          htmlFor="inquiry-meeting-datetime"
+                        >
                           Preferred meeting date &amp; time *
                         </label>
                         <input
@@ -560,7 +718,9 @@ export default function InquiryModal() {
                           min={minMeetingDateTime}
                           className={`inquiry-modal-input${fieldErrors.meetingDateTime ? " inquiry-modal-input--invalid" : ""}`}
                           value={form.meetingDateTime}
-                          onChange={(e) => updateField("meetingDateTime", e.target.value)}
+                          onChange={(e) =>
+                            updateField("meetingDateTime", e.target.value)
+                          }
                           onBlur={() => validateFieldOnBlur("meetingDateTime")}
                           aria-invalid={!!fieldErrors.meetingDateTime}
                           aria-describedby={
@@ -582,37 +742,58 @@ export default function InquiryModal() {
                     ) : null}
 
                     <div>
-                      <label className="inquiry-modal-field-label" htmlFor="inquiry-message">
-                        Your message *
+                      <label
+                        className="inquiry-modal-field-label"
+                        htmlFor="inquiry-message"
+                      >
+                       Message *
                       </label>
                       <input
                         id="inquiry-message"
                         type="text"
                         className={`inquiry-modal-input${fieldErrors.message ? " inquiry-modal-input--invalid" : ""}`}
                         value={form.message}
-                        onChange={(e) => updateField("message", sanitizeMessageText(e.target.value))}
+                        onChange={(e) =>
+                          updateField(
+                            "message",
+                            sanitizeMessageText(e.target.value),
+                          )
+                        }
                         onBlur={() => validateFieldOnBlur("message")}
                         placeholder="Tell us briefly what you're looking for..."
                         aria-invalid={!!fieldErrors.message}
-                        aria-describedby={fieldErrors.message ? "inquiry-message-error" : undefined}
+                        aria-describedby={
+                          fieldErrors.message
+                            ? "inquiry-message-error"
+                            : undefined
+                        }
                       />
                       {fieldErrors.message ? (
-                        <span id="inquiry-message-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                        <span
+                          id="inquiry-message-error"
+                          className="form-field-error inquiry-modal-field-error"
+                          role="alert"
+                        >
                           {fieldErrors.message}
                         </span>
                       ) : null}
                     </div>
 
-                    <button type="submit" className="inquiry-modal-submit" disabled={submitting}>
+                    <button
+                      type="submit"
+                      className="inquiry-modal-submit"
+                      disabled={submitting}
+                    >
                       {submitting
                         ? "Sending…"
                         : isSiteVisitTab
-                        ? "Request site visit"
-                        : "Schedule meeting"}
+                          ? "Request site visit"
+                          : "Schedule meeting"}
                     </button>
 
                     <p className="inquiry-modal-footnote">
-                      By submitting, you agree to our privacy policy. We&apos;ll never spam you.
+                      By submitting, you agree to our privacy policy. We&apos;ll
+                      never spam you.
                     </p>
                   </form>
                 </div>

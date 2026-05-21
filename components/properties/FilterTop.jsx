@@ -489,7 +489,7 @@ export default function FilterTop({
                     setType(s?.slug || "");
                   }}
                 />
-                <DropdownSelect
+                {/* <DropdownSelect
                   options={["Baths", "1", "2", "3", "4", "5"]}
                   selectedValue={baths || "Baths"}
                   onChange={(v) => setBaths(v === "Baths" ? "" : v)}
@@ -498,7 +498,7 @@ export default function FilterTop({
                   options={["Beds", "1", "2", "3", "4", "5"]}
                   selectedValue={beds || "Beds"}
                   onChange={(v) => setBeds(v === "Beds" ? "" : v)}
-                />
+                /> */}
 
                 <div className="wrap-btn">
                   <div

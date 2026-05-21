@@ -25,12 +25,15 @@ async function openInquiryModal() {
   }
 }
 
+const SCROLL_REOPEN_OFFSET_PX = 1300;
+
 export default function FloatingInquiryPopup() {
   const { data } = useSiteConfig();
   const pathname = usePathname();
   const [phase, setPhase] = useState("card");
   const timerRef = useRef(null);
   const lastPathRef = useRef(pathname);
+  const closedAtScrollRef = useRef(null);
   const ANIMATION_MS = 360;
 
   const config = data?.data || {};
@@ -58,88 +61,86 @@ export default function FloatingInquiryPopup() {
     }, ANIMATION_MS);
   };
 
+  const closeCard = () => {
+    if (phase !== "card") return;
+    closedAtScrollRef.current =
+      typeof window !== "undefined" ? window.scrollY : 0;
+    runPhaseTransition("toHidden", "hidden");
+  };
+
+  const reopenCard = () => {
+    closedAtScrollRef.current = null;
+    runPhaseTransition("toCard", "card");
+  };
+
   /**
    * Re-open the popup whenever the user navigates to a different route, even
-   * if they had minimised it on the previous page.
+   * if they had closed it on the previous page.
    */
   useEffect(() => {
     if (lastPathRef.current === pathname) return;
     lastPathRef.current = pathname;
-    if (phase === "icon" || phase === "toIcon") {
-      runPhaseTransition("toCard", "card");
+    if (phase === "hidden" || phase === "toHidden") {
+      reopenCard();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const closeToIcon = () => {
-    if (phase !== "card") return;
-    runPhaseTransition("toIcon", "icon");
-  };
+  /**
+   * When closed, listen for scroll. As soon as the user scrolls
+   * SCROLL_REOPEN_OFFSET_PX below where they closed it, bring the card back.
+   */
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    if (phase !== "hidden") return undefined;
 
-  const openFromIcon = () => {
-    if (phase !== "icon") return;
-    runPhaseTransition("toCard", "card");
-  };
+    const onScroll = () => {
+      const closedAt = closedAtScrollRef.current;
+      if (closedAt == null) return;
+      if (window.scrollY >= closedAt + SCROLL_REOPEN_OFFSET_PX) {
+        reopenCard();
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   if (!enabled || !imageUrl) return null;
 
   return (
-    <>
-      <div
-        className={[
-          "floating-inquiry-card",
-          phase === "icon" ? "floating-inquiry-card--hidden" : "",
-          phase === "toIcon" ? "floating-inquiry-card--to-icon" : "",
-          phase === "toCard" ? "floating-inquiry-card--to-card" : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        role="complementary"
-        aria-label="Quick inquiry"
-      >
-        <button
-          type="button"
-          className="floating-inquiry-card__close"
-          onClick={closeToIcon}
-          aria-label="Close inquiry popup"
-        >
-          ×
-        </button>
-        <button
-          type="button"
-          className="floating-inquiry-card__image-btn"
-          onClick={() => {
-            void openInquiryModal();
-          }}
-          aria-label="Open inquiry form"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imageUrl} alt="Inquiry offer" className="floating-inquiry-card__image" />
-        </button>
-      </div>
-
+    <div
+      className={[
+        "floating-inquiry-card",
+        phase === "hidden" ? "floating-inquiry-card--hidden" : "",
+        phase === "toHidden" ? "floating-inquiry-card--to-icon" : "",
+        phase === "toCard" ? "floating-inquiry-card--to-card" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      role="complementary"
+      aria-label="Quick inquiry"
+    >
       <button
         type="button"
-        className={[
-          "floating-inquiry-reopen",
-          phase === "card" ? "floating-inquiry-reopen--hidden" : "",
-          phase === "toIcon" ? "floating-inquiry-reopen--to-icon" : "",
-          phase === "toCard" ? "floating-inquiry-reopen--to-card" : "",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        onClick={openFromIcon}
-        aria-label="Reopen inquiry popup"
+        className="floating-inquiry-card__close"
+        onClick={closeCard}
+        aria-label="Close inquiry popup"
       >
-        <span className="floating-inquiry-reopen__badge" aria-hidden>
-          HOT DEAL
-        </span>
-        <span className="floating-inquiry-reopen__spark floating-inquiry-reopen__spark--1" aria-hidden />
-        <span className="floating-inquiry-reopen__spark floating-inquiry-reopen__spark--2" aria-hidden />
-        <span className="floating-inquiry-reopen__icon" aria-hidden>
-          %
-        </span>
+        ×
       </button>
-    </>
+      <button
+        type="button"
+        className="floating-inquiry-card__image-btn"
+        onClick={() => {
+          void openInquiryModal();
+        }}
+        aria-label="Open inquiry form"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={imageUrl} alt="Inquiry offer" className="floating-inquiry-card__image" />
+      </button>
+    </div>
   );
 }

@@ -30,7 +30,10 @@ export async function GET(request) {
       pagination: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 },
+    );
   }
 }
 
@@ -90,7 +93,7 @@ export async function POST(request) {
     });
 
     const TYPE_LABELS = {
-      book_meeting: "Book a Meeting",
+      book_meeting: "Connect with an Expert",
       site_visit: "Book a Site Visit",
       agent_connect: "Connect with an Agent",
     };

@@ -893,10 +893,6 @@ body * {
 }
 
 /* Blogs page only: reduce breadcrumb-to-trending slider gap */
-.blogs-page-content .flat-title {
-  margin-bottom: 14px;
-}
-
 /* Home page only: tighter section spacing */
 .home-page-content .tf-spacing-1 {
   padding-top: 72px;

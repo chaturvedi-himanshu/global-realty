@@ -31,10 +31,13 @@ export default function Nav() {
   const propsMenuActive =
     !isLoading && isPropertiesNavActive(pathname, searchParams, propertiesMenu);
 
-  const blogActive =
+  const blogsActive =
     pathname === "/blogs" ||
-    pathname.startsWith("/blog") ||
-    pathname.startsWith("/blogs/");
+    pathname === "/blog" ||
+    pathname.startsWith("/blogs/") ||
+    pathname.startsWith("/blog/");
+  const newsActive = pathname === "/news" || pathname.startsWith("/news/");
+  const mediaActive = blogsActive || newsActive;
   const galleryActive =
     pathname === "/events" || pathname.startsWith("/events/");
 
@@ -50,7 +53,7 @@ export default function Nav() {
       <li
         className={`has-child style-2 ${propsMenuActive ? "current-menu" : ""}`}
       >
-        <a href="#">Properties</a>
+        <a href="#">Projects</a>
         <ul className="submenu">
           {isLoading ? (
             <li>
@@ -58,7 +61,7 @@ export default function Nav() {
             </li>
           ) : propertiesMenu.length === 0 ? (
             <li>
-              <Link href="/properties">All properties</Link>
+              <Link href="/properties">All Projects</Link>
             </li>
           ) : (
             propertiesMenu.map((type) => (
@@ -84,8 +87,18 @@ export default function Nav() {
         </ul>
       </li>
 
-      <li className={blogActive ? "current-menu" : ""}>
-        <Link href="/blogs">Blog</Link>
+      <li
+        className={`has-child style-2 ${mediaActive ? "current-menu" : ""}`}
+      >
+        <a href="#">Media</a>
+        <ul className="submenu">
+          <li className={blogsActive ? "current-item" : ""}>
+            <Link href="/blogs">Blogs</Link>
+          </li>
+          <li className={newsActive ? "current-item" : ""}>
+            <Link href="/news">News</Link>
+          </li>
+        </ul>
       </li>
 
       <li className={galleryActive ? "current-menu" : ""}>

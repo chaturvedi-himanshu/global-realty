@@ -49,6 +49,9 @@ const AboutPageSchema = new mongoose.Schema(
   {
     key: { type: String, unique: true, default: "main", index: true },
     heroBackgroundImage: { type: String, default: "" },
+    heroVideo: { type: String, default: "" },
+    statsBackgroundImage: { type: String, default: "" },
+    statsOverlayColor: { type: String, default: "" },
     heroBadge: { type: String, default: "" },
     heroTitle: { type: String, default: "" },
     heroSubtitle: { type: String, default: "" },
