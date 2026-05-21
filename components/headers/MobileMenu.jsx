@@ -34,10 +34,13 @@ export default function MobileMenu() {
   const propsMenuActive =
     !isLoading && isPropertiesNavActive(pathname, searchParams, propertiesMenu);
 
-  const blogActive =
+  const blogsActive =
     pathname === "/blogs" ||
-    pathname.startsWith("/blog") ||
-    pathname.startsWith("/blogs/");
+    pathname === "/blog" ||
+    pathname.startsWith("/blogs/") ||
+    pathname.startsWith("/blog/");
+  const newsActive = pathname === "/news" || pathname.startsWith("/news/");
+  const mediaActive = blogsActive || newsActive;
   const galleryActive =
     pathname === "/events" || pathname.startsWith("/events/");
 
@@ -53,7 +56,7 @@ export default function MobileMenu() {
           <Link href="/">
             <Image
               alt=""
-              src="/images/logo/logo@2x.png"
+              src="/images/logo/logo.png"
               width={272}
               height={84}
             />
@@ -142,11 +145,45 @@ export default function MobileMenu() {
               </Link>
             </li>
             <li
-              className={`menu-item ${blogActive ? "current-menu-item" : ""}`}
+              className={`menu-item menu-item-has-children-mobile ${
+                mediaActive ? "current-menu-item" : ""
+              }`}
             >
-              <Link href="/blogs" className="item-menu-mobile">
-                Blog
-              </Link>
+              <a
+                href="#dropdown-menu-media"
+                className="item-menu-mobile collapsed"
+                data-bs-toggle="collapse"
+                aria-expanded="false"
+                aria-controls="dropdown-menu-media"
+              >
+                Media
+              </a>
+              <div
+                id="dropdown-menu-media"
+                className="collapse"
+                data-bs-parent="#menu-mobile-menu"
+              >
+                <ul className="sub-mobile">
+                  <li
+                    className={
+                      blogsActive ? "menu-item current-item" : "menu-item"
+                    }
+                  >
+                    <Link href="/blogs" className="item-menu-mobile">
+                      Blogs
+                    </Link>
+                  </li>
+                  <li
+                    className={
+                      newsActive ? "menu-item current-item" : "menu-item"
+                    }
+                  >
+                    <Link href="/news" className="item-menu-mobile">
+                      News
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </li>
             <li
               className={`menu-item ${
