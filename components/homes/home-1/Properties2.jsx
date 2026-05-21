@@ -25,6 +25,7 @@ function normalizeProperty(p) {
     title: p.title,
     images: p.images,
     imageSrc,
+    address: String(p.address || "").trim(),
     location: [p.address].filter(Boolean).join(", ") || p.location || "",
     beds: p.beds || p.bedrooms || 0,
     baths: p.baths || p.bathrooms || 0,

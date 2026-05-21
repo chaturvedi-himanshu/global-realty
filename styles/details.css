@@ -615,7 +615,7 @@
 .property-detail-page .tf-sidebar.sticky-sidebar {
   position: -webkit-sticky;
   position: sticky;
-  top: 104px;
+  top: 72px;
   z-index: 10;
 }
 

@@ -14,9 +14,22 @@ const INITIAL_FORM = {
   phone: "",
   interest: "",
   message: "",
+  visitDate: "",
+  meetingDateTime: "",
 };
 
 const PHONE_DIGITS = 10;
+
+const TAB_MEETING = "book_meeting";
+const TAB_VISIT = "site_visit";
+
+const AREA_OF_INTEREST_OPTIONS = [
+  "Affordable Residential",
+  "Luxury Residential",
+  "Lockable Retail Shops",
+  "Pre Leased Investments",
+  "Plots",
+];
 
 const MODAL_VALIDATE_OPTS = {
   requirePhone: true,
@@ -26,6 +39,24 @@ const MODAL_VALIDATE_OPTS = {
   requireInterest: true,
   minInterest: 3,
 };
+
+function todayDateString() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function nowDateTimeLocalString() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+}
 
 function SuccessCheckIcon({ gradId }) {
   const gid = `inquiry-check-${gradId}`.replace(/[^a-zA-Z0-9_-]/g, "");
@@ -52,11 +83,17 @@ export default function InquiryModal() {
   const successIconGradId = useId();
   const modalRef = useRef(null);
   const autoCloseTimerRef = useRef(null);
+  const [activeTab, setActiveTab] = useState(TAB_MEETING);
   const [form, setForm] = useState(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const minVisitDate = todayDateString();
+  const minMeetingDateTime = nowDateTimeLocalString();
+  const isSiteVisitTab = activeTab === TAB_VISIT;
+  const isBookMeetingTab = activeTab === TAB_MEETING;
 
   /**
    * Listen on the real modal node (ref) so events survive Strict Mode / remounts.
@@ -82,6 +119,7 @@ export default function InquiryModal() {
         autoCloseTimerRef.current = null;
       }
       setSuccess(false);
+      setActiveTab(TAB_MEETING);
       clearErrors();
     };
 
@@ -116,8 +154,55 @@ export default function InquiryModal() {
     message: form.message,
   });
 
+  const validateVisitDate = (value) => {
+    if (!isSiteVisitTab) return "";
+    const raw = String(value || "").trim();
+    if (!raw) return "Please pick a preferred visit date.";
+    const picked = new Date(raw);
+    if (Number.isNaN(picked.getTime())) return "Please pick a valid date.";
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    picked.setHours(0, 0, 0, 0);
+    if (picked.getTime() < today.getTime()) {
+      return "Visit date can't be in the past.";
+    }
+    return "";
+  };
+
+  const validateMeetingDateTime = (value) => {
+    if (!isBookMeetingTab) return "";
+    const raw = String(value || "").trim();
+    if (!raw) return "Please pick a preferred meeting date and time.";
+    const picked = new Date(raw);
+    if (Number.isNaN(picked.getTime())) return "Please pick a valid date and time.";
+    if (picked.getTime() < Date.now()) {
+      return "Meeting time can't be in the past.";
+    }
+    return "";
+  };
+
   /** Re-validate a single field after blur so errors show without waiting for submit. */
   const validateFieldOnBlur = (fieldKey) => {
+    if (fieldKey === "visitDate") {
+      const msg = validateVisitDate(form.visitDate);
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        if (msg) next.visitDate = msg;
+        else delete next.visitDate;
+        return next;
+      });
+      return;
+    }
+    if (fieldKey === "meetingDateTime") {
+      const msg = validateMeetingDateTime(form.meetingDateTime);
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        if (msg) next.meetingDateTime = msg;
+        else delete next.meetingDateTime;
+        return next;
+      });
+      return;
+    }
     const { errors } = validateInquiryForm(formSnapshot(), MODAL_VALIDATE_OPTS);
     setFieldErrors((prev) => {
       const next = { ...prev };
@@ -127,10 +212,27 @@ export default function InquiryModal() {
     });
   };
 
+  const handleTabChange = (nextTab) => {
+    if (nextTab === activeTab) return;
+    setActiveTab(nextTab);
+    setError("");
+    setFieldErrors((prev) => {
+      if (!prev.visitDate && !prev.meetingDateTime) return prev;
+      const n = { ...prev };
+      delete n.visitDate;
+      delete n.meetingDateTime;
+      return n;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { ok, errors } = validateInquiryForm(formSnapshot(), MODAL_VALIDATE_OPTS);
-    if (!ok) {
+    const visitDateError = validateVisitDate(form.visitDate);
+    const meetingDateTimeError = validateMeetingDateTime(form.meetingDateTime);
+    if (visitDateError) errors.visitDate = visitDateError;
+    if (meetingDateTimeError) errors.meetingDateTime = meetingDateTimeError;
+    if (!ok || visitDateError || meetingDateTimeError) {
       setFieldErrors(errors);
       setError("");
       return;
@@ -148,7 +250,12 @@ export default function InquiryModal() {
           phone: form.phone.trim(),
           interest: form.interest.trim(),
           message: form.message.trim(),
-          pageName: "header-get-in-touch",
+          inquiryType: activeTab,
+          visitDate: isSiteVisitTab ? form.visitDate : "",
+          meetingDateTime: isBookMeetingTab ? form.meetingDateTime : "",
+          pageName: isSiteVisitTab
+            ? "header-book-site-visit"
+            : "header-book-meeting",
         }),
       });
       if (res.ok) {
@@ -222,10 +329,14 @@ export default function InquiryModal() {
                     </div>
                   </div>
                   <h2 id="inquiryModalLabel" className="inquiry-success-title">
-                    Thank you — we&apos;ve got it!
+                    {isSiteVisitTab
+                      ? "Site visit request received!"
+                      : "Meeting request received!"}
                   </h2>
                   <p className="inquiry-success-sub">
-                    Your message is in safe hands. Our team will review your inquiry and reach out within{" "}
+                    {isSiteVisitTab
+                      ? "We've noted your preferred visit date. Our team will confirm the slot within "
+                      : "We've noted your preferred meeting time. Our team will confirm the slot within "}
                     <strong style={{ color: "#374151", fontWeight: 700 }}>24 hours</strong> with next steps.
                   </p>
                   <div className="inquiry-success-badges">
@@ -263,20 +374,47 @@ export default function InquiryModal() {
                 <div className="inquiry-modal-form-layout__glow" aria-hidden />
                 <div className="inquiry-modal-form-layout__glow-bottom" aria-hidden />
                 <div className="inquiry-modal-form-layout__inner">
-                  <header className="inquiry-modal-form-head">
+                  <header className="inquiry-modal-form-head inquiry-modal-form-head--center">
+                    <button
+                      type="button"
+                      className="inquiry-modal-close inquiry-modal-close--corner"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      ×
+                    </button>
                     <div className="inquiry-modal-form-head-text">
                       <p className="inquiry-modal-form-eyebrow">We&apos;re here to help</p>
                       <h2 id="inquiryModalLabel" className="inquiry-modal-form-title">
-                        Get in Touch
+                        {isSiteVisitTab ? "Book a Site Visit" : "Book a Meeting"}
                       </h2>
                       <p className="inquiry-modal-form-sub">
-                        Share a few details and our team will reach out with tailored options.
+                        {isSiteVisitTab
+                          ? "Pick a preferred date and we'll arrange your site visit."
+                          : "Pick a date and time and our team will confirm your meeting."}
                       </p>
                     </div>
-                    <button type="button" className="inquiry-modal-close" data-bs-dismiss="modal" aria-label="Close">
-                      ×
-                    </button>
                   </header>
+                  <div className="inquiry-modal-tabs" role="tablist" aria-label="Inquiry type">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={isBookMeetingTab}
+                      className={`inquiry-modal-tab${isBookMeetingTab ? " inquiry-modal-tab--active" : ""}`}
+                      onClick={() => handleTabChange(TAB_MEETING)}
+                    >
+                      Book a Meeting
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={isSiteVisitTab}
+                      className={`inquiry-modal-tab${isSiteVisitTab ? " inquiry-modal-tab--active" : ""}`}
+                      onClick={() => handleTabChange(TAB_VISIT)}
+                    >
+                      Book a Site Visit
+                    </button>
+                  </div>
                   <form className="inquiry-modal-form" onSubmit={handleSubmit} noValidate>
                     {error ? <div className="inquiry-modal-error-banner">{error}</div> : null}
 
@@ -329,64 +467,132 @@ export default function InquiryModal() {
                       </div>
                     </div>
 
-                    <div>
-                      <label className="inquiry-modal-field-label" htmlFor="inquiry-email">
-                        Email *
-                      </label>
-                      <input
-                        id="inquiry-email"
-                        type="email"
-                        className={`inquiry-modal-input${fieldErrors.email ? " inquiry-modal-input--invalid" : ""}`}
-                        value={form.email}
-                        onChange={(e) => updateField("email", sanitizeEmailInput(e.target.value))}
-                        onBlur={() => validateFieldOnBlur("email")}
-                        placeholder="your@email.com"
-                        aria-invalid={!!fieldErrors.email}
-                        aria-describedby={fieldErrors.email ? "inquiry-email-error" : undefined}
-                        autoComplete="email"
-                      />
-                      {fieldErrors.email ? (
-                        <span id="inquiry-email-error" className="form-field-error inquiry-modal-field-error" role="alert">
-                          {fieldErrors.email}
-                        </span>
-                      ) : null}
+                    <div className="inquiry-modal-grid-2">
+                      <div>
+                        <label className="inquiry-modal-field-label" htmlFor="inquiry-email">
+                          Email *
+                        </label>
+                        <input
+                          id="inquiry-email"
+                          type="email"
+                          className={`inquiry-modal-input${fieldErrors.email ? " inquiry-modal-input--invalid" : ""}`}
+                          value={form.email}
+                          onChange={(e) => updateField("email", sanitizeEmailInput(e.target.value))}
+                          onBlur={() => validateFieldOnBlur("email")}
+                          placeholder="your@email.com"
+                          aria-invalid={!!fieldErrors.email}
+                          aria-describedby={fieldErrors.email ? "inquiry-email-error" : undefined}
+                          autoComplete="email"
+                        />
+                        {fieldErrors.email ? (
+                          <span id="inquiry-email-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                            {fieldErrors.email}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <div>
+                        <label className="inquiry-modal-field-label" htmlFor="inquiry-interest">
+                          Area of interest *
+                        </label>
+                        <select
+                          id="inquiry-interest"
+                          className={`inquiry-modal-input inquiry-modal-input--select${fieldErrors.interest ? " inquiry-modal-input--invalid" : ""}${!form.interest ? " inquiry-modal-input--placeholder" : ""}`}
+                          value={form.interest}
+                          onChange={(e) => updateField("interest", e.target.value)}
+                          onBlur={() => validateFieldOnBlur("interest")}
+                          aria-invalid={!!fieldErrors.interest}
+                          aria-describedby={fieldErrors.interest ? "inquiry-interest-error" : undefined}
+                        >
+                          <option value="" disabled hidden>
+                            Select an option
+                          </option>
+                          {AREA_OF_INTEREST_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                        {fieldErrors.interest ? (
+                          <span id="inquiry-interest-error" className="form-field-error inquiry-modal-field-error" role="alert">
+                            {fieldErrors.interest}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
 
-                    <div>
-                      <label className="inquiry-modal-field-label" htmlFor="inquiry-interest">
-                        What are you interested in? *
-                      </label>
-                      <input
-                        id="inquiry-interest"
-                        type="text"
-                        className={`inquiry-modal-input${fieldErrors.interest ? " inquiry-modal-input--invalid" : ""}`}
-                        value={form.interest}
-                        onChange={(e) => updateField("interest", sanitizeSingleLineText(e.target.value))}
-                        onBlur={() => validateFieldOnBlur("interest")}
-                        placeholder="e.g. buying, renting, investment…"
-                        autoComplete="off"
-                        aria-invalid={!!fieldErrors.interest}
-                        aria-describedby={fieldErrors.interest ? "inquiry-interest-error" : undefined}
-                      />
-                      {fieldErrors.interest ? (
-                        <span id="inquiry-interest-error" className="form-field-error inquiry-modal-field-error" role="alert">
-                          {fieldErrors.interest}
-                        </span>
-                      ) : null}
-                    </div>
+                    {isSiteVisitTab ? (
+                      <div>
+                        <label className="inquiry-modal-field-label" htmlFor="inquiry-visit-date">
+                          Preferred visit date *
+                        </label>
+                        <input
+                          id="inquiry-visit-date"
+                          type="date"
+                          min={minVisitDate}
+                          className={`inquiry-modal-input${fieldErrors.visitDate ? " inquiry-modal-input--invalid" : ""}`}
+                          value={form.visitDate}
+                          onChange={(e) => updateField("visitDate", e.target.value)}
+                          onBlur={() => validateFieldOnBlur("visitDate")}
+                          aria-invalid={!!fieldErrors.visitDate}
+                          aria-describedby={fieldErrors.visitDate ? "inquiry-visit-date-error" : undefined}
+                        />
+                        {fieldErrors.visitDate ? (
+                          <span
+                            id="inquiry-visit-date-error"
+                            className="form-field-error inquiry-modal-field-error"
+                            role="alert"
+                          >
+                            {fieldErrors.visitDate}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    {isBookMeetingTab ? (
+                      <div>
+                        <label className="inquiry-modal-field-label" htmlFor="inquiry-meeting-datetime">
+                          Preferred meeting date &amp; time *
+                        </label>
+                        <input
+                          id="inquiry-meeting-datetime"
+                          type="datetime-local"
+                          min={minMeetingDateTime}
+                          className={`inquiry-modal-input${fieldErrors.meetingDateTime ? " inquiry-modal-input--invalid" : ""}`}
+                          value={form.meetingDateTime}
+                          onChange={(e) => updateField("meetingDateTime", e.target.value)}
+                          onBlur={() => validateFieldOnBlur("meetingDateTime")}
+                          aria-invalid={!!fieldErrors.meetingDateTime}
+                          aria-describedby={
+                            fieldErrors.meetingDateTime
+                              ? "inquiry-meeting-datetime-error"
+                              : undefined
+                          }
+                        />
+                        {fieldErrors.meetingDateTime ? (
+                          <span
+                            id="inquiry-meeting-datetime-error"
+                            className="form-field-error inquiry-modal-field-error"
+                            role="alert"
+                          >
+                            {fieldErrors.meetingDateTime}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : null}
 
                     <div>
                       <label className="inquiry-modal-field-label" htmlFor="inquiry-message">
                         Your message *
                       </label>
-                      <textarea
+                      <input
                         id="inquiry-message"
+                        type="text"
                         className={`inquiry-modal-input${fieldErrors.message ? " inquiry-modal-input--invalid" : ""}`}
                         value={form.message}
                         onChange={(e) => updateField("message", sanitizeMessageText(e.target.value))}
                         onBlur={() => validateFieldOnBlur("message")}
-                        placeholder="Tell us more about what you're looking for..."
-                        rows={4}
+                        placeholder="Tell us briefly what you're looking for..."
                         aria-invalid={!!fieldErrors.message}
                         aria-describedby={fieldErrors.message ? "inquiry-message-error" : undefined}
                       />
@@ -398,7 +604,11 @@ export default function InquiryModal() {
                     </div>
 
                     <button type="submit" className="inquiry-modal-submit" disabled={submitting}>
-                      {submitting ? "Sending…" : "Send message"}
+                      {submitting
+                        ? "Sending…"
+                        : isSiteVisitTab
+                        ? "Request site visit"
+                        : "Schedule meeting"}
                     </button>
 
                     <p className="inquiry-modal-footnote">

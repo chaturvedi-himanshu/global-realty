@@ -17,6 +17,29 @@ const emptyForm = { name: "", email: "", phone: "" };
 const SIDEBAR_FORM_CONSENT =
   "By submitting, I authorise Global Realty and its representatives to contact me via Call, SMS, WhatsApp, or Email. This consent overrides any NDNC/DND registration.";
 
+const INDIAN_MOBILE_RE = /^[6-9]\d{9}$/;
+const INDIAN_MOBILE_ERROR =
+  "Enter a 10-digit mobile number starting with 6, 7, 8, or 9.";
+
+/**
+ * Accepts only digits; drops any leading characters until the first digit is
+ * 6/7/8/9; caps the result to 10 digits. Keeps the UX strict so the user can
+ * never type an invalid Indian mobile.
+ */
+function sanitizeIndianMobile(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "";
+  const firstValid = digits.search(/[6-9]/);
+  if (firstValid === -1) return "";
+  return digits.slice(firstValid, firstValid + 10);
+}
+
+function validateIndianMobile(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  return INDIAN_MOBILE_RE.test(raw) ? "" : INDIAN_MOBILE_ERROR;
+}
+
 function defaultSidebarInquiryMessage(property, inquiryMeta) {
   if (property?.title)
     return `Property inquiry: ${String(property.title).trim()}`;
@@ -96,6 +119,18 @@ export default function ContactSellerSidebar({
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const handlePhoneChange = (rawValue) => {
+    const next = sanitizeIndianMobile(rawValue);
+    setForm((p) => ({ ...p, phone: next }));
+    const msg = validateIndianMobile(next);
+    setErrors((prev) => {
+      const updated = { ...prev };
+      if (msg) updated.phone = msg;
+      else delete updated.phone;
+      return updated;
+    });
+  };
+
   useEffect(() => {
     if (!submitted) return undefined;
     const timer = setTimeout(() => {
@@ -147,7 +182,9 @@ export default function ContactSellerSidebar({
     const { ok, errors: nextErrors } = validateInquiryForm(form, {
       requireMessage: false,
     });
-    if (!ok) {
+    const phoneError = validateIndianMobile(form.phone);
+    if (phoneError) nextErrors.phone = phoneError;
+    if (!ok || phoneError) {
       setErrors(nextErrors);
       const msg = firstErrorMessage(nextErrors);
       if (msg) toast.error(msg);
@@ -239,12 +276,27 @@ export default function ContactSellerSidebar({
                 <input
                   id={`${id}-g-phone`}
                   type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
                   className="property-inquiry-sticky__input"
-                  placeholder="Phone"
+                  placeholder="10-digit mobile number"
                   value={form.phone}
                   onChange={(e) => {
-                    setForm((p) => ({ ...p, phone: e.target.value }));
+                    setForm((p) => ({
+                      ...p,
+                      phone: sanitizeIndianMobile(e.target.value),
+                    }));
                     clearErr(setErrors, "phone");
+                  }}
+                  onBlur={() => {
+                    const msg = validateIndianMobile(form.phone);
+                    setErrors((prev) => {
+                      const next = { ...prev };
+                      if (msg) next.phone = msg;
+                      else delete next.phone;
+                      return next;
+                    });
                   }}
                   aria-invalid={!!errors.phone}
                   autoComplete="tel"
@@ -449,18 +501,18 @@ export default function ContactSellerSidebar({
                 className="property-inquiry-sticky__label"
                 htmlFor={`${id}-phone`}
               >
-                Phone
+                Phone *
               </label>
               <input
                 id={`${id}-phone`}
                 type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                pattern="[6-9][0-9]{9}"
                 className="property-inquiry-sticky__input"
-                placeholder="Phone"
+                placeholder="10-digit mobile number"
                 value={form.phone}
-                onChange={(e) => {
-                  setForm((p) => ({ ...p, phone: e.target.value }));
-                  clearErr(setErrors, "phone");
-                }}
+                onChange={(e) => handlePhoneChange(e.target.value)}
                 aria-invalid={!!errors.phone}
                 autoComplete="tel"
               />
@@ -478,7 +530,7 @@ export default function ContactSellerSidebar({
                 id={`${id}-email`}
                 type="email"
                 className="property-inquiry-sticky__input"
-                placeholder="E-mail"
+                placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => {
                   setForm((p) => ({ ...p, email: e.target.value }));

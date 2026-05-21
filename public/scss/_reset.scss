@@ -754,8 +754,8 @@ a {
         margin-left: -20px !important;
         margin-right: -20px !important;
         > * {
-            padding-left: 20px !important;
-            padding-right: 20px !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
         }
     }
     &.xl {
@@ -1168,7 +1168,7 @@ a {
 }
 .sticky-sidebar {
     position: sticky;
-    top: 104px;
+    top: 72px;
 }
 
 .parallax-mirror {

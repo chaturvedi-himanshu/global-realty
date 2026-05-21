@@ -14,6 +14,13 @@ const InquirySchema = new mongoose.Schema(
     propertyTitle: { type: String, default: "" },
     projectName: { type: String, default: "" },
     pageName: { type: String, default: "" },
+    inquiryType: {
+      type: String,
+      enum: ["agent_connect", "site_visit", "book_meeting"],
+      default: "book_meeting",
+    },
+    visitDate: { type: Date, default: null },
+    meetingDateTime: { type: Date, default: null },
     status: {
       type: String,
       enum: ["new", "read", "replied"],
@@ -23,5 +30,8 @@ const InquirySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.Inquiry ||
-  mongoose.model("Inquiry", InquirySchema);
+if (mongoose.models?.Inquiry) {
+  delete mongoose.models.Inquiry;
+}
+
+export default mongoose.model("Inquiry", InquirySchema);

@@ -53,21 +53,67 @@ export async function POST(request) {
       }
     }
 
+    const allowedTypes = new Set([
+      "agent_connect",
+      "site_visit",
+      "book_meeting",
+    ]);
+    const rawInquiryType = String(body?.inquiryType || "").trim();
+    const inquiryType = allowedTypes.has(rawInquiryType)
+      ? rawInquiryType
+      : "book_meeting";
+
+    let visitDate = null;
+    if (inquiryType === "site_visit" && body?.visitDate) {
+      const parsed = new Date(body.visitDate);
+      if (!Number.isNaN(parsed.getTime())) {
+        visitDate = parsed;
+      }
+    }
+
+    let meetingDateTime = null;
+    if (inquiryType === "book_meeting" && body?.meetingDateTime) {
+      const parsed = new Date(body.meetingDateTime);
+      if (!Number.isNaN(parsed.getTime())) {
+        meetingDateTime = parsed;
+      }
+    }
+
     const inquiry = await Inquiry.create({
       ...body,
+      inquiryType,
+      visitDate,
+      meetingDateTime,
       projectName: resolvedProjectName || body?.projectName || "",
       propertyTitle:
         String(body?.propertyTitle || "").trim() || resolvedProjectName || "",
     });
+
+    const TYPE_LABELS = {
+      book_meeting: "Book a Meeting",
+      site_visit: "Book a Site Visit",
+      agent_connect: "Connect with an Agent",
+    };
+    const inquiryTypeLabel = TYPE_LABELS[inquiryType] || "Inquiry";
+    const visitDateLabel = visitDate
+      ? visitDate.toISOString().slice(0, 10)
+      : "";
+    const meetingDateTimeLabel = meetingDateTime
+      ? meetingDateTime.toISOString().replace("T", " ").slice(0, 16)
+      : "";
+
     await sendLeadToCrm({
       name: body?.name,
       email: body?.email,
       mobile: body?.phone,
-      formType: body?.pageName || "Inquiry",
+      formType: inquiryTypeLabel,
       projectName: resolvedProjectName,
       source: "website",
       remark: [
         `Lead from ${body?.pageName || "Inquiry"} Form`,
+        `Type: ${inquiryTypeLabel}`,
+        visitDateLabel ? `Visit Date: ${visitDateLabel}` : "",
+        meetingDateTimeLabel ? `Meeting: ${meetingDateTimeLabel}` : "",
         body?.interest ? `Interest: ${body.interest}` : "",
         body?.message ? `Message: ${String(body.message).slice(0, 220)}` : "",
       ]
@@ -76,6 +122,10 @@ export async function POST(request) {
     });
     return NextResponse.json({ success: true, data: inquiry }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("POST /api/inquiries failed:", error);
+    return NextResponse.json(
+      { success: false, error: error?.message || "Unknown error" },
+      { status: 500 },
+    );
   }
 }

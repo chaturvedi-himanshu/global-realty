@@ -58,9 +58,7 @@ export default function PropertyCard({ property, variant = "default" }) {
   const specification = String(property.specification || "").trim();
   const location =
     String(property.address || "").trim() ||
-    String(property.location || "")
-      .split(",")[0]
-      .trim();
+    String(property.location || "").trim();
   const propertyTypeText = getPropertyCategoryLabel(property);
 
   if (variant === "home-list") {
@@ -130,7 +128,9 @@ export default function PropertyCard({ property, variant = "default" }) {
           {location && (
             <p className="location text-1 flex items-center gap-6 min-w-0">
               <i className="icon-location flex-shrink-0" aria-hidden />
-              <span className="line-clamp-1 min-w-0">{location}</span>
+              <span className="line-clamp-1 min-w-0" title={location}>
+                {location}
+              </span>
             </p>
           )}
           {specification ? (
@@ -257,7 +257,9 @@ export default function PropertyCard({ property, variant = "default" }) {
         {location ? (
           <p className="location text-1 flex items-center gap-6 min-w-0">
             <i className="icon-location flex-shrink-0" aria-hidden />
-            <span className="line-clamp-1 min-w-0">{location}</span>
+            <span className="line-clamp-1 min-w-0" title={location}>
+              {location}
+            </span>
           </p>
         ) : null}
         {specification ? (

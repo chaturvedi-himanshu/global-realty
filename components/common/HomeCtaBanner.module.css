@@ -30,7 +30,7 @@
   position: relative;
   z-index: 2;
   font-family: "Arial", sans-serif;
-  font-size: clamp(22px, 3.5vw, 42px);
+  font-size: clamp(22px, 3.5vw, 32px);
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 1.5px;

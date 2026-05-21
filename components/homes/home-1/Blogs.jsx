@@ -43,7 +43,11 @@ export default function Blogs({
   return (
     <section
       className={styles.section}
-      style={typeof topPadding === "number" ? { paddingTop: `${topPadding}px` } : undefined}
+      style={
+        typeof topPadding === "number"
+          ? { paddingTop: `${topPadding}px` }
+          : undefined
+      }
     >
       <div className="tf-container">
         <div className="row">
@@ -51,10 +55,11 @@ export default function Blogs({
             {showHeading ? (
               <div className="heading-section text-center mb-48">
                 <h2 className="title split-text effect-right">
-                  <SplitTextAnimation text="Property Trends & Updates" />
+                  <SplitTextAnimation text="REAL ESTATE NEWS & UPDATES" />
                 </h2>
                 <p className="text-1 split-text split-lines-transform">
-                  Stay updated with the latest trends, insights, and opportunities in the real estate.
+                  Stay updated with the latest trends, insights, and
+                  opportunities in the real estate.
                 </p>
               </div>
             ) : null}
@@ -85,7 +90,11 @@ export default function Blogs({
               <SwiperSlide className="swiper-slide" key={post.id || index}>
                 <article className={styles.slideCard}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.imgSrc} alt={post.title} className={styles.bg} />
+                  <img
+                    src={post.imgSrc}
+                    alt={post.title}
+                    className={styles.bg}
+                  />
                   <div className={styles.overlay} />
                   <div className={styles.content}>
                     <p className={styles.meta}>
@@ -93,7 +102,10 @@ export default function Blogs({
                       {post.tag}
                     </p>
                     <h2 className={styles.title}>{post.title}</h2>
-                    <Link href={`/blog-details/${post.slug}`} className={styles.btn}>
+                    <Link
+                      href={`/blog-details/${post.slug}`}
+                      className={styles.btn}
+                    >
                       Read More
                     </Link>
                   </div>
@@ -105,12 +117,17 @@ export default function Blogs({
           <div className={styles.controls}>
             <div className={styles.progressWrap}>
               <div className={styles.fraction}>
-                <span className={styles.current}>{String(activeSlide).padStart(2, "0")}</span>
+                <span className={styles.current}>
+                  {String(activeSlide).padStart(2, "0")}
+                </span>
                 <span className={styles.separator}> / </span>
                 <span>{String(totalSlides).padStart(2, "0")}</span>
               </div>
               <div className={styles.progressTrack}>
-                <span className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+                <span
+                  className={styles.progressFill}
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
             </div>
             <div className={styles.navWrap}>

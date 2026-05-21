@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useSiteConfig } from "@/lib/hooks/useCMS";
 
 async function openInquiryModal() {
@@ -26,8 +27,10 @@ async function openInquiryModal() {
 
 export default function FloatingInquiryPopup() {
   const { data } = useSiteConfig();
+  const pathname = usePathname();
   const [phase, setPhase] = useState("card");
   const timerRef = useRef(null);
+  const lastPathRef = useRef(pathname);
   const ANIMATION_MS = 360;
 
   const config = data?.data || {};
@@ -54,6 +57,19 @@ export default function FloatingInquiryPopup() {
       timerRef.current = null;
     }, ANIMATION_MS);
   };
+
+  /**
+   * Re-open the popup whenever the user navigates to a different route, even
+   * if they had minimised it on the previous page.
+   */
+  useEffect(() => {
+    if (lastPathRef.current === pathname) return;
+    lastPathRef.current = pathname;
+    if (phase === "icon" || phase === "toIcon") {
+      runPhaseTransition("toCard", "card");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const closeToIcon = () => {
     if (phase !== "card") return;

@@ -14,7 +14,59 @@ export default function AboutHomeSection({ content }) {
     <section className="home-about-section tf-spacing-3">
       <div className="tf-container">
         <div className="home-about-wrap">
-          {/* ── Left: image column ─────────────────────────── */}
+          {/* ── Left: content column ──────────────────────── */}
+          <div className="home-about-text-col">
+            {content.eyebrow ? (
+              <div className="home-about-eyebrow-row">
+                <span className="home-about-eyebrow-line" aria-hidden />
+                <p className="home-about-eyebrow">{content.eyebrow}</p>
+              </div>
+            ) : null}
+
+            {content.title ? (
+              <h2 className="home-about-title">{content.title}</h2>
+            ) : null}
+
+            {content.description ? (
+              <p className="home-about-description">{content.description}</p>
+            ) : null}
+
+            {highlights.length ? (
+              <ul className="home-about-list">
+                {highlights.map((item, idx) => (
+                  <li key={`${item}-${idx}`} className="home-about-list__item">
+                    <span className="home-about-list__check" aria-hidden>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {content.ctaText && content.ctaLink ? (
+              <Link
+                href={content.ctaLink}
+                className="tf-btn bg-color-primary pd-23 home-about-cta"
+              >
+                {content.ctaText}
+                <i className="icon-arrow-right" style={{ fontSize: 16 }} />
+              </Link>
+            ) : null}
+          </div>
+
+          {/* ── Right: image / video column ───────────────── */}
           <div className="home-about-media-col">
             <div
               className="home-about-video-card"
@@ -73,58 +125,16 @@ export default function AboutHomeSection({ content }) {
                 </span>
               </div>
             </div>
-          </div>
 
-          {/* ── Right: content column ──────────────────────── */}
-          <div className="home-about-text-col">
-            {content.eyebrow ? (
-              <div className="home-about-eyebrow-row">
-                <span className="home-about-eyebrow-line" aria-hidden />
-                <p className="home-about-eyebrow">{content.eyebrow}</p>
-              </div>
-            ) : null}
-
-            {content.title ? (
-              <h2 className="home-about-title">{content.title}</h2>
-            ) : null}
-
-            {content.description ? (
-              <p className="home-about-description">{content.description}</p>
-            ) : null}
-
-            {highlights.length ? (
-              <ul className="home-about-list">
-                {highlights.map((item, idx) => (
-                  <li key={`${item}-${idx}`} className="home-about-list__item">
-                    <span className="home-about-list__check" aria-hidden>
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-
-            {content.ctaText && content.ctaLink ? (
-              <Link
-                href={content.ctaLink}
-                className="tf-btn bg-color-primary pd-23 home-about-cta"
-              >
-                {content.ctaText}
-                <i className="icon-arrow-right" style={{ fontSize: 16 }} />
-              </Link>
-            ) : null}
+            <button
+              type="button"
+              className="tf-btn bg-color-primary pd-23 home-about-enquire-btn"
+              data-bs-toggle="modal"
+              data-bs-target="#modalInquiry"
+            >
+              Enquire Now
+              <i className="icon-arrow-right" style={{ fontSize: 16 }} />
+            </button>
           </div>
         </div>
       </div>

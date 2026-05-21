@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import styles from "./HomeCtaBanner.module.css";
 
 const FALLBACK = {
@@ -12,6 +11,26 @@ const FALLBACK = {
   overlayOpacity: 0.78,
   isActive: true,
 };
+
+async function openInquiryModal() {
+  if (typeof window === "undefined") return;
+  const modalEl = document.getElementById("modalInquiry");
+  if (!modalEl) return;
+  if (modalEl.classList.contains("show")) return;
+
+  if (window.bootstrap?.Modal) {
+    window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    return;
+  }
+  try {
+    const bootstrapModule = await import("bootstrap/dist/js/bootstrap.esm");
+    const ModalCtor = bootstrapModule?.Modal;
+    if (!ModalCtor) return;
+    ModalCtor.getOrCreateInstance(modalEl).show();
+  } catch {
+    // bootstrap not yet hydrated; ignore
+  }
+}
 
 function hexToRgba(color, opacity) {
   if (!color || typeof color !== "string") {
@@ -47,9 +66,23 @@ export default function HomeCtaBanner({ content }) {
       <div className={styles.overlay} style={{ background: overlay }} />
 
       <h2 className={styles.heading}>{c.heading}</h2>
-      <Link href={c.buttonLink || "/contact"} className={styles.btn}>
+      <button
+        type="button"
+        className={styles.btn}
+        onMouseEnter={() => {
+          void openInquiryModal();
+        }}
+        onFocus={() => {
+          void openInquiryModal();
+        }}
+        onClick={() => {
+          void openInquiryModal();
+        }}
+        aria-haspopup="dialog"
+        aria-controls="modalInquiry"
+      >
         {c.buttonText || "Contact Us"}
-      </Link>
+      </button>
     </section>
   );
 }
