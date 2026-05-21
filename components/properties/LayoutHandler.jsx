@@ -5,7 +5,7 @@ export default function LayoutHandler({ defaultGrid = true }) {
     <>
       <li className="nav-tab-item" role="presentation">
         <a
-          href="#gridLayout"
+          href="#gridLayout" 
           className={`btn-layout grid nav-link-item ${
             defaultGrid ? "active" : ""
           }`}
