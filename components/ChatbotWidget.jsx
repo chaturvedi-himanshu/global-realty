@@ -165,7 +165,7 @@ const VARIANT_CONFIG = {
     subBadges: [
       { icon: "⚡", text: "Quick responses" },
       { icon: "🔒", text: "Your privacy" },
-      { icon: "💰", text: "Transparent info" },
+      // { icon: "💰", text: "Transparent info" },
     ],
   },
   admin: {
@@ -242,6 +242,55 @@ export default function ChatbotWidget({ variant = "website" }) {
     }
     return () => {
       if (variant === "website") delete body.dataset.chatbotOpen;
+    };
+  }, [isOpen, variant]);
+
+  /**
+   * Lock background scroll on small screens while the chatbot is open.
+   * Uses the iOS-safe `position: fixed` trick (overflow:hidden alone is
+   * ignored by Safari iOS) and restores the original scroll position on
+   * close. Only active on mobile (≤ 767px); desktop scroll stays normal.
+   */
+  useEffect(() => {
+    if (typeof document === "undefined" || typeof window === "undefined") {
+      return;
+    }
+    if (variant !== "website") return;
+
+    const mq = window.matchMedia("(max-width: 767px)");
+    if (!isOpen || !mq.matches) return;
+
+    const { body } = document;
+    const html = document.documentElement;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+
+    const prev = {
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyWidth: body.style.width,
+      bodyOverflow: body.style.overflow,
+      htmlOverflow: html.style.overflow,
+    };
+
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+    html.style.overflow = "hidden";
+
+    return () => {
+      body.style.position = prev.bodyPosition;
+      body.style.top = prev.bodyTop;
+      body.style.left = prev.bodyLeft;
+      body.style.right = prev.bodyRight;
+      body.style.width = prev.bodyWidth;
+      body.style.overflow = prev.bodyOverflow;
+      html.style.overflow = prev.htmlOverflow;
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen, variant]);
 
@@ -690,8 +739,8 @@ export default function ChatbotWidget({ variant = "website" }) {
           aria-label="Open chat"
           style={{
             position: "fixed",
-            bottom: 28,
-            right: 28,
+            bottom: 8,
+            right: 8,
             zIndex: 9999,
             width: 60,
             height: 60,
@@ -726,8 +775,8 @@ export default function ChatbotWidget({ variant = "website" }) {
         <span
           style={{
             position: "fixed",
-            bottom: 28,
-            right: 28,
+            bottom: 8,
+            right:  8,
             zIndex: 9998,
             width: 60,
             height: 60,
@@ -740,10 +789,11 @@ export default function ChatbotWidget({ variant = "website" }) {
       )}
 
       <div
+        className="gr-chatbot-panel"
         style={{
           position: "fixed",
-          bottom: 28,
-          right: 28,
+          bottom: 8,
+          right: 8,
           zIndex: 9999,
           width: CHAT_PANEL_DESIGN_WIDTH,
           maxWidth: "calc(100vw - 40px)",
@@ -762,7 +812,6 @@ export default function ChatbotWidget({ variant = "website" }) {
           transformOrigin: "bottom right",
           display: "flex",
           flexDirection: "column",
-          maxHeight: "78vh",
           minWidth: 0,
         }}
       >
@@ -1396,6 +1445,18 @@ export default function ChatbotWidget({ variant = "website" }) {
         @keyframes chatBounce {
           0%, 60%, 100% { transform: translateY(0); }
           30%            { transform: translateY(-6px); }
+        }
+        .gr-chatbot-panel { max-height: 78vh; }
+        @media (max-width: 767px) {
+          .gr-chatbot-panel { max-height: 58vh; }
+          /* Belt-and-braces background-scroll lock; the useEffect above also
+             applies the iOS-safe position:fixed trick. */
+          body[data-chatbot-open="1"],
+          html:has(body[data-chatbot-open="1"]) {
+            overflow: hidden !important;
+            touch-action: none;
+            overscroll-behavior: none;
+          }
         }
       `}</style>
     </>
