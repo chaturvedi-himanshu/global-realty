@@ -16,6 +16,10 @@ export async function GET(request) {
     const keyword = searchParams.get("keyword") || searchParams.get("q");
     if (keyword) query.$text = { $search: keyword };
 
+    if (searchParams.get("topNews") === "true") {
+      query.isTopNews = true;
+    }
+
     const [items, total] = await Promise.all([
       News.find(query)
         .sort({ publishedDate: -1, order: 1, createdAt: -1 })

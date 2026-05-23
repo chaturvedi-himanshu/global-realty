@@ -14,6 +14,7 @@ const NewsSchema = new mongoose.Schema(
     },
     order: { type: Number, default: 0 },
     source: { type: String, default: "" },
+    isTopNews: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

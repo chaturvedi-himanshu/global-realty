@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import useSWR from "@/lib/swr-lite";
+import TopNewsSidebar from "./TopNewsSidebar";
 
 function NewsSkeleton() {
   return (
@@ -54,10 +55,10 @@ export default function NewsList() {
   }, [page]);
 
   return (
-    <section className="section-blog-grid section-news-grid">
+    <section className="section-blog-grid section-news-grid section-news-grid--with-sidebar">
       <div className="tf-container">
-        <div className="row">
-          <div className="col-12">
+        <div className="row" style={{ rowGap: "32px" }}>
+          <div className="col-lg-8">
             <div style={{ marginBottom: "28px" }}>
               <div
                 className="box-title"
@@ -357,6 +358,27 @@ export default function NewsList() {
                 </li>
               </ul>
             )}
+          </div>
+
+          <div className="col-lg-4">
+            <div
+              style={{ marginBottom: "28px", visibility: "hidden" }}
+              aria-hidden="true"
+            >
+              <div
+                className="box-title"
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  marginBottom: "12px",
+                }}
+              >
+                <h2 style={{ margin: 0 }}>&nbsp;</h2>
+              </div>
+            </div>
+            <TopNewsSidebar />
           </div>
         </div>
       </div>
