@@ -60,6 +60,7 @@ export async function POST(request) {
       "agent_connect",
       "site_visit",
       "book_meeting",
+      "brochure_download",
     ]);
     const rawInquiryType = String(body?.inquiryType || "").trim();
     const inquiryType = allowedTypes.has(rawInquiryType)
@@ -96,6 +97,7 @@ export async function POST(request) {
       book_meeting: "Connect with an Expert",
       site_visit: "Book a Site Visit",
       agent_connect: "Connect with an Agent",
+      brochure_download: "Brochure / File Download",
     };
     const inquiryTypeLabel = TYPE_LABELS[inquiryType] || "Inquiry";
     const visitDateLabel = visitDate

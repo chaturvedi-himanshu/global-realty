@@ -14,6 +14,7 @@ import PropertyNearby from "./PropertyNearby";
 import Reviews from "./Reviews";
 import Sidebar from "./Sidebar";
 import SimilarPropertiesSidebar from "./SimilarPropertiesSidebar";
+import BrochureDownloadModal from "@/components/common/BrochureDownloadModal";
 
 const getImageUrl = (img) => {
   if (!img) return "";
@@ -137,7 +138,10 @@ export default function Details1({ property }) {
 
             {hasAttach && (
               <div className="wg-property box-attachments">
-                <Attachments attachments={property.attachments} />
+                <Attachments
+                  attachments={property.attachments}
+                  property={property}
+                />
               </div>
             )}
 
@@ -177,6 +181,7 @@ export default function Details1({ property }) {
           </div>
         </div>
       </div>
+      <BrochureDownloadModal />
     </section>
   );
 }

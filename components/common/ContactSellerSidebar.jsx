@@ -6,6 +6,7 @@ import {
   firstErrorMessage,
   validateInquiryForm,
 } from "@/lib/inquiryFormValidation";
+import { requestGatedDownload } from "@/lib/gatedDownload";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -193,6 +194,28 @@ export default function ContactSellerSidebar({
     setErrors({});
     await submitInquiry(form);
   };
+
+  const handleBrochureDownload = useCallback(
+    (e) => {
+      e.preventDefault();
+      const brochureUrl = property ? getBrochureUrl(property) : "";
+      if (!brochureUrl) return;
+      const { projectName, pageName } = getPageMeta();
+      const fromUrl = brochureUrl.split(/[?#]/)[0].split("/").pop() || "";
+      requestGatedDownload({
+        url: brochureUrl,
+        attachmentName: "Brochure",
+        fileName: fromUrl || `${(property?.title || "brochure").replace(/\s+/g, "-")}.pdf`,
+        propertyId: property?._id ? String(property._id) : "",
+        propertyTitle: property?.title || "",
+        projectName: projectName || property?.title || "",
+        pageName: pageName || "",
+        source: "sidebar-brochure",
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [property, inquiryMeta],
+  );
 
   const handleShare = useCallback(async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
@@ -437,10 +460,9 @@ export default function ContactSellerSidebar({
           {brochureUrl ? (
             <a
               href={brochureUrl}
+              onClick={handleBrochureDownload}
               className="property-inquiry-sticky__action-btn"
-              download
-              target="_blank"
-              rel="noopener noreferrer"
+              aria-haspopup="dialog"
             >
               <FiDownload size={18} aria-hidden />
               Download Brochure
