@@ -1442,7 +1442,8 @@
 
 .about-v2-hero {
   position: relative;
-  min-height: 440px;
+  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   background: linear-gradient(
@@ -1457,6 +1458,13 @@
 .about-v2-hero--video {
   padding: 0;
   background: #0b1623;
+}
+
+@media (max-width: 767px) {
+  .about-v2-hero {
+    height: 40vh;
+    min-height: 40vh;
+  }
 }
 
 .about-v2-hero__video {
@@ -1478,11 +1486,21 @@
 .about-v2-stats-band {
   position: relative;
   padding: 56px 0;
+  color: #fff;
+}
+
+.about-v2-stats-band__inner {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1120px;
+  padding: 18px 32px;
+  border-radius: 12px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color: #fff;
   overflow: hidden;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
 }
 
 .about-v2-stats-band__overlay {
@@ -1490,14 +1508,12 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-}
-
-.about-v2-stats-band > .tf-container {
-  position: relative;
-  z-index: 2;
+  border-radius: inherit;
 }
 
 .about-v2-stats-band__grid {
+  position: relative;
+  z-index: 2;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -1511,7 +1527,7 @@
   border-radius: 0;
   padding: 8px 12px;
   flex: 1 1 0;
-  min-width: 140px;
+  min-width: 0;
   text-align: center;
   border: none;
   background: transparent;
@@ -1542,14 +1558,42 @@
     padding: 40px 0;
   }
 
+  .about-v2-stats-band__inner {
+    padding: 28px 20px;
+    border-radius: 10px;
+  }
+
   .about-v2-stats-band__grid {
     gap: 12px;
   }
 }
 
 @media (max-width: 575px) {
+  .about-v2-stats-band {
+    padding: 32px 0;
+  }
+
+  .about-v2-stats-band__inner {
+    padding: 24px 16px;
+  }
+
+  .about-v2-stats-band__grid {
+    gap: 10px;
+  }
+
   .about-v2-stats-band__card {
-    flex: 1 1 45%;
+    flex: 1 1 calc(50% - 10px);
+    padding: 6px 8px;
+  }
+
+  .about-v2-stats-band__card .hero-stat-card__label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .about-v2-stats-band__card {
+    flex: 1 1 100%;
   }
 }
 
@@ -1754,6 +1798,10 @@
 .about-v2-testimonials {
   padding: 70px 0;
   border-bottom: 1px solid var(--av2-border);
+}
+
+.about-v2-relationships{
+  padding-top: 0px;
 }
 
 .about-v2-journey,

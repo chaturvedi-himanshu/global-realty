@@ -148,7 +148,7 @@ export default function Properties2({ defaultGrid = true }) {
         <div className="row">
           <div className="col-12">
             <div className="box-title">
-              <h2>Properties</h2>
+              <h2>Projects</h2>
               <div className="right">
                 <ul className="nav-tab-filter group-layout" role="tablist">
                   <LayoutHandler defaultGrid={defaultGrid} />
@@ -186,9 +186,9 @@ export default function Properties2({ defaultGrid = true }) {
                 style={{ padding: "4rem 0", textAlign: "center" }}
               >
                 <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🏠</div>
-                <h3>No properties found</h3>
+                <h3>No projects found</h3>
                 <p style={{ color: "#6b7280" }}>
-                  Try adjusting your search filters
+                  Try adjusting your search criteria
                 </p>
               </div>
             ) : (

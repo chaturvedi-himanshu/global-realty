@@ -37,32 +37,39 @@ export default function AboutHeroStatsBand({
 
   if (validStats.length === 0) return null;
 
+  const hasImage = Boolean(backgroundImage);
+
   return (
-    <section
-      className="about-v2-stats-band"
-      style={{
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
-      }}
-    >
-      <div
-        className="about-v2-stats-band__overlay"
-        style={{ background: overlayColor }}
-        aria-hidden="true"
-      />
+    <section className="about-v2-stats-band">
       <div className="tf-container">
-        <div className="hero-stats-grid about-v2-stats-band__grid">
-          {validStats.map((item, idx) => (
+        <div
+          className="about-v2-stats-band__inner"
+          style={{
+            backgroundColor: overlayColor || undefined,
+            backgroundImage: hasImage ? `url(${backgroundImage})` : undefined,
+          }}
+        >
+          {hasImage ? (
             <div
-              key={`${item.label}-${idx}`}
-              className="hero-stat-card about-v2-stats-band__card"
-            >
-              <h4 className="hero-stat-card__value">
-                <AnimatedCount value={item.value} />
-                {item.suffix || ""}
-              </h4>
-              <p className="hero-stat-card__label">{item.label}</p>
-            </div>
-          ))}
+              className="about-v2-stats-band__overlay"
+              style={{ background: overlayColor }}
+              aria-hidden="true"
+            />
+          ) : null}
+          <div className="hero-stats-grid about-v2-stats-band__grid">
+            {validStats.map((item, idx) => (
+              <div
+                key={`${item.label}-${idx}`}
+                className="hero-stat-card about-v2-stats-band__card"
+              >
+                <h4 className="hero-stat-card__value">
+                  <AnimatedCount value={item.value} />
+                  {item.suffix || ""}
+                </h4>
+                <p className="hero-stat-card__label">{item.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
