@@ -16,6 +16,7 @@ const nextConfig = {
       { source: "/property-detail-v3/:id", destination: "/property-detail/:id", permanent: true },
       { source: "/property-detail-v4/:id", destination: "/property-detail/:id", permanent: true },
       { source: "/property-detail-v5/:id", destination: "/property-detail/:id", permanent: true },
+      { source: "/properties/:slug", destination: "/property-detail/:slug", permanent: true },
       { source: "/property-list-right-sidebar", destination: "/properties", permanent: true },
       { source: "/property-list-left-sidebar", destination: "/properties", permanent: true },
       { source: "/property-list-top-search", destination: "/properties", permanent: true },
