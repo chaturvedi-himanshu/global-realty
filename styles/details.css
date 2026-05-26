@@ -179,21 +179,52 @@
   border: none;
 }
 
+/* Keep "Get Direction" label/value pairs vertically aligned: lock the label
+   column to a consistent width so values always start at the same x position. */
+.single-property-map .info-map li {
+  align-items: baseline;
+}
+.single-property-map .info-map li .label {
+  flex: 0 0 110px;
+  width: 110px;
+  min-width: 110px;
+}
+@media (max-width: 575px) {
+  .single-property-map .info-map li .label {
+    flex-basis: 96px;
+    width: 96px;
+    min-width: 96px;
+  }
+}
+
 /* === Features / Amenities === */
 .det-amenities-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.625rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6875rem 1rem;
 }
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .det-amenities-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem 1.5rem;
   }
 }
-@media (min-width: 1024px) {
-  .det-amenities-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.box-amenities .det-amenity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--color-default, #4b5563);
+}
+.box-amenities .det-amenity-item::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  margin-top: 0.45em;
+  border-radius: 50%;
+  background-color: var(--Primary, var(--color-primary, #f1913d));
 }
 .det-amenity-item {
   display: flex;
