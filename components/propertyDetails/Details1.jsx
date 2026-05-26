@@ -28,12 +28,14 @@ const getImageUrl = (img) => {
 };
 
 export default function Details1({ property }) {
-  const videoUrl = property?.videoUrl || property?.video || "";
+  // `video` / `virtualTour` are the canonical fields written by the admin.
+  // The legacy `videoUrl` / `virtualTourUrl` fields are intentionally ignored
+  // here so that clearing the value in admin reliably hides the section.
+  const videoUrl = String(property?.video ?? "").trim();
   const videoPoster =
     getImageUrl((property?.images || [])[0]) ||
     "/images/section/property-detail.jpg";
-  const virtualTourUrl =
-    property?.virtualTourUrl || property?.virtualTour || "";
+  const virtualTourUrl = String(property?.virtualTour ?? "").trim();
   const hasMap = !!(
     property?.mapEmbedUrl ||
     (property?.latitude && property?.longitude)
