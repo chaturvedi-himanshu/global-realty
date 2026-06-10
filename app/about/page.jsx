@@ -120,12 +120,55 @@ export default async function AboutPageRoute() {
           overlayColor={data.statsOverlayColor}
         />
 
-        <section className="about-v2-relationships">
-          <div className="tf-container">
-            <h2>{data.storyTitle}</h2>
-            {storyParagraphs.map((paragraph, idx) => (
-              <p key={`story-p-${idx}`}>{paragraph}</p>
-            ))}
+        <section className="about-v2-relationships about-v2-story-section">
+          <div className="about-v2-story-section__glow" aria-hidden />
+          <div className="tf-container about-v2-story-grid">
+            <div className="about-v2-story-left">
+              <div className="about-v2-section-eyebrow">Who we are</div>
+              <h2>{data.storyTitle}</h2>
+              <div className="about-v2-story-cards">
+                {storyParagraphs.map((paragraph, idx) => (
+                  <article
+                    key={`story-p-${idx}`}
+                    className="about-v2-story-card"
+                    style={{ "--i": idx }}
+                  >
+                    <span className="about-v2-story-card__index" aria-hidden>
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <p>{paragraph}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            {Array.isArray(data.values) && data.values.length ? (
+              <aside className="about-v2-story-values" aria-label="Our core values" style={{ marginTop: "72px" }}>
+                <div className="about-v2-story-values__head">
+                  <h3>{data.valuesTitle || "Core Values"}</h3>
+                </div>
+                <ul className="about-v2-story-values__list">
+                  {data.values.map((item, idx) => {
+                    const Icon = valueIcons[idx % valueIcons.length];
+                    return (
+                      <li
+                        key={`${item.title}-${idx}`}
+                        className="about-v2-story-value"
+                        style={{ "--i": idx }}
+                      >
+                        <span className="about-v2-story-value__icon" aria-hidden>
+                          <Icon size={18} />
+                        </span>
+                        <div className="about-v2-story-value__text">
+                          <h4>{item.title}</h4>
+                          {item.description ? <p>{item.description}</p> : null}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </aside>
+            ) : null}
           </div>
         </section>
 
@@ -138,7 +181,7 @@ export default async function AboutPageRoute() {
           </div>
         </section>
 
-        <section className="about-v2-journey" id="journey">
+        {/* <section className="about-v2-journey" id="journey">
           <div className="tf-container about-v2-journey-inner">
             <div className="about-v2-journey-left">
               <div className="about-v2-section-eyebrow">{data.journeyEyebrow}</div>
@@ -165,9 +208,9 @@ export default async function AboutPageRoute() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
-        <section className="about-v2-values">
+        {/* <section className="about-v2-values">
           <div className="tf-container">
             <div className="about-v2-values-header">
               <div className="about-v2-section-eyebrow">Our</div>
@@ -189,7 +232,7 @@ export default async function AboutPageRoute() {
               })}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* <section className="about-v2-mission">
           <div className="tf-container">

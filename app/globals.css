@@ -912,12 +912,12 @@ body * {
 /* Blogs page only: reduce breadcrumb-to-trending slider gap */
 /* Home page only: tighter section spacing */
 .home-page-content .tf-spacing-1 {
-  padding-top: 72px;
-  padding-bottom: 72px;
+  padding-top: 32px;
+  padding-bottom: 32px;
 }
 .home-page-content .tf-spacing-2 {
   padding-top: 52px;
-  padding-bottom: 72px;
+  padding-bottom: 32px;
 }
 .home-page-content .tf-spacing-3 {
   padding-top: 44px;
@@ -932,6 +932,25 @@ body * {
 }
 .home-page-content .tf-spacing-6 {
   padding-bottom: 56px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Homepage: uniform section rhythm + heading sizing
+   Every content section funnels through tf-spacing-1 (72px top/bottom) and
+   shares the same centered heading title/subtitle sizing & spacing.
+   ────────────────────────────────────────────────────────────────────────── */
+.home-page-content .heading-section {
+  margin-bottom: 48px;
+}
+
+.home-page-content .heading-section .title {
+  font-size: clamp(28px, 1rem + 2.2vw, 40px);
+  line-height: 1.2;
+}
+
+.home-page-content .heading-section .text-1 {
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 /* ── Text column ────────────────────── */
@@ -970,7 +989,7 @@ body * {
 /* Title */
 .home-about-title {
   font-size: clamp(26px, 3vw, 40px);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--Heading, #2c2e33);
   margin: 0 0 18px;
@@ -1823,6 +1842,7 @@ html[data-theme="dark"] .home-about-video-play {
 }
 
 .events-page-section .events-media-card__frame {
+  display: block;
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -1834,6 +1854,10 @@ html[data-theme="dark"] .home-about-video-play {
 
 .events-page-section .events-media-card__frame--image {
   min-height: 200px;
+}
+
+.events-page-section a.events-media-card__frame--image {
+  cursor: zoom-in;
 }
 
 .events-page-section .events-media-card__img {
@@ -1896,8 +1920,30 @@ html[data-theme="dark"] .home-about-video-play {
     var(--Primary, #006532) 0%,
     color-mix(in srgb, var(--Primary, #006532) 70%, #000) 100%
   );
-  padding: 72px 0 56px;
   overflow: hidden;
+}
+
+.ci-hero__banner {
+  display: block;
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+/* PhotoSwipe lightbox controls — the theme reset applies overflow + native
+   appearance to every <button>, which clips the prev/next/close icons. */
+.pswp__button {
+  overflow: visible !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+.pswp__button--arrow {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.pswp__icn {
+  overflow: visible !important;
 }
 
 .ci-hero::before {
@@ -2035,7 +2081,7 @@ html[data-theme="dark"] .home-about-video-play {
 
 /* ── Main two-col section ────────────────────────────────────────── */
 .ci-main-section {
-  padding: 56px 0 56px;
+  padding: 56px 0 0 0;
   background: #f4f6f8;
   font-size: 1rem;
 }
@@ -2527,29 +2573,20 @@ html[data-theme="dark"] .home-about-video-play {
 }
 
 /* ── Trust badges ────────────────────────────────────────────────── */
-.ci-trust-section {
-  padding: 48px 0;
-  background: #fff;
-  border-top: 1px solid #eef0f3;
-}
-
 .ci-trust-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-@media (max-width: 767px) {
-  .ci-trust-grid {
-    grid-template-columns: 1fr;
-  }
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .ci-trust-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 24px 28px;
+  text-align: center;
+  gap: 10px;
+  padding: 18px 12px;
   background: #f7f9fc;
   border-radius: 16px;
   border: 1px solid #eef0f3;
@@ -2558,18 +2595,15 @@ html[data-theme="dark"] .home-about-video-play {
     transform 0.2s;
 }
 
-.ci-trust-card:hover {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
+
 
 .ci-trust-card__icon {
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--Primary, #006532) 10%, white);
-  color: var(--Primary, #006532);
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-primary, #78a535) 10%, white);
+  color: var(--color-primary, #78a535);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2578,18 +2612,18 @@ html[data-theme="dark"] .home-about-video-play {
 .ci-trust-card__text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .ci-trust-card__text strong {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: #111;
   line-height: 1.2;
 }
 
 .ci-trust-card__text span {
-  font-size: 15px;
+  font-size: 13px;
   color: #888;
   font-weight: 500;
 }

@@ -69,7 +69,7 @@ export default function PropertyAccordion({ panels = [] }) {
               <div className={styles.content}>
                 <p className={styles.tagline}>{panel.tagline}</p>
                 <a href={panel.href || "#"} className={styles.btn}>
-                  View Properties
+                  View Projects
                 </a>
               </div>
             </div>

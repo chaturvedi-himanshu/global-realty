@@ -60,7 +60,8 @@ export default function AboutLeadershipTeam({ leaders = [] }) {
       breakpoints={{
         0: { slidesPerView: 1.12, spaceBetween: 12 },
         768: { slidesPerView: 2, spaceBetween: 16 },
-        1200: { slidesPerView: 3, spaceBetween: 18 },
+        992: { slidesPerView: 3, spaceBetween: 18 },
+        1200: { slidesPerView: 4, spaceBetween: 18 },
       }}
       loop
       className={`swiper about-v2-team-swiper ${carouselStyles.carousel}`}

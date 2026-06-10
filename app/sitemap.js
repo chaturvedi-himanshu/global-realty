@@ -22,13 +22,26 @@ import PropertySubType from "@/models/PropertySubType";
  */
 export const revalidate = 3600;
 
-const BASE_URL = (
+/**
+ * Force HTTPS on the public base URL so every sitemap link is https.
+ * Local hosts (localhost / 127.0.0.1) are left on http for dev.
+ */
+function normalizeBaseUrl(raw) {
+  let url = String(raw || "").trim().replace(/\/+$/, "");
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test(url);
+  if (!isLocal) {
+    url = url.replace(/^http:\/\//i, "https://");
+    // Add scheme if the env var was provided without one (e.g. "example.com")
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+  }
+  return url;
+}
+
+const BASE_URL = normalizeBaseUrl(
   process.env.NEXT_PUBLIC_APP_URL ||
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "http://localhost:3000"
-)
-  .trim()
-  .replace(/\/+$/, "");
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000"
+);
 
 const STATIC_ROUTES = [
   { path: "/", priority: 1.0, changeFrequency: "daily" },

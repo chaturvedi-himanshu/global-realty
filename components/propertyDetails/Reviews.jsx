@@ -60,7 +60,7 @@ export default function Reviews({ propertyId, fallbackReviews = [] }) {
   return (
     <div className="wg-property mb-0 box-comment">
       <div className="wrap-comment">
-        <h4 className="title">Guest Reviews</h4>
+        <div className="wg-title text-11 fw-6 text-color-heading">Guest Reviews</div>
         <ul className="comment-list">
           {visibleReviews.map((review) => (
             <li key={review._id}>

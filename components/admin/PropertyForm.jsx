@@ -20,6 +20,7 @@ const INITIAL_STATE = {
   amenities: [], features: [], images: [], videoUrl: "", virtualTourUrl: "",
   metaTitle: "", metaDescription: "", metaKeywords: "",
   isFeatured: false, isNew: false, isPremium: false,
+  displayOrder: 0,
 };
 
 const TABS = [
@@ -67,12 +68,13 @@ export default function PropertyForm({ propertyId }) {
       return;
     }
     setSaving(true);
+    const payload = { ...form, displayOrder: Number(form.displayOrder) || 0 };
     try {
       if (propertyId) {
-        await api.put(`/properties/${propertyId}`, form);
+        await api.put(`/properties/${propertyId}`, payload);
         toast.success("Property updated");
       } else {
-        await api.post("/properties", form);
+        await api.post("/properties", payload);
         toast.success("Property created");
         router.push("/admin/properties");
       }
@@ -177,6 +179,20 @@ export default function PropertyForm({ propertyId }) {
                   <option value="">Select Sub Type</option>
                   {subtypesData?.data?.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
                 </select>
+              </div>
+              <div>
+                <label className="ap-label">Display Order</label>
+                <input
+                  type="number"
+                  min="0"
+                  className="ap-input"
+                  value={form.displayOrder}
+                  onChange={(e) => set("displayOrder", e.target.value === "" ? "" : Number(e.target.value))}
+                  placeholder="0"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Controls listing position. Lower numbers appear first (1, 2, 3…). Leave 0 to keep it after ordered ones (newest first).
+                </p>
               </div>
               <div className="ap-col-full"><label className="ap-label">Description</label><RichTextEditor value={form.description} onChange={(v) => set("description", v)} /></div>
               <div className="ap-col-full">

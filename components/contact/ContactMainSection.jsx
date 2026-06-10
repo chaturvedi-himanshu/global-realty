@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { FiTag, FiHeadphones, FiPercent, FiAward } from "react-icons/fi";
 import api from "@/lib/axios";
 import {
   firstErrorMessage,
@@ -72,40 +73,23 @@ function clearKey(setter, key) {
 }
 
 const DEFAULT_BADGES = [
-  {
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-        <path d="M24 4L28.5 14.5L40 16L31.5 24L33.5 35.5L24 30.5L14.5 35.5L16.5 24L8 16L19.5 14.5L24 4Z" fill="currentColor" opacity="0.9"/>
-        <path d="M20 40L24 38L28 40V46L24 44L20 46V40Z" fill="currentColor" opacity="0.6"/>
-      </svg>
-    ),
-    title: "Lowest Price",
-    subtitle: "Guaranteed",
-  },
-  {
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-        <circle cx="24" cy="24" r="10" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-        <path d="M14 24h-6M40 24h-6M24 14v-6M24 40v-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M18 30a8 8 0 0 1 0-12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M30 18a8 8 0 0 1 0 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      </svg>
-    ),
-    title: "Full Service",
-    subtitle: "Support",
-  },
-  {
-    icon: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-        <circle cx="24" cy="24" r="18" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-        <path d="M24 12v24M18 18h9a3 3 0 0 1 0 6H18a3 3 0 0 0 0 6h9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-        <line x1="12" y1="12" x2="36" y2="36" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.4"/>
-      </svg>
-    ),
-    title: "Zero",
-    subtitle: "Brokerage",
-  },
+  { title: "Lowest Price", subtitle: "Guaranteed" },
+  { title: "Full Service", subtitle: "Support" },
+  { title: "Zero", subtitle: "Brokerage" },
 ];
+
+/**
+ * Always render a theme-colored react-icon, chosen from the badge text.
+ * Any emoji/string icon coming from the CMS is intentionally ignored so the
+ * icons stay on-brand and consistent.
+ */
+function resolveBadgeIcon(badge) {
+  const text = `${badge?.title || ""} ${badge?.subtitle || ""}`.toLowerCase();
+  if (/price|cost|deal|offer/.test(text)) return <FiTag size={26} aria-hidden />;
+  if (/service|support|help|assist|care/.test(text)) return <FiHeadphones size={26} aria-hidden />;
+  if (/zero|brokerage|commission|fee|charge/.test(text)) return <FiPercent size={26} aria-hidden />;
+  return <FiAward size={26} aria-hidden />;
+}
 
 export default function ContactMainSection({ contactInfo = {} }) {
   const trustBadges = (contactInfo.trustBadges || []).filter((b) => b.title);
@@ -297,6 +281,18 @@ export default function ContactMainSection({ contactInfo = {} }) {
 
             <div className="ci-left-panel">
               <ContactOfficeDetails contactInfo={contactInfo} />
+
+              <div className="ci-trust-grid" aria-label="Our promises">
+                {displayBadges.map((b, i) => (
+                  <div key={i} className="ci-trust-card">
+                    <div className="ci-trust-card__icon">{resolveBadgeIcon(b)}</div>
+                    <div className="ci-trust-card__text">
+                      <strong>{b.title}</strong>
+                      {b.subtitle && <span>{b.subtitle}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="ci-right-panel">
@@ -487,29 +483,6 @@ export default function ContactMainSection({ contactInfo = {} }) {
               </div>
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ── Trust badges ─────────────────────────────────── */}
-      <section className="ci-trust-section" aria-label="Our promises">
-        <div className="tf-container">
-          <div className="ci-trust-grid">
-            {displayBadges.map((b, i) => (
-              <div key={i} className="ci-trust-card">
-                <div className="ci-trust-card__icon">
-                  {typeof b.icon === "string" ? (
-                    <span style={{ fontSize: "3.75rem" }}>{b.icon}</span>
-                  ) : (
-                    b.icon
-                  )}
-                </div>
-                <div className="ci-trust-card__text">
-                  <strong>{b.title}</strong>
-                  {b.subtitle && <span>{b.subtitle}</span>}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import SplitTextAnimation from "@/components/common/SplitTextAnimation";
 import { properties6 } from "@/data/properties";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import PropertyCard from "@/components/properties/PropertyCard";
 import styles from "./Properties2Carousel.module.css";
 
@@ -48,7 +49,9 @@ function normalizeProperty(p) {
   };
 }
 
-function expandForLoop(items, minSlides = 4) {
+// Ensure enough slides for a seamless infinite loop. Swiper needs at least
+// ~2x slidesPerView slides, so we duplicate the source until we clear that.
+function expandForLoop(items, minSlides = 6) {
   if (!Array.isArray(items) || items.length === 0) return [];
   if (items.length >= minSlides) return items;
   const expanded = [];
@@ -63,7 +66,7 @@ export default function Properties2({ properties: dbProperties = [] }) {
   const properties = expandForLoop(rawList.map(normalizeProperty).slice(0, 10));
 
   return (
-    <section className="section-listing tf-spacing-1">
+    <section className="section-listing tf-spacing-1" style={{ paddingBottom: "72px" }}>
       <div className="tf-container">
         <div className="row">
           <div className="col-12">
@@ -75,22 +78,25 @@ export default function Properties2({ properties: dbProperties = [] }) {
                 Explore our latest projects for sale
               </p>
             </div>
+            <div className={styles.carouselWrap}>
             <Swiper
-              modules={[Pagination, Autoplay]}
-              pagination={{
-                clickable: true,
-              }}
+              modules={[Autoplay]}
               autoplay={{
                 delay: 2000,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
               }}
               breakpoints={{
-                0: { slidesPerView: 1.12, spaceBetween: 12 },
-                768: { slidesPerView: 2, spaceBetween: 16 },
-                1200: { slidesPerView: 3, spaceBetween: 18 },
+                0: { slidesPerView: 1, spaceBetween: 12 },
+                768: {
+                  slidesPerView: 3,
+                  slidesPerGroup: 1,
+                  spaceBetween: 18,
+                },
               }}
               loop={true}
+              loopAdditionalSlides={3}
+              centeredSlides={false}
               className={`swiper ${styles.carousel}`}
             >
               {properties.map((property, idx) => (
@@ -102,6 +108,16 @@ export default function Properties2({ properties: dbProperties = [] }) {
                 </SwiperSlide>
               ))}
             </Swiper>
+            </div>
+            <div className={styles.viewAllWrap}>
+              <Link
+                href="/properties"
+                className="tf-btn bg-color-primary pd-23"
+              >
+                View All Projects
+                <i className="icon-arrow-right" style={{ fontSize: 16 }} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

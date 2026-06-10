@@ -63,7 +63,7 @@ export default function SimilarPropertiesSidebar({ property, maxItems = 3 }) {
     >
       <div className="sidebar-similar-properties__card">
         <h4 className="heading-title sidebar-similar-properties__title">
-          Similar Properties
+          Similar Projects
         </h4>
         {isLoading ? (
           <ul className="sidebar-similar-properties__list" role="list">

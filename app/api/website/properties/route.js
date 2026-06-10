@@ -16,11 +16,23 @@ export async function GET(request) {
     if (type) query.type = type;
     if (status) query.status = status;
 
-    const properties = await Property.find(query)
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .lean()
-      .select("-__v");
+    const properties = await Property.aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          _ord: {
+            $cond: [
+              { $gt: [{ $ifNull: ["$displayOrder", 0] }, 0] },
+              "$displayOrder",
+              Number.MAX_SAFE_INTEGER,
+            ],
+          },
+        },
+      },
+      { $sort: { _ord: 1, createdAt: -1 } },
+      { $limit: limit },
+      { $project: { __v: 0, _ord: 0 } },
+    ]);
 
     return NextResponse.json({ success: true, data: properties });
   } catch (error) {

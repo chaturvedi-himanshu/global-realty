@@ -84,15 +84,34 @@ async function getHomePageData() {
         .limit(10)
         .lean()
         .catch(() => []),
-      PropertyModel.find({
-        isActive: { $ne: false },
-        $or: [{ isFeatured: true }, { featured: true }],
-      })
-        .populate("propertyType", "name title slug")
-        .sort({ createdAt: -1 })
-        .limit(9)
-        .lean()
-        .catch(() => []),
+      (async () => {
+        const docs = await PropertyModel.aggregate([
+          {
+            $match: {
+              isActive: { $ne: false },
+              $or: [{ isFeatured: true }, { featured: true }],
+            },
+          },
+          {
+            $addFields: {
+              _ord: {
+                $cond: [
+                  { $gt: [{ $ifNull: ["$displayOrder", 0] }, 0] },
+                  "$displayOrder",
+                  Number.MAX_SAFE_INTEGER,
+                ],
+              },
+            },
+          },
+          { $sort: { _ord: 1, createdAt: -1 } },
+          { $limit: 9 },
+          { $project: { _ord: 0 } },
+        ]).catch(() => []);
+        return PropertyModel.populate(docs, {
+          path: "propertyType",
+          select: "name title slug",
+        });
+      })(),
       TestimonialModel.find({ isApproved: true, isActive: true })
         .sort({ createdAt: -1 })
         .limit(9)
@@ -394,15 +413,15 @@ export default async function Home() {
         {/* <Categories items={categoryItems} /> */}
         <Properties properties={featuredProperties.slice(0, 6)} />
         <AboutHomeSection content={aboutSection} />
-        <section className="tf-spacing-1">
+        <section className="">
           <PropertyAccordion panels={homeAccordionPanels} />
         </section>
-        <HelpCenter content={helpCenterContent} />
+        {/* <HelpCenter content={helpCenterContent} /> */}
         {/* <LoanCalculator /> */}
         <Cities cities={topCities.slice(0, 4)} />
         <Properties2 properties={properties} />
         <Partners partnerLogos={partnerLogos} />
-        <Blogs blogs={blogs} topPadding={56} />
+        <Blogs blogs={blogs} />
         <Testimonials testimonials={testimonials} />
         <HomeCtaBanner content={homeCtaBanner} />
       </div>

@@ -29,7 +29,9 @@ export default function Nav() {
   const propertiesMenu = payload?.propertiesMenu || [];
 
   const propsMenuActive =
-    !isLoading && isPropertiesNavActive(pathname, searchParams, propertiesMenu);
+    pathname === "/properties" ||
+    (!isLoading &&
+      isPropertiesNavActive(pathname, searchParams, propertiesMenu));
 
   const blogsActive =
     pathname === "/blogs" ||
@@ -53,7 +55,7 @@ export default function Nav() {
       <li
         className={`has-child style-2 ${propsMenuActive ? "current-menu" : ""}`}
       >
-        <a href="#">Projects</a>
+        <Link href="/properties">Projects</Link>
         <ul className="submenu">
           {isLoading ? (
             <li>

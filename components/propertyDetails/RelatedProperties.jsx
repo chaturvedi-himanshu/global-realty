@@ -36,7 +36,7 @@ export default function RelatedProperties({
         <div className="row">
           <div className="col-12">
             <div className="heading-section mb-32">
-              <h2 className="title">Similar Properties</h2>
+              <h2 className="title">Similar Projects</h2>
             </div>
             {isLoading ? (
               <div className="row">

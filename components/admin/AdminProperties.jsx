@@ -55,6 +55,15 @@ export default function AdminProperties() {
     },
     { key: "status", label: "Status", render: (row) => <StatusBadge status={row.status} /> },
     {
+      key: "displayOrder",
+      label: "Order",
+      width: 70,
+      render: (row) =>
+        row.displayOrder > 0
+          ? <span className="ap-flag ap-flag--blue">{row.displayOrder}</span>
+          : <span className="ap-row-meta">—</span>,
+    },
+    {
       key: "flags",
       label: "Flags",
       render: (row) => (

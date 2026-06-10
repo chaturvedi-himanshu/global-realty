@@ -301,7 +301,8 @@ export default function Testimonials({ testimonials: dbTestimonials = [] }) {
                 slidesPerView={1}
                 breakpoints={{
                   768: { slidesPerView: 2, spaceBetween: 20 },
-                  1200: { slidesPerView: 3, spaceBetween: 24 },
+                  992: { slidesPerView: 3, spaceBetween: 20 },
+                  1200: { slidesPerView: 4, spaceBetween: 24 },
                 }}
               >
                 {items.map((item) => (

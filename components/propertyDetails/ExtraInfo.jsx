@@ -193,7 +193,7 @@ export default function ExtraInfo({ property }) {
   return (
     <>
       <div className="wg-title text-11 fw-6 text-color-heading">
-        Property Details
+        Project Details
       </div>
 
       {desc && (

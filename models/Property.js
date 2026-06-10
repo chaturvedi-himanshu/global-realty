@@ -162,6 +162,8 @@ const PropertySchema = new mongoose.Schema(
     virtualTourUrl: { type: String, default: "" },
     virtualTour: { type: String, default: "" },
     attachments: { type: [AttachmentSchema], default: [] },
+    // Builder/developer logo shown on the detail-page inquiry sidebar
+    builderLogo: { type: String, default: "" },
 
     // ── Location ─────────────────────────────────
     address: { type: String, default: "" },
@@ -267,6 +269,8 @@ const PropertySchema = new mongoose.Schema(
     tags: { type: [String], default: [] },
     views: { type: Number, default: 0 },
     viewsCount: { type: Number, default: 0 },
+    /** Manual display order on listings. Lower shows first; 0/unset shown last by newest. */
+    displayOrder: { type: Number, default: 0 },
 
     // ── Flags ────────────────────────────────────
     isActive: { type: Boolean, default: true },
@@ -300,6 +304,7 @@ PropertySchema.index({ price: 1 });
 PropertySchema.index({ isFeatured: 1, isActive: 1 });
 PropertySchema.index({ propertyType: 1, propertySubType: 1 });
 PropertySchema.index({ averageRating: -1 });
+PropertySchema.index({ displayOrder: 1, createdAt: -1 });
 
 export default mongoose.models.Property ||
   mongoose.model("Property", PropertySchema);

@@ -14,6 +14,7 @@ import PropertyNearby from "./PropertyNearby";
 import Reviews from "./Reviews";
 import Sidebar from "./Sidebar";
 import SimilarPropertiesSidebar from "./SimilarPropertiesSidebar";
+import PropertyPromoCarousel from "./PropertyPromoCarousel";
 import BrochureDownloadModal from "@/components/common/BrochureDownloadModal";
 
 const getImageUrl = (img) => {
@@ -118,19 +119,13 @@ export default function Details1({ property }) {
                 />
               </div>
             )}
-            {hasPriceList && (
-              <div className="wg-property box-property-detail">
-                <PriceListSection priceList={property.priceList} />
-              </div>
-            )}
-
+            
             {hasNearby && (
               <div className="wg-property single-property-nearby">
                 <PropertyNearby nearby={property.nearby} />
               </div>
             )}
 
-            <PropertyExtraGallery property={property} />
 
             {hasFloor && (
               <div className="wg-property single-property-floor">
@@ -146,6 +141,8 @@ export default function Details1({ property }) {
                 />
               </div>
             )}
+            
+            <PropertyExtraGallery property={property} />
 
             {videoUrl && (
               <div className="wg-property video">
@@ -179,6 +176,7 @@ export default function Details1({ property }) {
 
           <div className="col-xl-4 col-lg-5">
             <SimilarPropertiesSidebar property={property} />
+            <PropertyPromoCarousel />
             <Sidebar property={property} className="sticky-sidebar" />
           </div>
         </div>

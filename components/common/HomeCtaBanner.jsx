@@ -1,5 +1,6 @@
 "use client";
 
+import { FiPhone } from "react-icons/fi";
 import styles from "./HomeCtaBanner.module.css";
 
 const FALLBACK = {
@@ -81,7 +82,8 @@ export default function HomeCtaBanner({ content }) {
         aria-haspopup="dialog"
         aria-controls="modalInquiry"
       >
-        {c.buttonText || "Contact Us"}
+        <FiPhone className={styles.btnIcon} size={18} aria-hidden />
+        <span>{c.buttonText || "Contact Us"}</span>
       </button>
     </section>
   );

@@ -18,10 +18,10 @@ export default function Cities({ cities = [] }) {
   const compactGrid = cities.length <= 4;
 
   return (
-    <section className="section-neighborhoods" style={{ paddingTop: "104px" }}>
+    <section className="section-neighborhoods tf-spacing-1">
       <div className="tf-container">
         <div className="col-12">
-          <div className="heading-section text-center mb-48">
+          <div className="heading-section text-center">
             <h2 className="title split-text effect-right">
               <SplitTextAnimation text="Explore The Neighborhoods" />
             </h2>

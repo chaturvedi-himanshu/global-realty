@@ -43,9 +43,6 @@ export default function Attachments({ attachments = [], property }) {
 
   return (
     <>
-      <div className="wg-title text-11 fw-6 text-color-heading">
-        File Attachments
-      </div>
       <div className="row">
         {docs.map((att, i) => (
           <div className="col-sm-6" key={`${att.url}-${i}`}>

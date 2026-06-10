@@ -11,7 +11,7 @@ export default function AboutHomeSection({ content }) {
   const mediaHref = String(content.mediaLink || "").trim();
 
   return (
-    <section className="home-about-section tf-spacing-3">
+    <section className="home-about-section tf-spacing-1">
       <div className="tf-container">
         <div className="home-about-wrap">
           {/* ── Left: content column ──────────────────────── */}

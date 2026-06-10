@@ -2,7 +2,8 @@
 
 import SplitTextAnimation from "@/components/common/SplitTextAnimation";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Gallery, Item } from "react-photoswipe-gallery";
 
 const HEADING = "Discover our events";
 const SUB =
@@ -20,7 +21,9 @@ function getYoutubeEmbedUrl(url) {
   return m ? `https://www.youtube.com/embed/${m[1]}` : null;
 }
 
-function EventMediaCard({ item, style }) {
+const DEFAULT_LIGHTBOX_DIMS = { w: 1600, h: 1067 };
+
+function EventMediaCard({ item, style, caption, dims }) {
   const { kind, url } = item;
   const yt = kind === "video" ? getYoutubeEmbedUrl(url) : null;
 
@@ -42,16 +45,39 @@ function EventMediaCard({ item, style }) {
             <video src={url} controls playsInline className="events-media-card__video" />
           </div>
         ) : (
-          <div className="events-media-card__frame events-media-card__frame--image">
-            <Image
-              src={url}
-              alt=""
-              fill
-              className="events-media-card__img"
-              sizes="(max-width: 768px) 100vw, 33vw"
-              unoptimized
-            />
-          </div>
+          <Item
+            original={url}
+            thumbnail={url}
+            caption={caption}
+            width={dims?.w || DEFAULT_LIGHTBOX_DIMS.w}
+            height={dims?.h || DEFAULT_LIGHTBOX_DIMS.h}
+          >
+            {({ ref, open }) => (
+              <a
+                onClick={open}
+                className="events-media-card__frame events-media-card__frame--image"
+                role="button"
+                tabIndex={0}
+                aria-label={caption || "View event photo"}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    open(e);
+                  }
+                }}
+              >
+                <Image
+                  ref={ref}
+                  src={url}
+                  alt={caption || ""}
+                  fill
+                  className="events-media-card__img"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  unoptimized
+                />
+              </a>
+            )}
+          </Item>
         )}
       </div>
     </div>
@@ -86,6 +112,30 @@ export default function EventsPageContent({ events = [], bannerConfig = {} }) {
       .filter((it) => String(it?.url || "").trim())
       .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
   }, [activeTab]);
+
+  // Preload natural dimensions so the PhotoSwipe lightbox sizes images correctly.
+  const [imageDims, setImageDims] = useState({});
+  useEffect(() => {
+    let cancelled = false;
+    sortedItems.forEach((it) => {
+      if (it?.kind === "video") return;
+      const url = String(it?.url || "").trim();
+      if (!url) return;
+      const probe = new window.Image();
+      probe.onload = () => {
+        if (cancelled || !probe.naturalWidth || !probe.naturalHeight) return;
+        setImageDims((prev) =>
+          prev[url]
+            ? prev
+            : { ...prev, [url]: { w: probe.naturalWidth, h: probe.naturalHeight } },
+        );
+      };
+      probe.src = url;
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [sortedItems]);
 
   if (!list.length) {
     return (
@@ -167,22 +217,34 @@ export default function EventsPageContent({ events = [], bannerConfig = {} }) {
           </p>
         </div>
 
-        <div
-          key={displayIndex}
-          className="events-gallery"
-          role="tabpanel"
-          aria-labelledby={`events-tab-${displayIndex}`}
+        <Gallery
+          options={{
+            arrowPrev: true,
+            arrowNext: true,
+            arrowKeys: true,
+            counter: true,
+            loop: true,
+          }}
         >
-          {sortedItems.map((item, i) => (
-            <EventMediaCard
-              key={`${activeTab._id}-${i}-${item.url}`}
-              item={item}
-              style={{
-                animationDelay: `${Math.min(i, 8) * 55}ms`,
-              }}
-            />
-          ))}
-        </div>
+          <div
+            key={displayIndex}
+            className="events-gallery"
+            role="tabpanel"
+            aria-labelledby={`events-tab-${displayIndex}`}
+          >
+            {sortedItems.map((item, i) => (
+              <EventMediaCard
+                key={`${activeTab._id}-${i}-${item.url}`}
+                item={item}
+                caption={activeTab?.name}
+                dims={imageDims[String(item?.url || "").trim()]}
+                style={{
+                  animationDelay: `${Math.min(i, 8) * 55}ms`,
+                }}
+              />
+            ))}
+          </div>
+        </Gallery>
       </div>
     </section>
   );

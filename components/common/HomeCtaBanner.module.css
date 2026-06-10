@@ -29,13 +29,16 @@
 .heading {
   position: relative;
   z-index: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: "Arial", sans-serif;
-  font-size: clamp(22px, 3.5vw, 32px);
+  font-size: 26px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 1.5px;
-  text-transform: uppercase;
   margin: 0;
+  text-transform: uppercase;
   line-height: 1.2;
   max-width: 900px;
 }
@@ -43,7 +46,10 @@
 .btn {
   position: relative;
   z-index: 2;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   padding: 16px 52px;
   background: var(--Primary);
   color: #ffffff;
@@ -76,4 +82,8 @@
   color: #ffffff;
   filter: brightness(0.86);
   transform: translateY(0);
+}
+
+.btnIcon {
+  flex-shrink: 0;
 }

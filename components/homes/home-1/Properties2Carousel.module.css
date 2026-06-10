@@ -1,43 +1,23 @@
+.carouselWrap {
+  overflow: hidden;
+  width: 100%;
+}
+
 .carousel {
-  padding-bottom: 36px;
   position: relative;
   overflow: hidden !important;
-  padding-right: 10px;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.carousel :global(.swiper-pagination) {
-  bottom: 0;
+.carousel :global(.swiper-slide) {
+  height: auto;
+  box-sizing: border-box;
+}
+
+.viewAllWrap {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 6px;
-}
-
-.carousel :global(.swiper-pagination-bullet) {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(15, 24, 36, 0.2);
-  box-shadow: 0 4px 10px rgba(15, 24, 36, 0.14);
-  opacity: 1;
-  cursor: pointer;
-  margin: 0 !important;
-  transition:
-    width 0.25s ease,
-    background 0.25s ease,
-    border-color 0.25s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.carousel :global(.swiper-pagination-bullet-active) {
-  width: 30px;
-  background: var(--Primary);
-  border-color: var(--Primary);
-  box-shadow: 0 6px 16px rgba(15, 24, 36, 0.18);
-}
-
-.carousel :global(.swiper-pagination-bullet:hover) {
-  transform: translateY(-1px);
+  margin-top: 40px;
 }

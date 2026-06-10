@@ -42,7 +42,7 @@ export default function Blogs({
 
   return (
     <section
-      className={styles.section}
+      className={`${styles.section} tf-spacing-1`}
       style={
         typeof topPadding === "number"
           ? { paddingTop: `${topPadding}px` }
@@ -55,7 +55,7 @@ export default function Blogs({
             {showHeading ? (
               <div className="heading-section text-center mb-48">
                 <h2 className="title split-text effect-right">
-                  <SplitTextAnimation text="REAL ESTATE NEWS & UPDATES" />
+                  <SplitTextAnimation text="Real Estate News & Updates" />
                 </h2>
                 <p className="text-1 split-text split-lines-transform">
                   Stay updated with the latest trends, insights, and

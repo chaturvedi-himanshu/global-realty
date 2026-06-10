@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   FaInstagram,
   FaFacebookF,
@@ -85,11 +86,14 @@ export default function Footer1() {
   const trustItems = Array.isArray(v2.trustItems) ? v2.trustItems : [];
   const badges = Array.isArray(v2.badges) ? v2.badges : [];
   const disclaimer = String(v2.disclaimer || "").trim();
-  const disclaimerWords = disclaimer ? disclaimer.split(/\s+/).filter(Boolean) : [];
+  const disclaimerWords = disclaimer
+    ? disclaimer.split(/\s+/).filter(Boolean)
+    : [];
   const hasLongDisclaimer = disclaimerWords.length > 40;
-  const visibleDisclaimer = hasLongDisclaimer && !isDisclaimerExpanded
-    ? `${disclaimerWords.slice(0, 40).join(" ")}...`
-    : disclaimer;
+  const visibleDisclaimer =
+    hasLongDisclaimer && !isDisclaimerExpanded
+      ? `${disclaimerWords.slice(0, 40).join(" ")}...`
+      : disclaimer;
 
   return (
     <>
@@ -118,7 +122,11 @@ export default function Footer1() {
                     key={`${s.label}-${i}`}
                     href={href || "#"}
                     target={/^https?:\/\//i.test(href) ? "_blank" : undefined}
-                    rel={/^https?:\/\//i.test(href) ? "noopener noreferrer" : undefined}
+                    rel={
+                      /^https?:\/\//i.test(href)
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
                     aria-label={s.label}
                     className="footer-v2-social-btn"
                     style={{ color: s.color || "#fff" }}
@@ -140,18 +148,65 @@ export default function Footer1() {
           </div>
 
           <div>
-            <div className="footer-v2-heading">Service Areas</div>
-            <ul className="footer-v2-list">
-              {serviceAreas.map((area, i) => (
-                <li key={`${area}-${i}`}>{area}</li>
-              ))}
-            </ul>
+            <>
+              <div className="footer-v2-heading">Corporate Office</div>
+              <div className="footer-v2-contact-stack">
+                {v2.contactLocationTitle ? (
+                  <div className="footer-v2-contact-card">
+                    <span className="footer-v2-contact-icon">
+                      <FaLocationDot />
+                    </span>
+                    <span>
+                      {v2.contactLocationSub ? (
+                        <span className="footer-v2-contact-sub">
+                          {v2.contactLocationSub}
+                        </span>
+                      ) : null}
+                    </span>
+                  </div>
+                ) : null}
+                {v2.contactPhone ? (
+                  <a
+                    href={`tel:${v2.contactPhone}`}
+                    className="footer-v2-contact-card"
+                  >
+                    <span className="footer-v2-contact-icon">
+                      <FaPhone />
+                    </span>
+                    <span className="footer-v2-contact-main">
+                      {v2.contactPhone}
+                    </span>
+                  </a>
+                ) : null}
+
+                {v2.contactEmailLabel ? (
+                  <a
+                    href={v2.contactEmailHref || "/contact"}
+                    className="footer-v2-contact-card"
+                  >
+                    <span className="footer-v2-contact-icon">
+                      <FaEnvelope />
+                    </span>
+                    <span className="footer-v2-contact-main">
+                      {v2.contactEmailLabel}
+                    </span>
+                  </a>
+                ) : null}
+              </div>
+            </>
             {reraItems.length > 0 ? (
               <>
-                <div className="footer-v2-heading footer-v2-rera-heading">RERA Details</div>
+                <div
+                  className={`footer-v2-heading ${serviceAreas.length > 0 ? "footer-v2-rera-heading" : ""}`}
+                >
+                  RERA Details
+                </div>
                 <ul className="footer-v2-rera-list">
                   {reraItems.map((item, i) => (
-                    <li key={`${item.label}-${i}`} className="footer-v2-rera-item">
+                    <li
+                      key={`${item.label}-${i}`}
+                      className="footer-v2-rera-item"
+                    >
                       <div className="footer-v2-rera-label">{item.label}</div>
                       {item.url ? (
                         <a
@@ -171,7 +226,7 @@ export default function Footer1() {
           </div>
 
           <div>
-            <div className="footer-v2-heading">Legal Links</div>
+            <div className="footer-v2-heading">Quick Links</div>
             <ul className="footer-v2-legal-list">
               {legalLinks.map((link, i) => (
                 <li key={`${link.label}-${i}`}>
@@ -182,29 +237,55 @@ export default function Footer1() {
           </div>
 
           <div>
-            <div className="footer-v2-heading">Trust</div>
-            <ul className="footer-v2-list">
-              {trustItems.map((item, i) => (
-                <li key={`${item}-${i}`}>{item}</li>
-              ))}
-            </ul>
-            <div className="footer-v2-heading footer-v2-contact-heading">Contact</div>
+            {/* {trustItems.length > 0 ? (
+              <>
+                <div className="footer-v2-heading">Why Choose Us</div>
+                <ul className="footer-v2-list">
+                  {trustItems.map((item, i) => (
+                    <li key={`${item}-${i}`}>{item}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null} */}
+            {serviceAreas.length > 0 ? (
+              <>
+                <div className="footer-v2-heading">Service Areas</div>
+                <ul className="footer-v2-list">
+                  {serviceAreas.map((area, i) => (
+                    <li key={`${area}-${i}`}>{area}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            {/* <div className="footer-v2-heading footer-v2-contact-heading">
+              Contact
+            </div>
             <div className="footer-v2-contact-stack">
               {v2.contactPhone ? (
-                <a href={`tel:${v2.contactPhone}`} className="footer-v2-contact-card">
+                <a
+                  href={`tel:${v2.contactPhone}`}
+                  className="footer-v2-contact-card"
+                >
                   <span className="footer-v2-contact-icon">
                     <FaPhone />
                   </span>
-                  <span className="footer-v2-contact-main">{v2.contactPhone}</span>
+                  <span className="footer-v2-contact-main">
+                    {v2.contactPhone}
+                  </span>
                 </a>
               ) : null}
 
               {v2.contactEmailLabel ? (
-                <a href={v2.contactEmailHref || "/contact"} className="footer-v2-contact-card">
+                <a
+                  href={v2.contactEmailHref || "/contact"}
+                  className="footer-v2-contact-card"
+                >
                   <span className="footer-v2-contact-icon">
                     <FaEnvelope />
                   </span>
-                  <span className="footer-v2-contact-main">{v2.contactEmailLabel}</span>
+                  <span className="footer-v2-contact-main">
+                    {v2.contactEmailLabel}
+                  </span>
                 </a>
               ) : null}
 
@@ -214,14 +295,18 @@ export default function Footer1() {
                     <FaLocationDot />
                   </span>
                   <span>
-                    <span className="footer-v2-contact-main">{v2.contactLocationTitle}</span>
+                    <span className="footer-v2-contact-main">
+                      {v2.contactLocationTitle}
+                    </span>
                     {v2.contactLocationSub ? (
-                      <span className="footer-v2-contact-sub">{v2.contactLocationSub}</span>
+                      <span className="footer-v2-contact-sub">
+                        {v2.contactLocationSub}
+                      </span>
                     ) : null}
                   </span>
                 </div>
               ) : null}
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -244,7 +329,28 @@ export default function Footer1() {
               ) : null}
             </div>
           ) : null}
-          <div>{v2.bottomText}</div>
+          <div className="flex items-center justify-between">
+            <div>{v2.bottomText}</div>
+            <div className="footer-v2-credit">
+              <span>Designed and developed by</span>
+              <a
+                href="https://www.sysneticindia.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Sysnetic India"
+                className="footer-v2-credit__link"
+              >
+                <Image
+                  src="/images/logo/sysneticindialogo.png"
+                  alt="Sysnetic India"
+                  width={132}
+                  height={34}
+                  className="footer-v2-credit__logo"
+                  unoptimized
+                />
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </>

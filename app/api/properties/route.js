@@ -37,7 +37,40 @@ export async function GET(request) {
 
     const keyword = searchParams.get("keyword");
     if (keyword) {
-      query.$text = { $search: keyword };
+      const kw = String(keyword).trim();
+      if (kw) {
+        const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const rx = { $regex: escaped, $options: "i" };
+
+        // Resolve matching city names -> ids (city is stored as ObjectId or string)
+        const CityModel =
+          mongoose.models.City ||
+          mongoose.model(
+            "City",
+            new mongoose.Schema({ name: String, slug: String }, { strict: false })
+          );
+        const cityDocs = await CityModel.find({ name: rx }).select("_id").lean();
+        const cityIds = cityDocs.flatMap((c) => {
+          const idStr = String(c._id);
+          return isObjectId(idStr)
+            ? [new mongoose.Types.ObjectId(idStr), idStr]
+            : [idStr];
+        });
+
+        // Location/identity-scoped keyword match. Intentionally excludes the
+        // free-text `description` so a project that merely *mentions* a nearby
+        // area (e.g. "Greater Noida") isn't returned for that location search.
+        const keywordOr = [
+          { title: rx },
+          { address: rx },
+          { pincode: rx },
+          { specification: rx },
+          { tags: rx },
+        ];
+        if (cityIds.length) keywordOr.push({ city: { $in: cityIds } });
+
+        query.$and = [...(query.$and || []), { $or: keywordOr }];
+      }
     }
 
     const city = searchParams.get("city");
@@ -144,19 +177,38 @@ export async function GET(request) {
     }
 
     const sortParam = searchParams.get("sort") || "";
-    let sort = { createdAt: -1 }; // default: newest first
+    let sort = null; // null => default: manual displayOrder, then newest first
     if (sortParam === "price_asc")                                    sort = { price: 1 };
     else if (sortParam === "price_desc")                              sort = { price: -1 };
     else if (sortParam === "featured")                                sort = { isFeatured: -1, createdAt: -1 };
     else if (sortParam === "createdAt_asc" || sortParam === "oldest") sort = { createdAt: 1 };
     else if (sortParam === "createdAt_desc" || sortParam === "newest")sort = { createdAt: -1 };
 
+    // Default ordering: properties with a manual displayOrder (> 0) come first
+    // in ascending order; the rest (0/unset) follow, sorted by newest.
+    const sortStages = sort
+      ? [{ $sort: sort }]
+      : [
+          {
+            $addFields: {
+              _ord: {
+                $cond: [
+                  { $gt: [{ $ifNull: ["$displayOrder", 0] }, 0] },
+                  "$displayOrder",
+                  Number.MAX_SAFE_INTEGER,
+                ],
+              },
+            },
+          },
+          { $sort: { _ord: 1, createdAt: -1 } },
+        ];
+
     // Use aggregate for $match so Mongoose does NOT cast query values — this
     // lets { $in: [ObjectId, "string"] } match fields stored as either type.
     const [rawMatches, countResult] = await Promise.all([
       Property.aggregate([
         { $match: query },
-        { $sort: sort },
+        ...sortStages,
         { $skip: skip },
         { $limit: limit },
         { $project: { _id: 1 } },

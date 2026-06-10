@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FiDownload, FiSend, FiShare2 } from "react-icons/fi";
+import { FiCalendar, FiDollarSign, FiDownload, FiSend, FiShare2, FiUser } from "react-icons/fi";
 
 const emptyForm = { name: "", email: "", phone: "" };
 
@@ -56,6 +56,30 @@ function clearErr(setter, key) {
     delete n[key];
     return n;
   });
+}
+
+async function openInquiryModal(tab = "book_meeting") {
+  if (typeof window === "undefined") return;
+  const modalEl = document.getElementById("modalInquiry");
+  if (!modalEl) return;
+  if (modalEl.classList.contains("show")) return;
+
+  window.dispatchEvent(
+    new CustomEvent("inquiry-modal:set-tab", { detail: { tab } }),
+  );
+
+  if (window.bootstrap?.Modal) {
+    window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    return;
+  }
+  try {
+    const bootstrapModule = await import("bootstrap/dist/js/bootstrap.esm");
+    const ModalCtor = bootstrapModule?.Modal;
+    if (!ModalCtor) return;
+    ModalCtor.getOrCreateInstance(modalEl).show();
+  } catch {
+    // bootstrap not yet hydrated; ignore
+  }
 }
 
 function getOverviewValue(property, patterns) {
@@ -205,7 +229,9 @@ export default function ContactSellerSidebar({
       requestGatedDownload({
         url: brochureUrl,
         attachmentName: "Brochure",
-        fileName: fromUrl || `${(property?.title || "brochure").replace(/\s+/g, "-")}.pdf`,
+        fileName:
+          fromUrl ||
+          `${(property?.title || "brochure").replace(/\s+/g, "-")}.pdf`,
         propertyId: property?._id ? String(property._id) : "",
         propertyTitle: property?.title || "",
         projectName: projectName || property?.title || "",
@@ -373,6 +399,7 @@ export default function ContactSellerSidebar({
 
   /* ── Property detail sticky inquiry ──────────────────────────────── */
   const builderName = getBuilderName(property);
+  const builderLogo = String(property.builderLogo || "").trim();
   const priceLine = formatPropertyPriceCrLac(
     property.price,
     property.priceType,
@@ -388,20 +415,39 @@ export default function ContactSellerSidebar({
     >
       <div className="property-inquiry-sticky">
         <div className="property-inquiry-sticky__head">
-          <Link
-            href="/"
-            className="property-inquiry-sticky__logo-link"
-            aria-label="Home"
-          >
-            <Image
-              src="/images/logo/logo.png"
-              alt=""
-              width={140}
-              height={44}
-              className="property-inquiry-sticky__logo"
-              priority={false}
-            />
-          </Link>
+          {builderLogo ? (
+            <span className="property-inquiry-sticky__logo-link">
+              <Image
+                src={builderLogo}
+                alt={builderName ? `${builderName} logo` : property.title}
+                width={140}
+                height={44}
+                className="property-inquiry-sticky__logo"
+                style={{
+                  width: "auto",
+                  height: 44,
+                  maxWidth: 180,
+                  objectFit: "contain",
+                }}
+                priority={false}
+              />
+            </span>
+          ) : (
+            <Link
+              href="/"
+              className="property-inquiry-sticky__logo-link"
+              aria-label="Home"
+            >
+              <Image
+                src="/images/logo/logo.png"
+                alt=""
+                width={140}
+                height={44}
+                className="property-inquiry-sticky__logo"
+                priority={false}
+              />
+            </Link>
+          )}
           <div className="property-inquiry-sticky__property-info">
             <p className="property-inquiry-sticky__property-line">
               <strong className="property-inquiry-sticky__property-name">
@@ -418,15 +464,6 @@ export default function ContactSellerSidebar({
             ) : null}
           </div>
         </div>
-
-        {builderName ? (
-          <p className="property-inquiry-sticky__builder">
-            <span className="property-inquiry-sticky__meta-k">Builder :</span>{" "}
-            <span className="property-inquiry-sticky__meta-v">
-              {builderName}
-            </span>
-          </p>
-        ) : null}
 
         {specLine ? (
           <p className="property-inquiry-sticky__meta-row">
@@ -452,10 +489,11 @@ export default function ContactSellerSidebar({
           <button
             type="button"
             className="property-inquiry-sticky__action-btn"
-            onClick={handleShare}
+            onClick={() => void openInquiryModal()}
+            aria-haspopup="dialog"
+            aria-controls="modalInquiry"
           >
-            <FiShare2 size={18} aria-hidden />
-            Share
+            Price on request
           </button>
           {brochureUrl ? (
             <a
@@ -478,9 +516,27 @@ export default function ContactSellerSidebar({
               Download Brochure
             </button>
           )}
+          <button
+            type="button"
+            className="property-inquiry-sticky__action-btn"
+            onClick={() => void openInquiryModal()}
+            aria-haspopup="dialog"
+            aria-controls="modalInquiry"
+          >
+            Connect With An Expert
+          </button>
+          <button
+            type="button"
+            className="property-inquiry-sticky__action-btn"
+            onClick={() => void openInquiryModal("site_visit")}
+            aria-haspopup="dialog"
+            aria-controls="modalInquiry"
+          >
+            Book A Site Visit
+          </button>
         </div>
 
-        <form
+        {/* <form
           className="property-inquiry-sticky__form"
           onSubmit={handleSubmit}
           noValidate
@@ -579,7 +635,7 @@ export default function ContactSellerSidebar({
               </button>
             </>
           )}
-        </form>
+        </form> */}
       </div>
     </div>
   );

@@ -107,6 +107,18 @@ export default function InquiryModal() {
    * Clear errors on shown so reopen never shows stale blur/submit validation.
    */
   useEffect(() => {
+    const onSetTab = (event) => {
+      const tab = event?.detail?.tab;
+      if (tab === TAB_VISIT || tab === TAB_MEETING) {
+        setActiveTab(tab);
+      }
+    };
+
+    window.addEventListener("inquiry-modal:set-tab", onSetTab);
+    return () => window.removeEventListener("inquiry-modal:set-tab", onSetTab);
+  }, []);
+
+  useEffect(() => {
     const el = modalRef.current;
     if (!el) return undefined;
 
