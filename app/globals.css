@@ -1923,6 +1923,15 @@ html[data-theme="dark"] .home-about-video-play {
   overflow: hidden;
 }
 
+/* Admin-uploaded banner image — image only, no overlaid content */
+.ci-hero--image-only {
+  background: none;
+}
+
+.ci-hero--image-only::before {
+  content: none;
+}
+
 .ci-hero__banner {
   display: block;
   width: 100%;

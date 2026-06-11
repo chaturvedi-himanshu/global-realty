@@ -92,6 +92,7 @@ function resolveBadgeIcon(badge) {
 }
 
 export default function ContactMainSection({ contactInfo = {} }) {
+  const bannerImage = String(contactInfo.bannerImage || "").trim();
   const trustBadges = (contactInfo.trustBadges || []).filter((b) => b.title);
   const rawStats    = (contactInfo.heroStats  || []).filter((s) => s.value && s.label);
   const heroStats   = rawStats.length > 0 ? rawStats : [
@@ -249,30 +250,16 @@ export default function ContactMainSection({ contactInfo = {} }) {
   return (
     <>
       {/* ── Hero banner ───────────────────────────────────── */}
-      <div className="ci-hero">
-        <div className="ci-hero__overlay" aria-hidden="true" />
-        <div className="tf-container ci-hero__inner">
-          <div className="ci-hero__text">
-            <h1 className="ci-hero__title">
-              {contactInfo.bannerTitle || "Contact Us"}
-            </h1>
-            {contactInfo.bannerSubtitle && (
-              <p className="ci-hero__subtitle">{contactInfo.bannerSubtitle}</p>
-            )}
-          </div>
-          <div className="ci-hero__stats">
-            {heroStats.map((stat, i) => (
-              <>
-                {i > 0 && <div key={`d-${i}`} className="ci-hero__stat-divider" />}
-                <div key={i} className="ci-hero__stat">
-                  <span className="ci-hero__stat-num">{stat.value}</span>
-                  <span className="ci-hero__stat-lbl">{stat.label}</span>
-                </div>
-              </>
-            ))}
-          </div>
+      {bannerImage && (
+        <div className="ci-hero ci-hero--image-only">
+          <img
+            src={bannerImage}
+            alt={contactInfo.bannerTitle || "Contact Us"}
+            className="ci-hero__banner"
+            loading="eager"
+          />
         </div>
-      </div>
+      )}
 
       {/* ── Main two-column section ───────────────────────── */}
       <section className="ci-main-section">
@@ -491,10 +478,6 @@ export default function ContactMainSection({ contactInfo = {} }) {
       {contactInfo.mapEmbedUrl && (
         <section className="ci-map-section" aria-label="Our location on map">
           <div className="ci-map-section__inner tf-container">
-            <div className="ci-map-section__header">
-              <h2>Find Us</h2>
-              <p>Visit our office — we&apos;re happy to meet in person.</p>
-            </div>
             <div className="ci-map-wrap">
               <iframe
                 src={contactInfo.mapEmbedUrl}
