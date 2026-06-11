@@ -143,7 +143,7 @@ export default async function AboutPageRoute() {
             </div>
 
             {Array.isArray(data.values) && data.values.length ? (
-              <aside className="about-v2-story-values" aria-label="Our core values" style={{ marginTop: "72px" }}>
+              <aside className="about-v2-story-values" aria-label="Our core values">
                 <div className="about-v2-story-values__head">
                   <h3>{data.valuesTitle || "Core Values"}</h3>
                 </div>

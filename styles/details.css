@@ -649,6 +649,37 @@
   z-index: 10;
 }
 
+@media (max-width: 575px) {
+  .property-detail-page .tf-sidebar.sticky-sidebar {
+    position: relative;
+    top: 0;
+    z-index: 10;
+    padding-top: 0px !important;
+  }
+}
+@media (max-width: 545px) {
+  .property-inquiry-sidebar .property-inquiry-sticky {
+    box-shadow: unset !important;
+  }
+  .tf-spacing-1,
+  .tf-spacing-2,
+  .tf-spacing-3,
+  .tf-spacing-4,
+  .tf-spacing-5,
+  .tf-spacing-6,
+  .tf-spacing-7,
+  .tf-spacing-8,
+  .tf-spacing-9,
+  .tf-spacing-10,
+  .tf-spacing-11,
+  .tf-spacing-12,
+  .tf-spacing-14,
+  .tf-spacing-15 {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+}
+
 /* Property detail — sticky inquiry card (project name, meta, share/brochure, form) */
 .property-inquiry-sidebar .property-inquiry-sticky {
   background: var(--White, #fff);
@@ -951,7 +982,9 @@
   color: var(--color-primary, #78a535);
 }
 
-[data-theme="dark"] .property-inquiry-sidebar .property-inquiry-sticky__consent {
+[data-theme="dark"]
+  .property-inquiry-sidebar
+  .property-inquiry-sticky__consent {
   color: var(--text-muted, #94a3b8);
 }
 
@@ -1029,7 +1062,9 @@
   background: var(--color-primary, #78a535);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
   cursor: pointer;
-  transition: background 0.25s ease-in-out, transform 0.2s ease-in-out,
+  transition:
+    background 0.25s ease-in-out,
+    transform 0.2s ease-in-out,
     box-shadow 0.25s ease-in-out;
 }
 
@@ -1039,7 +1074,9 @@
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(0, 0, 0, 0.12);
   opacity: 1;
-  transition: width 0.25s ease, background 0.25s ease;
+  transition:
+    width 0.25s ease,
+    background 0.25s ease;
 }
 
 .property-promo-carousel__swiper .swiper-pagination-bullet-active {
