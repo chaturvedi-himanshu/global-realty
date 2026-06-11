@@ -415,7 +415,7 @@ export default function ContactSellerSidebar({
     >
       <div className="property-inquiry-sticky">
         <div className="property-inquiry-sticky__head">
-          {builderLogo ? (
+          {builderLogo && (
             <span className="property-inquiry-sticky__logo-link">
               <Image
                 src={builderLogo}
@@ -432,21 +432,6 @@ export default function ContactSellerSidebar({
                 priority={false}
               />
             </span>
-          ) : (
-            <Link
-              href="/"
-              className="property-inquiry-sticky__logo-link"
-              aria-label="Home"
-            >
-              <Image
-                src="/images/logo/logo.png"
-                alt=""
-                width={140}
-                height={44}
-                className="property-inquiry-sticky__logo"
-                priority={false}
-              />
-            </Link>
           )}
           <div className="property-inquiry-sticky__property-info">
             <p className="property-inquiry-sticky__property-line">
@@ -495,27 +480,17 @@ export default function ContactSellerSidebar({
           >
             Price on request
           </button>
-          {brochureUrl ? (
-            <a
-              href={brochureUrl}
-              onClick={handleBrochureDownload}
+          {brochureUrl && (
+            <button
+              type="button"
               className="property-inquiry-sticky__action-btn"
+              onClick={handleBrochureDownload}
               aria-haspopup="dialog"
             >
               <FiDownload size={18} aria-hidden />
               Download Brochure
-            </a>
-          ) : (
-            <button
-              type="button"
-              className="property-inquiry-sticky__action-btn property-inquiry-sticky__action-btn--disabled"
-              disabled
-              title="No brochure uploaded for this listing"
-            >
-              <FiDownload size={18} aria-hidden />
-              Download Brochure
             </button>
-          )}
+          ) }
           <button
             type="button"
             className="property-inquiry-sticky__action-btn"

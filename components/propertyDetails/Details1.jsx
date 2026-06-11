@@ -133,14 +133,14 @@ export default function Details1({ property }) {
               </div>
             )}
 
-            {hasAttach && (
+            {/* {hasAttach && (
               <div className="wg-property box-attachments">
                 <Attachments
                   attachments={property.attachments}
                   property={property}
                 />
               </div>
-            )}
+            )} */}
             
             <PropertyExtraGallery property={property} />
 
@@ -175,7 +175,7 @@ export default function Details1({ property }) {
           </div>
 
           <div className="col-xl-4 col-lg-5">
-            <SimilarPropertiesSidebar property={property} />
+            {/* <SimilarPropertiesSidebar property={property} /> */}
             <PropertyPromoCarousel />
             <Sidebar property={property} className="sticky-sidebar" />
           </div>

@@ -91,7 +91,7 @@ export default function MobileMenu() {
                 aria-expanded="false"
                 aria-controls="dropdown-menu-props"
               >
-                Properties
+                Projects
               </a>
               <div
                 id="dropdown-menu-props"

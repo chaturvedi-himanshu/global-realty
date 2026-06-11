@@ -148,6 +148,90 @@ export default function Footer1() {
           </div>
 
           <div>
+            {trustItems.length > 0 ? (
+              <>
+                <div className="footer-v2-heading">Why Choose Us</div>
+                <ul className="footer-v2-list">
+                  {trustItems.map((item, i) => (
+                    <li key={`${item}-${i}`}>{item}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+          </div>
+
+          <div>
+            <div className="footer-v2-heading">Quick Links</div>
+            <ul className="footer-v2-legal-list">
+              {legalLinks.map((link, i) => (
+                <li key={`${link.label}-${i}`}>
+                  <Link href={link.href || "/"}>{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+            {/* {serviceAreas.length > 0 ? (
+              <>
+                <div className="footer-v2-heading">Service Areas</div>
+                <ul className="footer-v2-list">
+                  {serviceAreas.map((area, i) => (
+                    <li key={`${area}-${i}`}>{area}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null} */}
+            {/* <div className="footer-v2-heading footer-v2-contact-heading">
+              Contact
+            </div>
+            <div className="footer-v2-contact-stack">
+              {v2.contactPhone ? (
+                <a
+                  href={`tel:${v2.contactPhone}`}
+                  className="footer-v2-contact-card"
+                >
+                  <span className="footer-v2-contact-icon">
+                    <FaPhone />
+                  </span>
+                  <span className="footer-v2-contact-main">
+                    {v2.contactPhone}
+                  </span>
+                </a>
+              ) : null}
+
+              {v2.contactEmailLabel ? (
+                <a
+                  href={v2.contactEmailHref || "/contact"}
+                  className="footer-v2-contact-card"
+                >
+                  <span className="footer-v2-contact-icon">
+                    <FaEnvelope />
+                  </span>
+                  <span className="footer-v2-contact-main">
+                    {v2.contactEmailLabel}
+                  </span>
+                </a>
+              ) : null}
+
+              {v2.contactLocationTitle ? (
+                <div className="footer-v2-contact-card">
+                  <span className="footer-v2-contact-icon">
+                    <FaLocationDot />
+                  </span>
+                  <span>
+                    <span className="footer-v2-contact-main">
+                      {v2.contactLocationTitle}
+                    </span>
+                    {v2.contactLocationSub ? (
+                      <span className="footer-v2-contact-sub">
+                        {v2.contactLocationSub}
+                      </span>
+                    ) : null}
+                  </span>
+                </div>
+              ) : null}
+            </div> */}
+          </div>
+
+          <div>
             <>
               <div className="footer-v2-heading">Corporate Office</div>
               <div className="footer-v2-contact-stack">
@@ -223,90 +307,6 @@ export default function Footer1() {
                 </ul>
               </>
             ) : null}
-          </div>
-
-          <div>
-            <div className="footer-v2-heading">Quick Links</div>
-            <ul className="footer-v2-legal-list">
-              {legalLinks.map((link, i) => (
-                <li key={`${link.label}-${i}`}>
-                  <Link href={link.href || "/"}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            {/* {trustItems.length > 0 ? (
-              <>
-                <div className="footer-v2-heading">Why Choose Us</div>
-                <ul className="footer-v2-list">
-                  {trustItems.map((item, i) => (
-                    <li key={`${item}-${i}`}>{item}</li>
-                  ))}
-                </ul>
-              </>
-            ) : null} */}
-            {serviceAreas.length > 0 ? (
-              <>
-                <div className="footer-v2-heading">Service Areas</div>
-                <ul className="footer-v2-list">
-                  {serviceAreas.map((area, i) => (
-                    <li key={`${area}-${i}`}>{area}</li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
-            {/* <div className="footer-v2-heading footer-v2-contact-heading">
-              Contact
-            </div>
-            <div className="footer-v2-contact-stack">
-              {v2.contactPhone ? (
-                <a
-                  href={`tel:${v2.contactPhone}`}
-                  className="footer-v2-contact-card"
-                >
-                  <span className="footer-v2-contact-icon">
-                    <FaPhone />
-                  </span>
-                  <span className="footer-v2-contact-main">
-                    {v2.contactPhone}
-                  </span>
-                </a>
-              ) : null}
-
-              {v2.contactEmailLabel ? (
-                <a
-                  href={v2.contactEmailHref || "/contact"}
-                  className="footer-v2-contact-card"
-                >
-                  <span className="footer-v2-contact-icon">
-                    <FaEnvelope />
-                  </span>
-                  <span className="footer-v2-contact-main">
-                    {v2.contactEmailLabel}
-                  </span>
-                </a>
-              ) : null}
-
-              {v2.contactLocationTitle ? (
-                <div className="footer-v2-contact-card">
-                  <span className="footer-v2-contact-icon">
-                    <FaLocationDot />
-                  </span>
-                  <span>
-                    <span className="footer-v2-contact-main">
-                      {v2.contactLocationTitle}
-                    </span>
-                    {v2.contactLocationSub ? (
-                      <span className="footer-v2-contact-sub">
-                        {v2.contactLocationSub}
-                      </span>
-                    ) : null}
-                  </span>
-                </div>
-              ) : null}
-            </div> */}
           </div>
         </div>
 

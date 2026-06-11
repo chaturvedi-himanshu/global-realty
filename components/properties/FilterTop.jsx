@@ -456,7 +456,7 @@ export default function FilterTop({
                     Home
                   </Link>
                 </li>
-                <li>Properties</li>
+                <li>Projects</li>
               </ul>
             </div>
 

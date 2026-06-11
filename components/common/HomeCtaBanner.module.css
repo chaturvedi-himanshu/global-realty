@@ -43,6 +43,14 @@
   max-width: 900px;
 }
 
+@media (max-width: 768px) {
+  .heading {
+    font-size: 20px;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
 .btn {
   position: relative;
   z-index: 2;
