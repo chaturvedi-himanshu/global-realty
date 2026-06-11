@@ -150,7 +150,7 @@ export default function Footer1() {
           <div>
             {trustItems.length > 0 ? (
               <>
-                <div className="footer-v2-heading">Why Choose Us</div>
+                <div className="footer-v2-heading">Trust</div>
                 <ul className="footer-v2-list">
                   {trustItems.map((item, i) => (
                     <li key={`${item}-${i}`}>{item}</li>
