@@ -1935,11 +1935,7 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(
-    180deg,
-    var(--av2-green-mid),
-    var(--av2-lux-gold)
-  );
+  background: #6f943b;
 }
 
 .about-v2-story-card__index {
@@ -2110,7 +2106,20 @@
   font-size: 34px;
   font-weight: 700;
   color: var(--av2-text-dark);
-  margin-bottom: 12px;
+}
+
+.bottom-section-css{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
 }
 
 .about-v2 p {
@@ -2126,7 +2135,6 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #9a7a42;
-  margin-bottom: 10px;
 }
 
 .about-v2-team-grid {

@@ -329,7 +329,7 @@ export default function Footer1() {
               ) : null}
             </div>
           ) : null}
-          <div className="flex sm:flex-row flex-col items-center justify-between">
+          <div className="bottom-section-css">
             <div>{v2.bottomText}</div>
             <div className="footer-v2-credit">
               <span>Designed and developed by</span>
