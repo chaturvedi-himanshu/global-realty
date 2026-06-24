@@ -24,6 +24,7 @@ const AREA_OF_INTEREST_OPTIONS = [
   "Lockable Retail Shops",
   "Pre Leased Investments",
   "Plots",
+  "Job/Career",
 ];
 
 const VALIDATE_OPTS = {
