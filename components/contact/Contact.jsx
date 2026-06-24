@@ -29,7 +29,6 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [interest, setInterest] = useState("");
-  const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -37,8 +36,8 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { ok, errors } = validateInquiryForm(
-      { name, email, phone, message },
-      { minMessage: 10 }
+      { name, email, phone },
+      { requireMessage: false }
     );
     if (!ok) {
       setFieldErrors(errors);
@@ -54,7 +53,6 @@ export default function Contact() {
         email: email.trim(),
         phone: phone.trim(),
         interest: interest.trim(),
-        message: message.trim(),
         pageName: "contact",
       });
       toast.success("Message sent! We'll get back to you soon.");
@@ -198,25 +196,6 @@ export default function Contact() {
                       />
                     </fieldset>
                   </div>
-                  <fieldset>
-                    <label htmlFor="message">Your Message:</label>
-                    <textarea
-                      name="message"
-                      cols={30}
-                      rows={10}
-                      placeholder="Message"
-                      id="message"
-                      value={message}
-                      onChange={(e) => {
-                        setMessage(e.target.value);
-                        clearKey(setFieldErrors, "message");
-                      }}
-                      aria-invalid={!!fieldErrors.message}
-                    />
-                    {fieldErrors.message ? (
-                      <span className="form-field-error">{fieldErrors.message}</span>
-                    ) : null}
-                  </fieldset>
                   <div className="send-wrap">
                     <button
                       className="tf-btn bg-color-primary fw-7 pd-8"

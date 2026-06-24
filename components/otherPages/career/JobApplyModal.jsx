@@ -24,8 +24,7 @@ function validateForm(values, file) {
     err.fullName = "Use letters, spaces, and common punctuation only.";
 
   const email = values.email.trim();
-  if (!email) err.email = "Enter your email.";
-  else if (!EMAIL_RE.test(email)) err.email = "Enter a valid email address.";
+  if (email && !EMAIL_RE.test(email)) err.email = "Enter a valid email address.";
 
   const digits = values.phone.replace(/\D/g, "");
   if (!digits) err.phone = "Enter your phone number.";
@@ -207,7 +206,7 @@ export default function JobApplyModal({ open, onClose, job }) {
           </div>
           <div className="job-apply-field">
             <label className="job-apply-label" htmlFor="ja-email">
-              Email <span className="job-apply-req">*</span>
+              Email
             </label>
             <input
               id="ja-email"

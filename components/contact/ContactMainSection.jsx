@@ -7,7 +7,6 @@ import api from "@/lib/axios";
 import {
   firstErrorMessage,
   sanitizeEmailInput,
-  sanitizeMessageText,
   sanitizePhoneDigits,
   sanitizeSingleLineText,
   validateInquiryForm,
@@ -31,7 +30,6 @@ const VALIDATE_OPTS = {
   requirePhone: true,
   phoneMinDigits: PHONE_DIGITS,
   phoneMaxDigits: PHONE_DIGITS,
-  minMessage: 10,
   requireInterest: true,
   minInterest: 3,
 };
@@ -41,7 +39,6 @@ const INITIAL_FORM = {
   email: "",
   phone: "",
   interest: "",
-  message: "",
   visitDate: "",
   meetingDateTime: "",
 };
@@ -130,13 +127,12 @@ export default function ContactMainSection({ contactInfo = {} }) {
     email: form.email,
     phone: form.phone,
     interest: form.interest,
-    message: form.message,
   });
 
   const validateVisitDate = (value) => {
     if (!isSiteVisitTab) return "";
     const raw = String(value || "").trim();
-    if (!raw) return "Please pick a preferred visit date.";
+    if (!raw) return "";
     const picked = new Date(raw);
     if (Number.isNaN(picked.getTime())) return "Please pick a valid date.";
     const today = new Date();
@@ -149,7 +145,7 @@ export default function ContactMainSection({ contactInfo = {} }) {
   const validateMeetingDateTime = (value) => {
     if (!isBookMeetingTab) return "";
     const raw = String(value || "").trim();
-    if (!raw) return "Please pick a preferred meeting date and time.";
+    if (!raw) return "";
     const picked = new Date(raw);
     if (Number.isNaN(picked.getTime())) return "Please pick a valid date and time.";
     if (picked.getTime() < Date.now()) return "Meeting time can't be in the past.";
@@ -222,7 +218,6 @@ export default function ContactMainSection({ contactInfo = {} }) {
         email:    form.email.trim(),
         phone:    form.phone.trim(),
         interest: form.interest.trim(),
-        message:  form.message.trim(),
         inquiryType:     activeTab,
         visitDate:       isSiteVisitTab   ? form.visitDate       : "",
         meetingDateTime: isBookMeetingTab ? form.meetingDateTime : "",
@@ -370,7 +365,7 @@ export default function ContactMainSection({ contactInfo = {} }) {
 
                       <div className="ci-form-row">
                         <div className="ci-field">
-                          <label htmlFor="ci-email">Email Address *</label>
+                          <label htmlFor="ci-email">Email Address</label>
                           <input
                             id="ci-email"
                             type="email"
@@ -406,7 +401,7 @@ export default function ContactMainSection({ contactInfo = {} }) {
 
                       {isSiteVisitTab ? (
                         <div className="ci-field">
-                          <label htmlFor="ci-visit-date">Preferred visit date *</label>
+                          <label htmlFor="ci-visit-date">Preferred visit date</label>
                           <input
                             id="ci-visit-date"
                             type="date"
@@ -423,7 +418,7 @@ export default function ContactMainSection({ contactInfo = {} }) {
 
                       {isBookMeetingTab ? (
                         <div className="ci-field">
-                          <label htmlFor="ci-meeting-datetime">Preferred meeting date &amp; time *</label>
+                          <label htmlFor="ci-meeting-datetime">Preferred meeting date &amp; time</label>
                           <input
                             id="ci-meeting-datetime"
                             type="datetime-local"
@@ -437,21 +432,6 @@ export default function ContactMainSection({ contactInfo = {} }) {
                           {fieldErrors.meetingDateTime && <span className="ci-field-err">{fieldErrors.meetingDateTime}</span>}
                         </div>
                       ) : null}
-
-                      <div className="ci-field">
-                        <label htmlFor="ci-message">Message *</label>
-                        <input
-                          id="ci-message"
-                          type="text"
-                          placeholder="Tell us briefly what you're looking for…"
-                          value={form.message}
-                          onChange={(e) => updateField("message", sanitizeMessageText(e.target.value))}
-                          onBlur={() => validateFieldOnBlur("message")}
-                          aria-invalid={!!fieldErrors.message}
-                          className={`ci-input${fieldErrors.message ? " ci-input--err" : ""}`}
-                        />
-                        {fieldErrors.message && <span className="ci-field-err">{fieldErrors.message}</span>}
-                      </div>
 
                       <p className="ci-form-consent">
                         By submitting, I authorise Global Realty and its representatives to contact me via Call, SMS, WhatsApp, or Email. This consent overrides any NDNC/DND registration.

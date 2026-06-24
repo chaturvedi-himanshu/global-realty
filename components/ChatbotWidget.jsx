@@ -457,19 +457,24 @@ export default function ChatbotWidget({ variant = "website" }) {
         setLeadName(val);
         setFlow("ask-email");
         simulateTypingThenReply(
-          `Nice to meet you, **${val}**! 😊\n\nWhat's your **email address**? We'll use it to follow up.`,
+          `Nice to meet you, **${val}**! 😊\n\nWhat's your **email address**? (Optional — type **skip** to continue without one.)`,
         );
         return;
       }
 
       if (flow === "ask-email") {
-        if (!isValidEmail(val)) {
-          simulateTypingThenReply(
-            "Please enter a valid **email address** (for example, **you@example.com**).",
-          );
-          return;
+        const skip = /^(skip|no|n\/a|na|none|-)$/i.test(val);
+        if (!skip) {
+          if (!isValidEmail(val)) {
+            simulateTypingThenReply(
+              "Please enter a valid **email address**, or type **skip** to continue without one.",
+            );
+            return;
+          }
+          setLeadEmail(val.trim());
+        } else {
+          setLeadEmail("");
         }
-        setLeadEmail(val.trim());
         setFlow("ask-interest");
         simulateTypingThenReply(
           "Thanks! **What are you interested in?** (e.g. buying, renting, site visit, investment)",
@@ -500,7 +505,10 @@ export default function ChatbotWidget({ variant = "website" }) {
           return;
         }
         const phoneDigits = toIndianMobile10Digits(val);
-        let saveMessage = `✅ **Perfect!** We've saved your details.\n\nWe'll contact **${leadName}** at **${phoneDigits}** and **${leadEmail.trim()}** soon.\n\nIs there anything else I can help you with?`;
+        const emailPart = leadEmail.trim()
+          ? ` and **${leadEmail.trim()}**`
+          : "";
+        let saveMessage = `✅ **Perfect!** We've saved your details.\n\nWe'll contact **${leadName}** at **${phoneDigits}**${emailPart} soon.\n\nIs there anything else I can help you with?`;
         try {
           const res = await fetch("/api/chatbot/lead", {
             method: "POST",
@@ -1334,7 +1342,7 @@ export default function ChatbotWidget({ variant = "website" }) {
               flow === "ask-name"
                 ? "Enter your name…"
                 : flow === "ask-email"
-                  ? "Enter your email…"
+                  ? "Enter your email or type skip…"
                   : flow === "ask-interest"
                     ? "What are you interested in?…"
                     : flow === "ask-phone"

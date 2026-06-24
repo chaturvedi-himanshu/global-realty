@@ -85,6 +85,7 @@ export async function POST(request) {
 
     const inquiry = await Inquiry.create({
       ...body,
+      message: String(body?.message || "").trim(),
       inquiryType,
       visitDate,
       meetingDateTime,

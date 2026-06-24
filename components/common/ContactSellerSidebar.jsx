@@ -358,7 +358,7 @@ export default function ContactSellerSidebar({
                   className="property-inquiry-sticky__label"
                   htmlFor={`${id}-g-email`}
                 >
-                  E-mail *
+                  E-mail
                 </label>
                 <input
                   id={`${id}-g-email`}

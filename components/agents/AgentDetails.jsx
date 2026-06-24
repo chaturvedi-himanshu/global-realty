@@ -16,7 +16,6 @@ export default function AgentDetails({ agent }) {
     name: "",
     email: "",
     phone: "",
-    message: "",
   });
   const [sending, setSending] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -50,7 +49,7 @@ export default function AgentDetails({ agent }) {
 
   const submitContact = async (e) => {
     e.preventDefault();
-    const { ok, errors } = validateInquiryForm(form, { minMessage: 10 });
+    const { ok, errors } = validateInquiryForm(form, { requireMessage: false });
     if (!ok) {
       setFieldErrors(errors);
       const msg = firstErrorMessage(errors);
@@ -67,7 +66,7 @@ export default function AgentDetails({ agent }) {
           typeof window !== "undefined" ? window.location.href : "",
       });
       toast.success("Message sent! We'll get back to you soon.");
-      setForm({ name: "", email: "", phone: "", message: "" });
+      setForm({ name: "", email: "", phone: "" });
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -304,24 +303,6 @@ export default function AgentDetails({ agent }) {
                   />
                   {fieldErrors.phone ? (
                     <span className="form-field-error">{fieldErrors.phone}</span>
-                  ) : null}
-                </fieldset>
-                <fieldset>
-                  <textarea
-                    name="message"
-                    cols={30}
-                    rows={10}
-                    placeholder="Message"
-                    id="message"
-                    value={form.message}
-                    onChange={(e) => {
-                      setForm((p) => ({ ...p, message: e.target.value }));
-                      clearErr("message");
-                    }}
-                    aria-invalid={!!fieldErrors.message}
-                  />
-                  {fieldErrors.message ? (
-                    <span className="form-field-error">{fieldErrors.message}</span>
                   ) : null}
                 </fieldset>
                 <div className="wrap-btn">

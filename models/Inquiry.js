@@ -6,7 +6,7 @@ const InquirySchema = new mongoose.Schema(
     email: { type: String, default: "" },
     phone: { type: String, default: "" },
     interest: { type: String, default: "" },
-    message: { type: String, required: true },
+    message: { type: String, default: "" },
     propertyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Property",

@@ -2,7 +2,6 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import {
   sanitizeEmailInput,
-  sanitizeMessageText,
   sanitizePhoneDigits,
   sanitizeSingleLineText,
   validateInquiryForm,
@@ -13,7 +12,6 @@ const INITIAL_FORM = {
   email: "",
   phone: "",
   interest: "",
-  message: "",
   visitDate: "",
   meetingDateTime: "",
 };
@@ -36,7 +34,6 @@ const MODAL_VALIDATE_OPTS = {
   requirePhone: true,
   phoneMinDigits: PHONE_DIGITS,
   phoneMaxDigits: PHONE_DIGITS,
-  minMessage: 10,
   requireInterest: true,
   minInterest: 3,
 };
@@ -171,13 +168,12 @@ export default function InquiryModal() {
     email: form.email,
     phone: form.phone,
     interest: form.interest,
-    message: form.message,
   });
 
   const validateVisitDate = (value) => {
     if (!isSiteVisitTab) return "";
     const raw = String(value || "").trim();
-    if (!raw) return "Please pick a preferred visit date.";
+    if (!raw) return "";
     const picked = new Date(raw);
     if (Number.isNaN(picked.getTime())) return "Please pick a valid date.";
     const today = new Date();
@@ -192,7 +188,7 @@ export default function InquiryModal() {
   const validateMeetingDateTime = (value) => {
     if (!isBookMeetingTab) return "";
     const raw = String(value || "").trim();
-    if (!raw) return "Please pick a preferred meeting date and time.";
+    if (!raw) return "";
     const picked = new Date(raw);
     if (Number.isNaN(picked.getTime()))
       return "Please pick a valid date and time.";
@@ -273,7 +269,6 @@ export default function InquiryModal() {
           email: form.email.trim(),
           phone: form.phone.trim(),
           interest: form.interest.trim(),
-          message: form.message.trim(),
           inquiryType: activeTab,
           visitDate: isSiteVisitTab ? form.visitDate : "",
           meetingDateTime: isBookMeetingTab ? form.meetingDateTime : "",
@@ -603,7 +598,7 @@ export default function InquiryModal() {
                           className="inquiry-modal-field-label"
                           htmlFor="inquiry-email"
                         >
-                          Email *
+                          Email
                         </label>
                         <input
                           id="inquiry-email"
@@ -686,7 +681,7 @@ export default function InquiryModal() {
                           className="inquiry-modal-field-label"
                           htmlFor="inquiry-visit-date"
                         >
-                          Preferred visit date *
+                          Preferred visit date
                         </label>
                         <input
                           id="inquiry-visit-date"
@@ -723,7 +718,7 @@ export default function InquiryModal() {
                           className="inquiry-modal-field-label"
                           htmlFor="inquiry-meeting-datetime"
                         >
-                          Preferred meeting date &amp; time *
+                          Preferred meeting date &amp; time
                         </label>
                         <input
                           id="inquiry-meeting-datetime"
@@ -753,44 +748,6 @@ export default function InquiryModal() {
                         ) : null}
                       </div>
                     ) : null}
-
-                    <div>
-                      <label
-                        className="inquiry-modal-field-label"
-                        htmlFor="inquiry-message"
-                      >
-                       Message *
-                      </label>
-                      <input
-                        id="inquiry-message"
-                        type="text"
-                        className={`inquiry-modal-input${fieldErrors.message ? " inquiry-modal-input--invalid" : ""}`}
-                        value={form.message}
-                        onChange={(e) =>
-                          updateField(
-                            "message",
-                            sanitizeMessageText(e.target.value),
-                          )
-                        }
-                        onBlur={() => validateFieldOnBlur("message")}
-                        placeholder="Tell us briefly what you're looking for..."
-                        aria-invalid={!!fieldErrors.message}
-                        aria-describedby={
-                          fieldErrors.message
-                            ? "inquiry-message-error"
-                            : undefined
-                        }
-                      />
-                      {fieldErrors.message ? (
-                        <span
-                          id="inquiry-message-error"
-                          className="form-field-error inquiry-modal-field-error"
-                          role="alert"
-                        >
-                          {fieldErrors.message}
-                        </span>
-                      ) : null}
-                    </div>
 
                     <button
                       type="submit"
