@@ -8,6 +8,7 @@
   overflow: hidden;
 }
 
+/* One dot per visible group (e.g. 4 on desktop); hide when only one page exists */
 .swiper :global(.swiper-pagination) {
   position: static !important;
   margin-top: 22px;
@@ -17,6 +18,10 @@
   gap: 8px;
 }
 
+.swiper :global(.swiper-pagination:has(.swiper-pagination-bullet:only-child)) {
+  display: none !important;
+}
+
 .swiper :global(.swiper-pagination-bullet) {
   width: 10px;
   height: 10px;
@@ -24,7 +29,7 @@
   border-radius: 999px;
   opacity: 1;
   background: rgba(15, 24, 36, 0.18);
-  transition: none;
+  transition: width 0.2s ease, background-color 0.2s ease;
 }
 
 .swiper :global(.swiper-pagination-bullet-active) {

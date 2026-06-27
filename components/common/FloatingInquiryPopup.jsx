@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSiteConfig } from "@/lib/hooks/useCMS";
 
+const CAROUSEL_INTERVAL_MS = 2000;
+
 async function openInquiryModal() {
   if (typeof window === "undefined") return;
   const modalEl = document.getElementById("modalInquiry");
   if (!modalEl) return;
 
-  // Works both when bootstrap is already attached to window and when it is only available as ESM import.
   if (window.bootstrap?.Modal) {
     window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
     return;
@@ -21,17 +22,31 @@ async function openInquiryModal() {
     if (!ModalCtor) return;
     ModalCtor.getOrCreateInstance(modalEl).show();
   } catch {
-    // swallow: no-op if bootstrap fails to load in edge runtime states
+    // bootstrap not yet hydrated; ignore
   }
 }
 
 const SCROLL_REOPEN_OFFSET_PX = 1300;
 
+function resolvePopupImages(config) {
+  const fromList = Array.isArray(config?.inquiryPopupImages)
+    ? config.inquiryPopupImages
+        .map((item) => String(item || "").trim())
+        .filter(Boolean)
+    : [];
+  if (fromList.length) return fromList;
+
+  const legacy = String(config?.inquiryPopupImage || "").trim();
+  return legacy ? [legacy] : [];
+}
+
 export default function FloatingInquiryPopup() {
   const { data } = useSiteConfig();
   const pathname = usePathname();
   const [phase, setPhase] = useState("card");
+  const [activeSlide, setActiveSlide] = useState(0);
   const timerRef = useRef(null);
+  const carouselTimerRef = useRef(null);
   const lastPathRef = useRef(pathname);
   const closedAtScrollRef = useRef(null);
   const ANIMATION_MS = 360;
@@ -42,15 +57,35 @@ export default function FloatingInquiryPopup() {
     if (typeof config.inquiryPopupEnabled === "string") return config.inquiryPopupEnabled === "true";
     return false;
   }, [config.inquiryPopupEnabled]);
-  const imageUrl = typeof config.inquiryPopupImage === "string" ? config.inquiryPopupImage : "";
+
+  const images = useMemo(() => resolvePopupImages(config), [config]);
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (carouselTimerRef.current) clearInterval(carouselTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    setActiveSlide(0);
+    if (carouselTimerRef.current) {
+      clearInterval(carouselTimerRef.current);
+      carouselTimerRef.current = null;
+    }
+    if (images.length <= 1) return undefined;
+
+    carouselTimerRef.current = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % images.length);
+    }, CAROUSEL_INTERVAL_MS);
+
+    return () => {
+      if (carouselTimerRef.current) {
+        clearInterval(carouselTimerRef.current);
+        carouselTimerRef.current = null;
+      }
+    };
+  }, [images]);
 
   const runPhaseTransition = (nextPhase, endPhase) => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -73,10 +108,6 @@ export default function FloatingInquiryPopup() {
     runPhaseTransition("toCard", "card");
   };
 
-  /**
-   * Re-open the popup whenever the user navigates to a different route, even
-   * if they had closed it on the previous page.
-   */
   useEffect(() => {
     if (lastPathRef.current === pathname) return;
     lastPathRef.current = pathname;
@@ -86,10 +117,6 @@ export default function FloatingInquiryPopup() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  /**
-   * When closed, listen for scroll. As soon as the user scrolls
-   * SCROLL_REOPEN_OFFSET_PX below where they closed it, bring the card back.
-   */
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
     if (phase !== "hidden") return undefined;
@@ -107,7 +134,7 @@ export default function FloatingInquiryPopup() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  if (!enabled || !imageUrl) return null;
+  if (!enabled || images.length === 0) return null;
 
   return (
     <div
@@ -138,8 +165,22 @@ export default function FloatingInquiryPopup() {
         }}
         aria-label="Open inquiry form"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUrl} alt="Inquiry offer" className="floating-inquiry-card__image" />
+        <div className="floating-inquiry-card__carousel" aria-live="polite">
+          {images.map((src, index) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={`${src}-${index}`}
+              src={src}
+              alt={`Inquiry offer ${index + 1}`}
+              className={[
+                "floating-inquiry-card__image",
+                index === activeSlide ? "floating-inquiry-card__image--active" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            />
+          ))}
+        </div>
       </button>
     </div>
   );

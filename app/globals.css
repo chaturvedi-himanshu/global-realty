@@ -448,11 +448,28 @@ body * {
   cursor: pointer;
 }
 
+.floating-inquiry-card__carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .floating-inquiry-card__image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+  pointer-events: none;
+}
+
+.floating-inquiry-card__image--active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .floating-inquiry-card__close {

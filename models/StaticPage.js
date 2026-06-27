@@ -12,6 +12,8 @@ const StaticPageSchema = new mongoose.Schema(
     content: { type: String, default: "" },
     metaTitle: { type: String, default: "" },
     metaDescription: { type: String, default: "" },
+    showProperties: { type: Boolean, default: false },
+    propertyIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
     status: {
       type: String,
       enum: ["draft", "published"],

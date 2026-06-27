@@ -146,6 +146,9 @@ export default async function AboutPageRoute() {
               <aside className="about-v2-story-values" aria-label="Our core values">
                 <div className="about-v2-story-values__head">
                   <h3>{data.valuesTitle || "Core Values"}</h3>
+                  {data.valuesDescription ? (
+                    <p className="about-v2-story-values__sub">{data.valuesDescription}</p>
+                  ) : null}
                 </div>
                 <ul className="about-v2-story-values__list">
                   {data.values.map((item, idx) => {
@@ -161,7 +164,9 @@ export default async function AboutPageRoute() {
                         </span>
                         <div className="about-v2-story-value__text">
                           <h4>{item.title}</h4>
-                          {item.description ? <p>{item.description}</p> : null}
+                          {item.description || item.tagline ? (
+                            <p>{item.description || item.tagline}</p>
+                          ) : null}
                         </div>
                       </li>
                     );

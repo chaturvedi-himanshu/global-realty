@@ -64,9 +64,9 @@ export default function Properties({ properties: dbProperties = [] }) {
               <h2 className="title split-text effect-right">
                 <SplitTextAnimation text="Featured Projects" />
               </h2>
-              <p className="text-1 split-text split-lines-transform">
+              {/* <p className="text-1 split-text split-lines-transform">
                 Find your dream home from our featured projects
-              </p>
+              </p> */}
             </div>
             <div className="row">
               {properties.map((property, idx) => (

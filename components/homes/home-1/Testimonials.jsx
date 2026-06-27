@@ -296,13 +296,14 @@ export default function Testimonials({ testimonials: dbTestimonials = [] }) {
                   disableOnInteraction: false,
                   pauseOnMouseEnter: true,
                 }}
-                loop
+                loop={items.length > 4}
                 spaceBetween={20}
                 slidesPerView={1}
+                slidesPerGroup={1}
                 breakpoints={{
-                  768: { slidesPerView: 2, spaceBetween: 20 },
-                  992: { slidesPerView: 3, spaceBetween: 20 },
-                  1200: { slidesPerView: 4, spaceBetween: 24 },
+                  768: { slidesPerView: 2, slidesPerGroup: 2, spaceBetween: 20 },
+                  992: { slidesPerView: 3, slidesPerGroup: 3, spaceBetween: 20 },
+                  1200: { slidesPerView: 4, slidesPerGroup: 4, spaceBetween: 24 },
                 }}
               >
                 {items.map((item) => (
